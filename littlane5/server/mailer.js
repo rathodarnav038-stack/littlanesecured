@@ -125,7 +125,49 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
         const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
         const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\nYou can also download it anytime here: ${downloadUrl}\n\nSee you on the dancefloor!\n— Littlane Entertainment`;
 
-        // If Mailgun is configured, use Mailgun. Otherwise, fall back to SMTP transporter.
+        // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)
+        if (process.env.BREVO_API_KEY) {
+            console.log(`[Mailer] Sending ticket to ${to} via Brevo HTTP API...`);
+            
+            // Format attachments for Brevo (Base64)
+            const brevoAttachments = [];
+            if (fs.existsSync(pdfPath)) {
+                brevoAttachments.push({
+                    content: fs.readFileSync(pdfPath).toString('base64'),
+                    name: `${ticketId}.pdf`
+                });
+            }
+
+            const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': process.env.BREVO_API_KEY,
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender: {
+                        name: "Littlane Events",
+                        email: fromEmail.replace(/.*<(.*)>/, '$1') || "events@littlane.com"
+                    },
+                    to: [{ email: to, name: name }],
+                    subject: subject,
+                    htmlContent: html,
+                    textContent: text,
+                    attachment: brevoAttachments
+                })
+            });
+
+            const resData = await response.json();
+            if (!response.ok) {
+                throw new Error(resData.message || 'Brevo API request failed');
+            }
+
+            console.log('[Mailer] Brevo send response:', resData);
+            return { success: true, messageId: resData.messageId };
+        }
+
+        // 2. If Mailgun is configured, use Mailgun API
         if (mgClient) {
             console.log(`[Mailer] Sending ticket to ${to} via Mailgun...`);
             
@@ -164,14 +206,14 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
                 subject: subject,
                 text: text,
                 html: html,
-                inline: mgAttachments.filter(att => att.cid), // Mailgun handles inline attachments differently than files
+                inline: mgAttachments.filter(att => att.cid),
                 attachment: mgAttachments.filter(att => !att.cid)
             });
 
             console.log('[Mailer] Mailgun send response:', response);
             return { success: true, id: response.id };
         } else {
-            // SMTP fallback
+            // 3. SMTP fallback
             console.log(`[Mailer] Sending ticket to ${to} via SMTP...`);
             const t = await getTransporter();
             const info = await t.sendMail({
