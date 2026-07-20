@@ -70,7 +70,7 @@ export default function TicketCard({ dark, ticket, onBack }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div class="relative overflow-hidden">
+          <div className="relative overflow-hidden">
             <motion.img
               src="/images/freshers-takeover-banner.png"
               alt="Freshers Takeover Banner"

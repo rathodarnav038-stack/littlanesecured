@@ -168,7 +168,7 @@ export default function ScanRejected({ dark, ticket, notFoundId, onBack, onScanN
         <div className="bg-[#EF4444]/[0.08] border-t px-5 py-3 flex items-center justify-between" style={{ borderColor: dark ? '#2A2A2A' : '#EBEBEB' }}>
           <span className={`text-xs font-medium ${subText}`}>Status</span>
           <span className="bg-[#EF4444] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-            {ticket!.status === 'cancelled' ? 'Cancelled' : 'Rejected'}
+            {isNotFound ? 'Invalid' : ticket!.status === 'cancelled' ? 'Cancelled' : 'Rejected'}
           </span>
         </div>
       </motion.div>
