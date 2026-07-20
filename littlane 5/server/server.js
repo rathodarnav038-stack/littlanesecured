@@ -481,6 +481,7 @@ app.get('/api/test-email', async (req, res) => {
     if (!to) return res.status(400).json({ success: false, message: 'Pass ?to=your@email.com' });
     const nodemailer = require('nodemailer');
     try {
+        const dns = require('dns');
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: 465,
@@ -489,7 +490,10 @@ app.get('/api/test-email', async (req, res) => {
             tls: { rejectUnauthorized: false },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
-            socketTimeout: 15000
+            socketTimeout: 15000,
+            lookup: (hostname, options, callback) => {
+                dns.lookup(hostname, { family: 4 }, callback);
+            }
         });
         await transporter.verify();
         const info = await transporter.sendMail({
