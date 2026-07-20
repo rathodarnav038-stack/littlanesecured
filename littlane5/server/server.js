@@ -463,6 +463,22 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
     }
 });
 
+// ==================== 6B. SECURE DATA WIPE (ADMIN ONLY) ====================
+app.post('/api/admin/danger-wipe-test-data', async (req, res) => {
+    const clientKey = req.query.key || req.headers['x-admin-key'];
+    if (!clientKey || clientKey !== ADMIN_KEY) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    try {
+        const mongoose = require('mongoose');
+        const result = await mongoose.connection.db.collection('sales').deleteMany({});
+        res.json({ success: true, message: `Successfully wiped ${result.deletedCount} test tickets and reset all revenue/ticket stats.` });
+    } catch (err) {
+        console.error('[WIPE ERROR]', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ==================== 7. SCAN TICKET ====================
 app.post('/api/scan-ticket', async (req, res) => {
     const { ticketId, scannedBy } = req.body || {};
