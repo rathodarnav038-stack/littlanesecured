@@ -10,6 +10,6 @@
     { "source": "/dashboard/(.*)", "destination": "/combined-app/dist/index.html" },
     { "source": "/api/(.*)", "destination": "https://littlanefinal.onrender.com/api/$1" },
     { "source": "/ticket-files/(.*)", "destination": "https://littlanefinal.onrender.com/ticket-files/$1" },
-    { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/((?!combined-app|assets|tickets|dashboard|api|ticket-files).*)$", "destination": "/$1" }
   ]
 }
