@@ -483,32 +483,26 @@ app.post('/api/scan-ticket', async (req, res) => {
 app.get('/api/test-email', async (req, res) => {
     const { to } = req.query;
     if (!to) return res.status(400).json({ success: false, message: 'Pass ?to=your@email.com' });
-    const nodemailer = require('nodemailer');
+    const { sendTicketEmail } = require('./mailer');
     try {
-        const dns = require('dns');
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: 465,
-            secure: true,
-            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-            tls: { rejectUnauthorized: false },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 15000,
-            lookup: (hostname, options, callback) => {
-                dns.lookup(hostname, { family: 4 }, callback);
-            }
-        });
-        await transporter.verify();
-        const info = await transporter.sendMail({
-            from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+        const result = await sendTicketEmail({
             to,
-            subject: 'Littlane Email Test',
-            text: 'If you see this, email is working correctly!'
+            name: 'Test Customer',
+            ticketId: 'TEST-123456',
+            gender: 'male',
+            quantity: 1,
+            amount: 499,
+            pdfPath: '', // skip attachment path for simple test
+            qrBuffer: null,
+            downloadUrl: 'https://littlane.in'
         });
-        res.json({ success: true, messageId: info.messageId, smtp_user: process.env.SMTP_USER, email_from: process.env.EMAIL_FROM });
+        if (result.success) {
+            res.json({ success: true, method: process.env.MAILGUN_API_KEY ? 'mailgun' : 'smtp/fallback', details: result });
+        } else {
+            res.status(500).json({ success: false, error: result.error });
+        }
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message, smtp_user: process.env.SMTP_USER, email_from: process.env.EMAIL_FROM });
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

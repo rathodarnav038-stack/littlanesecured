@@ -1,12 +1,31 @@
 // Handles sending the ticket to the buyer's email once payment succeeds.
-// Configure real SMTP credentials in server/.env — see .env.example.
+// Configure real SMTP or Mailgun credentials in server/.env — see .env.example.
 
 const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
 const { EVENT_NAME, EVENT_DETAILS, GENDER_LABEL, BANNER_PATH } = require('./ticket');
 
 let transporter = null;
 let usingTestAccount = false;
+
+// Initialize Mailgun client if configuration is present
+let mgClient = null;
+if (process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN) {
+    try {
+        const FormData = require('form-data');
+        const Mailgun = require('mailgun.js');
+        const mailgun = new Mailgun(FormData);
+        mgClient = mailgun.client({
+            username: 'api',
+            key: process.env.MAILGUN_API_KEY,
+            url: process.env.MAILGUN_URL || 'https://api.mailgun.net' // e.g. https://api.eu.mailgun.net for EU
+        });
+        console.log('[Mailer] Mailgun client initialized successfully.');
+    } catch (e) {
+        console.error('[Mailer] Failed to initialize Mailgun client:', e.message);
+    }
+}
 
 async function getTransporter() {
     if (transporter) return transporter;
@@ -33,7 +52,7 @@ async function getTransporter() {
     // whole flow (including "email sent") still works out of the box while
     // you're testing. Nothing will land in a real inbox until you set
     // SMTP_HOST / SMTP_USER / SMTP_PASS in server/.env.
-    console.warn('[Mailer] No SMTP_HOST configured — using a temporary Ethereal test inbox. Set SMTP_HOST/SMTP_USER/SMTP_PASS in server/.env to send real emails.');
+    console.warn('[Mailer] No SMTP_HOST or Mailgun configured — using a temporary Ethereal test inbox. Set SMTP_HOST/SMTP_USER/SMTP_PASS in server/.env to send real emails.');
     const testAccount = await nodemailer.createTestAccount();
     usingTestAccount = true;
     transporter = nodemailer.createTransport({
@@ -52,8 +71,8 @@ async function getTransporter() {
  */
 async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, pdfPath, qrBuffer, downloadUrl }) {
     try {
-        const t = await getTransporter();
         const genderLabel = GENDER_LABEL[gender] || gender;
+        const fromEmail = process.env.EMAIL_FROM || '"Littlane Events" <events@littlane.com>';
 
         const attachments = [
             { filename: `${ticketId}.pdf`, path: pdfPath }
@@ -91,18 +110,71 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
           </div>
         </div>`;
 
-        const info = await t.sendMail({
-            from: process.env.EMAIL_FROM || '"Littlane Events" <events@littlane.com>',
-            to,
-            subject: `Your ${EVENT_NAME} Pass — ${ticketId}`,
-            text: `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\nYou can also download it anytime here: ${downloadUrl}\n\nSee you on the dancefloor!\n— Littlane Entertainment`,
-            html,
-            attachments
-        });
+        const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
+        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\nYou can also download it anytime here: ${downloadUrl}\n\nSee you on the dancefloor!\n— Littlane Entertainment`;
 
-        const previewUrl = usingTestAccount ? nodemailer.getTestMessageUrl(info) : null;
-        if (previewUrl) console.log(`[Mailer] Test email preview: ${previewUrl}`);
-        return { success: true, messageId: info.messageId, previewUrl };
+        // If Mailgun is configured, use Mailgun. Otherwise, fall back to SMTP transporter.
+        if (mgClient) {
+            console.log(`[Mailer] Sending ticket to ${to} via Mailgun...`);
+            
+            // Format attachments for Mailgun API
+            const mgAttachments = [];
+            
+            // PDF file
+            if (fs.existsSync(pdfPath)) {
+                mgAttachments.push({
+                    filename: `${ticketId}.pdf`,
+                    data: fs.readFileSync(pdfPath)
+                });
+            }
+            
+            // QR inline image
+            if (qrBuffer) {
+                mgAttachments.push({
+                    filename: 'qr.png',
+                    data: qrBuffer,
+                    cid: 'ticketqr'
+                });
+            }
+            
+            // Banner inline image
+            if (fs.existsSync(BANNER_PATH)) {
+                mgAttachments.push({
+                    filename: 'banner.png',
+                    data: fs.readFileSync(BANNER_PATH),
+                    cid: 'ticketbanner'
+                });
+            }
+
+            const response = await mgClient.messages.create(process.env.MAILGUN_DOMAIN, {
+                from: fromEmail,
+                to: [to],
+                subject: subject,
+                text: text,
+                html: html,
+                inline: mgAttachments.filter(att => att.cid), // Mailgun handles inline attachments differently than files
+                attachment: mgAttachments.filter(att => !att.cid)
+            });
+
+            console.log('[Mailer] Mailgun send response:', response);
+            return { success: true, id: response.id };
+        } else {
+            // SMTP fallback
+            console.log(`[Mailer] Sending ticket to ${to} via SMTP...`);
+            const t = await getTransporter();
+            const info = await t.sendMail({
+                from: fromEmail,
+                to,
+                subject,
+                text,
+                html,
+                attachments
+            });
+
+            const previewUrl = usingTestAccount ? nodemailer.getTestMessageUrl(info) : null;
+            if (previewUrl) console.log(`[Mailer] Test email preview: ${previewUrl}`);
+            return { success: true, messageId: info.messageId, previewUrl };
+        }
     } catch (error) {
         console.error(`[Mailer] Failed to send ticket to ${to}:`, error.message);
         return { success: false, error: error.message };
