@@ -21,15 +21,7 @@ export default function LittixLogo({ dark = true, size = 'md', animated = true }
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
-      <span className={dark ? 'text-white' : 'text-[#111]'}>Lit</span>
-      <motion.span
-        className="text-transparent bg-clip-text"
-        style={{ backgroundImage: 'linear-gradient(120deg, #A855F7, #D946EF, #A855F7)', backgroundSize: '200% 100%' }}
-        animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-      >
-        tix
-      </motion.span>
+      <span className={dark ? 'text-white' : 'text-[#111]'}>LITTLANE</span>
       <span className="relative ml-1 inline-block" style={{ width: dotSize, height: dotSize, marginBottom: '2px' }}>
         <motion.span
           className="absolute inset-0 rounded-full bg-[#A855F7]"
