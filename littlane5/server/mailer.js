@@ -131,14 +131,14 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
             
             // Format attachments for Brevo (Base64)
             const brevoAttachments = [];
-            if (fs.existsSync(pdfPath)) {
+            if (pdfPath && fs.existsSync(pdfPath)) {
                 brevoAttachments.push({
                     content: fs.readFileSync(pdfPath).toString('base64'),
                     name: `${ticketId}.pdf`
                 });
             }
 
-            const payload = JSON.stringify({
+            const payloadObj = {
                 sender: {
                     name: "Littlane Events",
                     email: fromEmail.replace(/.*<(.*)>/, '$1') || "events@littlane.com"
@@ -146,9 +146,14 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
                 to: [{ email: to, name: name }],
                 subject: subject,
                 htmlContent: html,
-                textContent: text,
-                attachment: brevoAttachments
-            });
+                textContent: text
+            };
+
+            if (brevoAttachments.length > 0) {
+                payloadObj.attachment = brevoAttachments;
+            }
+
+            const payload = JSON.stringify(payloadObj);
 
             return new Promise((resolve, reject) => {
                 const https = require('https');
