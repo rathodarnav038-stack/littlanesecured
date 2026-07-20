@@ -34,10 +34,13 @@ async function getTransporter() {
         const dns = require('dns');
         transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false, // false for 587 (STARTTLS)
             auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-            tls: { rejectUnauthorized: false },
+            tls: {
+                rejectUnauthorized: false,
+                minVersion: 'TLSv1.2'
+            },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 15000,
