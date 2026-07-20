@@ -200,10 +200,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             price: `₹${t.amount || '—'}`,
             qty: t.quantity || 1,
             generatedBy: t.generatedBy || 'Littlane',
-            generatedAt: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
+            generatedAt: t.generatedAt ? (() => {
+              const d = new Date(t.generatedAt)
+              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+              const rawH = d.getHours()
+              const ampm = rawH >= 12 ? 'PM' : 'AM'
+              const h12 = rawH % 12 === 0 ? 12 : rawH % 12
+              const m = d.getMinutes().toString().padStart(2, '0')
+              return `${months[d.getMonth()]} ${d.getDate()}, ${h12}:${m} ${ampm}`
+            })() : 'TBA',
             status: 'scanned',
             scannedBy: t.scannedBy || scannedBy || 'Gate Staff',
-            scannedAt: t.scannedAt || new Date().toLocaleString()
+            scannedAt: t.scannedAt || (() => {
+              const now = new Date()
+              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+              const rawH = now.getHours()
+              const ampm = rawH >= 12 ? 'PM' : 'AM'
+              const h12 = rawH % 12 === 0 ? 12 : rawH % 12
+              const m = now.getMinutes().toString().padStart(2, '0')
+              return `${months[now.getMonth()]} ${now.getDate()}, ${h12}:${m} ${ampm}`
+            })()
           }
           await refreshTickets()
           return { result: 'success', ticket: resolvedTicket }

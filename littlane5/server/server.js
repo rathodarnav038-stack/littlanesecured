@@ -498,9 +498,11 @@ app.post('/api/scan-ticket', async (req, res) => {
 
         const now = new Date();
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const hh = now.getHours().toString().padStart(2, '0');
+        const rawHour = now.getHours();
+        const ampm = rawHour >= 12 ? 'PM' : 'AM';
+        const hour12 = rawHour % 12 === 0 ? 12 : rawHour % 12;
         const mm = now.getMinutes().toString().padStart(2, '0');
-        const scannedAtStr = `${months[now.getMonth()]} ${now.getDate()}, ${hh}:${mm}`;
+        const scannedAtStr = `${months[now.getMonth()]} ${now.getDate()}, ${hour12}:${mm} ${ampm}`;
 
         await db.updateSaleRecord(sale.orderId, {
             status: 'scanned',
