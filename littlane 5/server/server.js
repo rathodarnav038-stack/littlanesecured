@@ -475,6 +475,31 @@ app.post('/api/scan-ticket', async (req, res) => {
     }
 });
 
+// ==================== DEBUG: TEST EMAIL ====================
+app.get('/api/test-email', async (req, res) => {
+    const { to } = req.query;
+    if (!to) return res.status(400).json({ success: false, message: 'Pass ?to=your@email.com' });
+    const nodemailer = require('nodemailer');
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT || 587),
+            secure: Number(process.env.SMTP_PORT) === 465,
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+        });
+        await transporter.verify();
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+            to,
+            subject: 'Littlane Email Test',
+            text: 'If you see this, email is working correctly!'
+        });
+        res.json({ success: true, messageId: info.messageId, smtp_user: process.env.SMTP_USER, email_from: process.env.EMAIL_FROM });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message, smtp_user: process.env.SMTP_USER, email_from: process.env.EMAIL_FROM });
+    }
+});
+
 // ==================== HEALTH ====================
 app.get('/api/health', (req, res) => res.json({ success: true, event: EVENT.name, testMode: TEST_MODE }));
 
