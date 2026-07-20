@@ -269,7 +269,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
-              <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Sales Analytics (SQLite)</h2>
+              <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Sales Analytics</h2>
               <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '3px 0 0' }}>
                 Period Sales: {period === 'today' ? todayRevenue.toLocaleString() : totalRevenue.toLocaleString()} INR
               </p>
@@ -375,7 +375,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
-              <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Live Activity (SQLite)</h2>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Live Activity</h2>
               <p style={{ fontSize: '11px', color: 'var(--muted-foreground)', margin: '2px 0 0' }}>Real-time event stream</p>
             </div>
           </div>
