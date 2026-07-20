@@ -4,10 +4,10 @@
   "outputDirectory": ".",
   "rewrites": [
     { "source": "/assets/(.*)", "destination": "/combined-app/dist/assets/$1" },
-    { "source": "/tickets", "destination": "/combined-app/dist/index.html" },
-    { "source": "/tickets/(.*)", "destination": "/combined-app/dist/index.html" },
-    { "source": "/dashboard", "destination": "/combined-app/dist/index.html" },
-    { "source": "/dashboard/(.*)", "destination": "/combined-app/dist/index.html" },
+    { "source": "/tickets", "destination": "/dashboard.html" },
+    { "source": "/tickets/(.*)", "destination": "/dashboard.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/dashboard/(.*)", "destination": "/dashboard.html" },
     { "source": "/api/(.*)", "destination": "https://littlanefinal.onrender.com/api/$1" },
     { "source": "/ticket-files/(.*)", "destination": "https://littlanefinal.onrender.com/ticket-files/$1" },
     { "source": "/((?!combined-app|assets|tickets|dashboard|api|ticket-files).*)$", "destination": "/$1" }
