@@ -56,23 +56,23 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
   }, [rejectedScans, search])
 
   return (
-    <div className={`${bg} flex flex-col w-full min-h-screen`} style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className={`${bg} flex flex-col w-full h-[100dvh] overflow-hidden`} style={{ fontFamily: 'Inter, sans-serif' }}>
 
-      <div className={`flex items-center justify-between px-4 py-3 border-b ${navBg} sticky top-0 z-10 backdrop-blur-md`}>
+      <div className={`flex items-center justify-between px-4 py-4 border-b ${navBg} sticky top-0 z-10 backdrop-blur-md`}>
         <LittixLogo dark={dark} size="sm" />
-        <span className={`text-sm font-semibold ${text}`}>Scanner Panel</span>
+        <span className={`text-base font-bold ${text}`}>Scanner Panel</span>
         <motion.button
           onClick={onToggleTheme}
           whileTap={{ scale: 0.85 }}
-          className={`w-8 h-8 flex items-center justify-center rounded-full ${dark ? 'bg-[#1A1A1A]' : 'bg-white shadow-sm'}`}
+          className={`w-10 h-10 flex items-center justify-center rounded-full ${dark ? 'bg-[#1A1A1A]' : 'bg-white shadow-sm'}`}
           style={{ willChange: 'transform' }}
         >
           {dark ? (
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <svg width="18" height="18" viewBox="0 0 15 15" fill="none">
               <path d="M13 8.5A5.5 5.5 0 116.5 2a4.5 4.5 0 006.5 6.5z" stroke="#A0A0A0" strokeWidth="1.3" strokeLinejoin="round" />
             </svg>
           ) : (
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <svg width="18" height="18" viewBox="0 0 15 15" fill="none">
               <circle cx="7.5" cy="7.5" r="3" stroke="#6B6B6B" strokeWidth="1.3" />
               <path d="M7.5 0.5v2M7.5 12v2M14.5 7.5h-2M2.5 7.5h-2M12.5 2.5l-1.4 1.4M3.9 11.1l-1.4 1.4M12.5 12.5l-1.4-1.4M3.9 3.9L2.5 2.5" stroke="#6B6B6B" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
@@ -81,31 +81,31 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
       </div>
 
       {/* Stats row specific to Scan Panel */}
-      <div className="flex gap-2 px-4 pt-4 pb-2">
+      <div className="flex gap-3 px-4 pt-4 pb-2">
         <div
-          className={`flex-1 rounded-2xl border px-3 py-2.5 ${cardBg}`}
+          className={`flex-1 rounded-2xl border px-4 py-3.5 ${cardBg}`}
           style={{ boxShadow: dark ? 'none' : '0 1px 8px rgba(0,0,0,0.04)' }}
         >
-          <p className="text-xl font-black text-[#22C55E]">
+          <p className="text-2xl font-black text-[#22C55E]">
             <AnimatedCounter value={scannedTickets.length} />
           </p>
-          <p className={`text-[10px] font-medium mt-0.5 ${subText}`}>Total Scanned</p>
+          <p className={`text-[11px] font-semibold mt-0.5 ${subText}`}>Total Scanned</p>
         </div>
         <div
-          className={`flex-1 rounded-2xl border px-3 py-2.5 ${cardBg}`}
+          className={`flex-1 rounded-2xl border px-4 py-3.5 ${cardBg}`}
           style={{ boxShadow: dark ? 'none' : '0 1px 8px rgba(0,0,0,0.04)' }}
         >
-          <p className="text-xl font-black text-[#EF4444]">
+          <p className="text-2xl font-black text-[#EF4444]">
             <AnimatedCounter value={rejectedScans.length} />
           </p>
-          <p className={`text-[10px] font-medium mt-0.5 ${subText}`}>Failed Scans (Session)</p>
+          <p className={`text-[11px] font-semibold mt-0.5 ${subText}`}>Failed (Session)</p>
         </div>
       </div>
 
       {/* Search box */}
       <div className="px-4 pb-2">
         <motion.div
-          className={`flex items-center gap-2 rounded-2xl px-4 py-3 border ${searchBg}`}
+          className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 border ${searchBg}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{
             opacity: 1,
@@ -115,7 +115,7 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
           }}
           transition={{ duration: 0.3 }}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
             <circle cx="6" cy="6" r="4.5" stroke={dark ? '#555' : '#A0A0A0'} strokeWidth="1.2" />
             <path d="M10 10l2.5 2.5" stroke={dark ? '#555' : '#A0A0A0'} strokeWidth="1.2" strokeLinecap="round" />
           </svg>
@@ -125,19 +125,19 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             placeholder="Search scans…"
-            className={`text-sm bg-transparent outline-none w-full ${dark ? 'text-white placeholder-[#555]' : 'text-[#111] placeholder-[#A0A0A0]'}`}
+            className={`text-base bg-transparent outline-none w-full ${dark ? 'text-white placeholder-[#555]' : 'text-[#111] placeholder-[#A0A0A0]'}`}
           />
         </motion.div>
       </div>
 
       {/* Tab Selectors */}
-      <div className="flex gap-2 px-4 pb-3">
+      <div className="flex gap-2.5 px-4 pb-3">
         {(['scanned', 'failed'] as const).map((tab) => (
           <motion.button
             key={tab}
             onClick={() => setActiveTab(tab)}
             whileTap={{ scale: 0.94 }}
-            className={`relative px-4 py-1.5 rounded-full text-xs font-semibold border overflow-hidden ${
+            className={`relative flex-1 py-3 rounded-2xl text-sm font-bold border overflow-hidden ${
               activeTab === tab
                 ? 'text-white border-[#A855F7]'
                 : dark
@@ -153,44 +153,44 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
               />
             )}
             <span className="relative">
-              {tab === 'scanned' ? 'Scanned Tickets' : 'Failed & Duplicates'}
+              {tab === 'scanned' ? 'Scanned' : 'Failed & Duplicates'}
             </span>
           </motion.button>
         ))}
       </div>
 
-      <div className={`flex items-center px-4 py-2 border-b text-[9px] font-bold uppercase tracking-widest ${subText}`} style={{ borderColor: dark ? '#1E1E1E' : '#EBEBEB' }}>
-        <span style={{ width: 90, flexShrink: 0 }}>Ticket ID</span>
+      <div className={`flex items-center px-4 py-3 border-b text-[10px] font-bold uppercase tracking-widest ${subText}`} style={{ borderColor: dark ? '#1E1E1E' : '#EBEBEB' }}>
+        <span style={{ width: 85, flexShrink: 0 }}>Ticket ID</span>
         <span className="flex-1">Attendee / Details</span>
-        <span style={{ width: 66 }} className="text-right">Outcome</span>
+        <span style={{ width: 75 }} className="text-right">Outcome</span>
       </div>
 
-      {/* Scans lists — no AnimatePresence on list items for iPhone performance */}
+      {/* Scans lists — Scrollable with Touch Optimization */}
       <div
-        className="flex flex-col overflow-y-auto flex-1"
+        className="flex-1 overflow-y-auto min-h-0"
         style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}
       >
         {activeTab === 'scanned' ? (
           filteredScanned.length === 0 ? (
-            <p className={`text-xs text-center py-8 ${subText}`}>No scanned tickets yet.</p>
+            <p className={`text-sm text-center py-12 ${subText}`}>No scanned tickets yet.</p>
           ) : (
             filteredScanned.map((ticket) => (
               <button
                 key={ticket.id}
                 onClick={() => onOpenTicket(ticket.id)}
-                className="px-4 py-3 border-b flex items-start text-left w-full active:opacity-70 transition-opacity duration-100"
+                className="px-4 py-4 border-b flex items-center text-left w-full active:opacity-75 transition-opacity duration-100 min-h-[64px]"
                 style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
               >
-                <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                <span className={`text-xs font-mono font-bold ${subText}`} style={{ width: 85, flexShrink: 0 }}>
                   #{ticket.id.length > 8 ? ticket.id.slice(-8).toUpperCase() : ticket.id.toUpperCase()}
                 </span>
-                <div className="flex-1">
-                  <span className={`text-xs font-semibold block ${text}`}>{ticket.attendee}</span>
-                  <p className={`text-[9px] ${subText} mt-0.5`}>
-                    {ticket.ticketType} · Scanned by {ticket.scannedBy} at {ticket.scannedAt}
+                <div className="flex-1 min-w-0 pr-2">
+                  <span className={`text-sm font-bold block truncate ${text}`}>{ticket.attendee}</span>
+                  <p className={`text-[10px] ${subText} mt-0.5 truncate`}>
+                    {ticket.ticketType} · {ticket.scannedAt}
                   </p>
                 </div>
-                <span className="bg-[#22C55E]/15 text-[#22C55E] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="bg-[#22C55E]/15 text-[#22C55E] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex-shrink-0">
                   Success
                 </span>
               </button>
@@ -198,11 +198,10 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
           )
         ) : (
           filteredFailed.length === 0 ? (
-            <p className={`text-xs text-center py-8 ${subText}`}>No failed scans in this session.</p>
+            <p className={`text-sm text-center py-12 ${subText}`}>No failed scans in this session.</p>
           ) : (
             filteredFailed.map((item, i) => {
               const canClick = !!item.ticket
-              // Badge color + label by reason
               const badgeStyle =
                 item.reason === 'cancelled'
                   ? 'bg-[#F59E0B]/15 text-[#F59E0B]'
@@ -211,11 +210,10 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                   : 'bg-[#EF4444]/15 text-[#EF4444]'
               const badgeLabel =
                 item.reason === 'cancelled' ? 'Cancelled' : item.reason === 'invalid' ? 'Invalid' : 'Duplicate'
-              // Attempt ordinal: 1→"2nd scan", 2→"3rd scan" etc.
               const ordinal = (n: number) => {
-                const s = n + 1  // 1st attempt = 2nd scan overall
+                const s = n + 1
                 const sfx = s === 1 ? 'st' : s === 2 ? 'nd' : s === 3 ? 'rd' : 'th'
-                return `${s}${sfx} scan attempt`
+                return `${s}${sfx} scan`
               }
               const shortId = item.rawCode
                 ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase())
@@ -225,45 +223,43 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                 <button
                   key={i}
                   onClick={() => onOpenTicket(item.ticket!.id)}
-                  className="px-4 py-3 border-b flex items-start text-left w-full active:opacity-70 transition-opacity duration-100"
+                  className="px-4 py-4 border-b flex items-center text-left w-full active:opacity-75 transition-opacity duration-100 min-h-[70px]"
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
-                  <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                  <span className={`text-xs font-mono font-bold ${subText}`} style={{ width: 85, flexShrink: 0 }}>
                     #{shortId}
                   </span>
-                  <div className="flex-1 min-w-0">
-                    <span className={`text-xs font-semibold block truncate ${text}`}>{item.ticket!.attendee}</span>
-                    <p className={`text-[9px] ${subText} mt-0.5`}>
+                  <div className="flex-1 min-w-0 pr-2">
+                    <span className={`text-sm font-bold block truncate ${text}`}>{item.ticket!.attendee}</span>
+                    <p className={`text-[10px] ${subText} mt-0.5 truncate`}>
                       {item.ticket!.ticketType} · {ordinal(item.attemptNumber)}
                     </p>
                     {item.reason === 'duplicate' && item.ticket!.scannedAt && (
-                      <p className={`text-[9px] text-[#EF4444]/70 mt-0.5`}>
-                        First scanned: {item.ticket!.scannedAt}
+                      <p className={`text-[10px] text-[#EF4444]/75 mt-0.5 truncate`}>
+                        1st scan: {item.ticket!.scannedAt}
                       </p>
                     )}
-                    <p className={`text-[9px] ${subText} mt-0.5`}>Rejected at {item.timestamp}</p>
                   </div>
-                  <span className={`${badgeStyle} text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0 ml-1`}>
+                  <span className={`${badgeStyle} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex-shrink-0`}>
                     {badgeLabel}
                   </span>
                 </button>
               ) : (
                 <div
                   key={i}
-                  className="px-4 py-3 border-b flex items-start text-left w-full"
+                  className="px-4 py-4 border-b flex items-center text-left w-full min-h-[64px]"
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
-                  <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                  <span className={`text-xs font-mono font-bold ${subText}`} style={{ width: 85, flexShrink: 0 }}>
                     #{shortId}
                   </span>
-                  <div className="flex-1 min-w-0">
-                    <span className={`text-xs font-semibold block ${text}`}>Unknown Ticket</span>
-                    <p className={`text-[9px] ${subText} mt-0.5`}>
-                      {ordinal(item.attemptNumber)} · Not found in database
+                  <div className="flex-1 min-w-0 pr-2">
+                    <span className={`text-sm font-bold block ${text}`}>Unknown Ticket</span>
+                    <p className={`text-[10px] ${subText} mt-0.5`}>
+                      {ordinal(item.attemptNumber)} · Not found
                     </p>
-                    <p className={`text-[9px] ${subText} mt-0.5`}>Rejected at {item.timestamp}</p>
                   </div>
-                  <span className="bg-[#6B7280]/15 text-[#9CA3AF] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0 ml-1">
+                  <span className="bg-[#6B7280]/15 text-[#9CA3AF] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex-shrink-0">
                     Invalid
                   </span>
                 </div>
@@ -273,15 +269,19 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
         )}
       </div>
 
-
-      <div className={`px-4 py-3 border-t ${navBg}`}>
+      {/* Floating/Sticky Scan Button Wrapper */}
+      <div className={`px-4 py-4 border-t ${navBg} safe-bottom`}>
         <motion.button
           onClick={onScan}
           whileTap={{ scale: 0.96 }}
-          className="w-full bg-[#A855F7] text-white text-xs font-bold py-3 rounded-2xl flex items-center justify-center gap-1.5"
-          style={{ boxShadow: '0 4px 20px rgba(168,85,247,0.3)', willChange: 'transform' }}
+          className="w-full bg-[#A855F7] text-white text-base font-black py-4.5 rounded-2xl flex items-center justify-center gap-2"
+          style={{ 
+            boxShadow: '0 6px 24px rgba(168,85,247,0.35)', 
+            willChange: 'transform',
+            height: '56px'
+          }}
         >
-          📷 Scan Ticket
+          📷 SCAN TICKET
         </motion.button>
       </div>
     </div>
