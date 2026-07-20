@@ -1,0 +1,19 @@
+{
+  "name": "littlane",
+  "version": "1.0.0",
+  "description": "Unified Littix App and Enterprise Admin Dashboard",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "cd server && npm start",
+    "build": "cd combined-app && npm install && npm run build",
+    "dev": "concurrently \"cd combined-app && npm run dev\" \"cd server && node server.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "serve": "^14.2.3"
+  }
+}

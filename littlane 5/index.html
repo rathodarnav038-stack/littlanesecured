@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LITTLANE — Pune's Premier College Fest Curators</title>
+    <meta name="description" content="Littlane is Pune's leading college fest & entertainment crew. Crafting sold-out nights with loud sound and zero chill.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- LOADER -->
+    <div class="loader" id="loader"><div class="loader-inner"><div class="loader-bar"></div><span class="loader-text">LITTLANE</span><span class="loader-percent" id="loaderPercent">0</span></div></div>
+    <!-- PARTICLES -->
+    <canvas class="particles-canvas" id="particles"></canvas>
+    <!-- GRAIN -->
+    <div class="grain"></div>
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- CURSOR -->
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-dot" id="cursorDot"></div>
+
+    <!-- THEME TOGGLE -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle rave mode">
+        <span class="toggle-sun">☀️</span>
+        <span class="toggle-moon">🌙</span>
+        <span class="toggle-label" id="toggleLabel">Sundowner Theme</span>
+    </button>
+
+    <!-- Old event popup removed -->
+
+    <!-- ==================== BOOKING FORM POPUP (LITTIX STYLE) ==================== -->
+    <style>
+        .littix-form { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1rem; }
+        .littix-field { display: flex; flex-direction: column; gap: 0.375rem; }
+        .littix-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; color: #A0A0A0; }
+        html[data-theme="light"] .littix-label { color: #6B6B6B; }
+        .littix-input { border-radius: 1rem; padding: 0.875rem 1rem; font-size: 0.875rem; outline: none; transition: all 0.25s; border: 1px solid #2A2A2A; background-color: #1A1A1A; color: #ffffff; }
+        html[data-theme="light"] .littix-input { border: 1px solid #E4E4E7; background-color: #ffffff; color: #111111; }
+        .littix-input:focus { border-color: #A855F7; box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+        .littix-btn { width: 100%; border: none; cursor: pointer; border-radius: 1rem; padding: 1rem; font-weight: 700; font-size: 1rem; background-color: #A855F7; color: white; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 24px rgba(168,85,247,0.35); transition: transform 0.2s, box-shadow 0.2s; }
+        .littix-btn:hover { transform: scale(1.02); box-shadow: 0 8px 32px rgba(168,85,247,0.5); }
+        .littix-btn:active { transform: scale(0.97); }
+        #bookingPopup { border-radius: 1.5rem; background: var(--bg); overflow: hidden; }
+        .littix-rate { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem; text-align: center; }
+        html[data-theme="light"] .littix-rate { color: #111111; }
+
+        /* ==================== EVENT FLYER POPUP STYLES ==================== */
+        .flyer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            padding: 0;
+        }
+        .flyer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .flyer-container {
+            position: relative;
+            max-width: min(92vw, 480px);
+            width: 100%;
+            background: #000;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 60px rgba(168, 85, 247, 0.15);
+            cursor: pointer;
+            transform: scale(0.92);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .flyer-overlay.active .flyer-container {
+            transform: scale(1);
+        }
+        .flyer-close {
+            position: absolute;
+            top: 0.9rem;
+            right: 0.9rem;
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            z-index: 10;
+        }
+        .flyer-close:hover {
+            background: rgba(239, 68, 68, 0.9);
+            border-color: transparent;
+            transform: rotate(90deg);
+        }
+        .flyer-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 88vh;
+            object-fit: cover;
+        }
+        .flyer-selling-banner {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.92));
+            padding: 2rem 1rem 1rem;
+            text-align: center;
+        }
+        @keyframes sellingPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.04); }
+        }
+        .flyer-selling-text {
+            display: inline-block;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #F59E0B;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-shadow: 0 0 16px rgba(245, 158, 11, 0.7), 0 2px 4px rgba(0,0,0,0.8);
+            animation: sellingPulse 1.6s ease-in-out infinite;
+        }
+
+        @media (max-width: 480px) {
+            .flyer-container {
+                max-width: 96vw;
+                border-radius: 1rem;
+            }
+            .flyer-selling-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+    <div class="event-popup-overlay" id="bookingOverlay" style="display: none; align-items: center; justify-content: center;">
+        <div class="event-popup" id="bookingPopup" style="max-width: 420px; width: 100%; padding: 2rem 1.5rem;">
+            <button class="event-close" id="bookingClose" aria-label="Close" style="top: 1rem; right: 1rem; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text);">✕</button>
+
+            <!-- FORM STEP -->
+            <div id="bookingFormStep">
+                <div style="display: flex; flex-direction: column; gap: 0.375rem; margin-bottom: 1.5rem;">
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A855F7;">FRESHERS TAKEOVER</span>
+                    <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 0;">Book Your Pass</h2>
+                    <p style="font-size: 0.875rem; color: #A0A0A0; margin: 0;">Female Pass ₹2 · Male Pass ₹1</p>
+                </div>
+                <form id="ticketBookingForm" class="littix-form">
+                    <div class="littix-field">
+                        <label class="littix-label" for="b_name">Attendee Name</label>
+                        <input class="littix-input" type="text" id="b_name" name="name" placeholder="e.g. Jordan Clarke" required>
+                    </div>
+                    <div class="littix-field">
+                        <label class="littix-label" for="b_email">Attendee Email</label>
+                        <input class="littix-input" type="email" id="b_email" name="email" placeholder="jordan@example.com" required>
+                    </div>
+                    <div class="littix-field">
+                        <label class="littix-label" for="b_phone">Phone Number</label>
+                        <input class="littix-input" type="tel" id="b_phone" name="phone" placeholder="+91 98765 43210" required>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div class="littix-field" style="flex: 1;">
+                            <label class="littix-label" for="b_gender">Pass Type</label>
+                            <select class="littix-input" id="b_gender" name="gender" required>
+                                <option value="female">Female Pass (₹2)</option>
+                                <option value="male">Male Pass (₹1)</option>
+                            </select>
+                        </div>
+                        <div class="littix-field" style="width: 80px;">
+                            <label class="littix-label" for="b_quantity">Qty</label>
+                            <input class="littix-input" type="number" id="b_quantity" name="quantity" min="1" max="20" value="1" required style="text-align: center;">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <div class="littix-rate">Total: <span id="b_totalRate">₹0</span></div>
+                        <p id="b_formError" style="display:none; color:#f87171; font-size:0.8rem; margin: 0 0 0.75rem;"></p>
+                        <button type="submit" class="littix-btn" id="b_submitBtn">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                <rect x="1" y="1" width="16" height="16" rx="3" stroke="white" stroke-width="1.5" />
+                                <path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <span id="b_submitLabel">Pay & Get Pass</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SUCCESS STEP — "My Ticket" card -->
+            <div id="bookingSuccessStep" style="display:none;">
+                <p style="text-align:center; font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 1rem;">You're in! 🎉</p>
+
+                <div style="background:#0d0d0f; border-radius:16px; overflow:hidden; max-width:340px; margin:0 auto; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+                    <!-- Banner with badges -->
+                    <div style="position:relative;">
+                        <img src="images/freshers-takeover-banner.png" alt="FRESHERS TAKEOVER" style="width:100%; display:block; aspect-ratio:1/1; object-fit:cover;">
+                        <span style="position:absolute; top:10px; left:10px; background:rgba(255,255,255,0.9); color:#333; font-size:0.65rem; font-weight:700; padding:4px 10px; border-radius:99px;">NOT SCANNED</span>
+                        <span style="position:absolute; top:10px; right:10px; background:#22c55e; color:#fff; font-size:0.65rem; font-weight:700; padding:4px 10px; border-radius:99px;">ACTIVE</span>
+                    </div>
+
+                    <!-- White details panel -->
+                    <div style="background:#ffffff; padding:1.25rem 1.25rem 1.5rem;">
+                        <h3 style="margin:0 0 0.2rem; font-size:1.1rem; font-weight:800; color:#0d0d0f;">FRESHERS LITT</h3>
+                        <p style="margin:0 0 0.9rem; font-size:0.8rem; font-weight:600; color:#A855F7;">Main Stage · General Admission</p>
+
+                        <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1rem;">
+                            <span id="b_pillDate" style="background:#f2f2f5; color:#333; font-size:0.7rem; font-weight:600; padding:5px 10px; border-radius:99px;"></span>
+                            <span id="b_pillTime" style="background:#f2f2f5; color:#333; font-size:0.7rem; font-weight:600; padding:5px 10px; border-radius:99px;"></span>
+                            <span id="b_pillVenue" style="background:#f2f2f5; color:#333; font-size:0.7rem; font-weight:600; padding:5px 10px; border-radius:99px;"></span>
+                        </div>
+
+                        <hr style="border:none; border-top:1px solid #eee; margin:0.9rem 0;">
+
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.9rem;">
+                            <div>
+                                <div style="font-size:0.65rem; color:#999; text-transform:uppercase;">Ticket Type</div>
+                                <div id="b_sumType" style="font-size:0.9rem; font-weight:700; color:#0d0d0f;"></div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:0.65rem; color:#999; text-transform:uppercase;">Qty</div>
+                                <div id="b_sumQty" style="font-size:0.9rem; font-weight:700; color:#0d0d0f;"></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:0.65rem; color:#999; text-transform:uppercase;">Price</div>
+                                <div id="b_sumPrice" style="font-size:0.9rem; font-weight:700; color:#A855F7;"></div>
+                            </div>
+                        </div>
+
+                        <hr style="border:none; border-top:1px solid #eee; margin:0.9rem 0;">
+
+                        <div style="font-size:0.65rem; color:#999; text-transform:uppercase;">Ticket ID</div>
+                        <div id="b_sumTicketId" style="font-size:0.95rem; font-weight:700; color:#0d0d0f; margin-bottom:0.2rem;"></div>
+                        <div id="b_sumGeneratedBy" style="font-size:0.68rem; color:#999; margin-bottom:1rem;"></div>
+
+                        <div style="text-align:center; margin: 0.5rem 0 0.75rem;">
+                            <img id="b_qrImg" src="" alt="Ticket QR" style="width:150px; height:150px;">
+                            <p style="font-size:0.68rem; color:#999; margin-top:0.4rem;">Show this QR code at entry</p>
+                        </div>
+
+                        <p style="text-align:center; font-weight:800; color:#000000; margin:0; font-size:0.75rem; letter-spacing:0.05em;">LITTLANE ENTERTAINMENT</p>
+                    </div>
+                </div>
+
+                <div id="b_successEmailBox" style="margin-top:1rem; border:1px solid #22c55e; border-radius:10px; padding:0.6rem 0.9rem; text-align:center;">
+                    <span style="color:#22c55e; font-weight:700; font-size:0.8rem;">✓ <span id="b_successEmailMsg">Sent to your email</span></span>
+                </div>
+                <p id="b_emailErrorMsg" style="display:none; color:#f87171; font-size:0.75rem; margin-top: 0.75rem; text-align:center;"></p>
+
+                <a id="b_downloadBtn" href="#" class="littix-btn" style="text-decoration:none; display:flex; margin-top:1rem;" download>Download Ticket (PDF)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EVENT FLYER POPUP ==================== -->
+    <div class="flyer-overlay" id="flyerOverlay">
+        <div class="flyer-container">
+            <button class="flyer-close" id="flyerClose" aria-label="Close">✕</button>
+            <img class="flyer-img" id="flyerImg" src="images/event-poster.jpg" alt="Freshers Takeover Flyer">
+            <div class="flyer-selling-banner">
+                <span class="flyer-selling-text">⚡ Buy Fast — Selling Out! ⚡</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating event trigger (Removed for now) -->
+    <!--
+    <button class="event-trigger" id="eventTrigger" aria-label="Book Tickets">
+        <span class="event-trigger-pulse"></span>
+        <span class="event-trigger-text">🎟 Book Tickets</span>
+    </button>
+    -->
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-logo"><a href="#hero"><span class="logo-text">LITTLANE</span><span class="logo-sub">Pune • Entertainment</span></a></div>
+        <div class="nav-links">
+            <a href="#crew" class="nav-link">The Crew</a>
+            <a href="#experience" class="nav-link">Experience</a>
+            <a href="#partners" class="nav-link">Partners</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+        <a href="#" class="nav-cta magnetic" data-magnetic data-book-trigger>Book Now</a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-inner">
+            <a href="#crew" class="mobile-link"><span>The Crew</span></a>
+            <a href="#experience" class="mobile-link"><span>Experience</span></a>
+            <a href="#partners" class="mobile-link"><span>Partners</span></a>
+            <a href="#contact" class="mobile-link"><span>Contact</span></a>
+            <a href="#" class="mobile-cta" data-book-trigger><span>Book Now</span></a>
+        </div>
+    </div>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" id="hero">
+        <div class="hero-bg">
+            <img src="images/rave-sky.jpg" alt="Sunset sky" class="hero-bg-img" id="heroBgImg"
+                 data-light="images/sky-hero.jpg" data-dark="images/rave-sky.jpg">
+        </div>
+        <div class="hero-content">
+            <div class="hero-desktop">
+                <h1 class="hero-title">
+                    <div class="hero-line-wrap"><span class="hero-line js-hero-line-1">Where Hype</span></div>
+                    <div class="hero-line-wrap"><span class="hero-line js-hero-line-2">Meets Reality</span></div>
+                </h1>
+                <div class="hero-bottom">
+                    <div class="hero-bottom-left">
+                        <span class="hero-bold js-hero-left-1">Every</span>
+                        <span class="hero-bold js-hero-left-2">Weekend</span>
+                    </div>
+                    <div class="hero-bottom-right">
+                        <span class="hero-bold js-hero-right-1">Across</span>
+                        <span class="hero-bold js-hero-right-2">Pune</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOBILE HERO -->
+            <div class="hero-mobile">
+                <h1 class="hero-title mobile-title">
+                    <div class="hero-line-wrap"><span class="hero-small-line js-hero-line-1"><span class="deco-line"></span>WHERE<span class="deco-line"></span></span></div>
+                    <div class="hero-line-wrap"><span class="hero-line mobile-huge js-hero-line-1">HYPE</span></div>
+                    <div class="hero-line-wrap"><span class="hero-small-line js-hero-line-2"><span class="deco-line"></span>MEETS<span class="deco-line"></span></span></div>
+                    <div class="hero-line-wrap"><span class="hero-line mobile-huge js-hero-line-2">REALITY</span></div>
+                </h1>
+                <div class="hero-bottom mobile-bottom">
+                    <div class="mobile-bottom-col js-hero-left-1">
+                        <svg class="mobile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span class="mobile-bold js-hero-left-2">EVERY</span>
+                        <span class="mobile-bold js-hero-left-2">WEEKEND</span>
+                    </div>
+                    <div class="mobile-divider js-hero-right-1"></div>
+                    <div class="mobile-bottom-col js-hero-right-2">
+                        <svg class="mobile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <span class="mobile-bold js-hero-right-2">ACROSS</span>
+                        <span class="mobile-bold js-hero-right-2">PUNE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-sub-section">
+            <p class="hero-tagline">Pune's premier college fest curators.<br>Sold-out nights. Loud sound. Zero chill.</p>
+            <a href="#" class="btn-primary magnetic" data-magnetic data-book-trigger>
+                <span class="btn-text">Secure Your Passage</span><span class="btn-arrow">→</span>
+            </a>
+        </div>
+        <div class="hero-scroll-indicator"><div class="scroll-line"></div><span>Scroll</span></div>
+    </section>
+
+    <!-- ==================== MARQUEE ==================== -->
+    <section class="marquee-section" id="marqueeSection">
+        <div class="marquee-track" id="marqueeTrack">
+            <div class="marquee-content"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
+            <div class="marquee-content" aria-hidden="true"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
+            <div class="marquee-content" aria-hidden="true"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
+        </div>
+    </section>
+
+    <!-- ==================== THE CREW ==================== -->
+    <section class="crew-section" id="crew">
+        <div class="container">
+            <div class="crew-top">
+                <span class="section-label reveal-text">— The Crew</span>
+                <div class="crew-stats-inline">
+                    <div class="stat-box tilt-card" data-tilt>
+                        <div class="flip-counter" data-flip="6" data-suffix="K"><span class="flip-num">0</span></div>
+                        <span class="stat-plus">+</span><span class="stat-label">Attendees</span>
+                    </div>
+                    <div class="stat-box tilt-card" data-tilt>
+                        <div class="flip-counter" data-flip="20"><span class="flip-num">0</span></div>
+                        <span class="stat-plus">+</span><span class="stat-label">Events</span>
+                    </div>
+                </div>
+            </div>
+            <div class="crew-grid">
+                <div class="crew-left">
+                    <div class="crew-headline">
+                        <div class="split-line-wrap"><span class="split-line">We don't throw</span></div>
+                        <div class="split-line-wrap"><span class="split-line dark">events.</span></div>
+                        <div class="split-line-wrap"><span class="split-line accent">We craft nights.</span></div>
+                    </div>
+                    <p class="crew-desc reveal-text">Littlane is one of Pune's leading college fest curators, creating unforgettable experiences for students across the city. We specialize in premium college events that bring together music, entertainment, culture, and memories you won't shut up about.</p>
+                </div>
+                <div class="crew-right">
+                    <div class="crew-image parallax-img image-reveal">
+                        <img src="images/rave-crowd.jpg" alt="Crowd at concert" loading="lazy"
+                             data-light="images/crowd-concert.jpg" data-dark="images/rave-crowd.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== STATS BAR ==================== -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item"><div class="flip-counter" data-flip="20"><span class="flip-num">0</span></div><span class="stat-big-plus">+</span><span class="stat-big-label">Events</span></div>
+                <div class="stat-item"><div class="flip-counter" data-flip="16" data-suffix="K"><span class="flip-num">0</span></div><span class="stat-big-plus">+</span><span class="stat-big-label">Students</span></div>
+                <div class="stat-item"><div class="flip-counter" data-flip="30"><span class="flip-num">0</span></div><span class="stat-big-plus">+</span><span class="stat-big-label">Brand Collabs</span></div>
+                <div class="stat-item"><div class="flip-counter" data-flip="40"><span class="flip-num">0</span></div><span class="stat-big-plus">+</span><span class="stat-big-label">Ambassadors</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== WHY LITTLANE ==================== -->
+    <section class="why-section" id="experience">
+        <div class="container">
+            <span class="section-label section-label-light reveal-text">— Why Littlane</span>
+            <div class="why-headline">
+                <div class="split-line-wrap"><span class="split-line light">Loud Sound.</span></div>
+                <div class="split-line-wrap"><span class="split-line orange">Zero Chill.</span></div>
+            </div>
+            <div class="why-grid">
+                <div class="why-item" data-why-item><span class="why-num">/01</span><span class="why-text">6000+ Happy Attendees</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/02</span><span class="why-text">Multiple Successful Events</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/03</span><span class="why-text">Trusted by Students</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/04</span><span class="why-text">Premium Venues</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/05</span><span class="why-text">Professional Event Organizer</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/06</span><span class="why-text">High-Energy Experiences</span></div>
+                <div class="why-item" data-why-item><span class="why-num">/07</span><span class="why-text">Safe & Well-Organized Events</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== BRAND PARTNERSHIPS ==================== -->
+    <section class="partners-section" id="partners">
+        <div class="container">
+            <div class="partners-top">
+                <div class="partners-left">
+                    <span class="section-label reveal-text">— Brand Partnerships</span>
+                    <p class="partners-intro reveal-text">At Littlane, we don't just organize events — we craft premium experiences. Every collaboration is designed to elevate your brand and create moments that leave a lasting impression across Pune.</p>
+                </div>
+                <div class="partners-right">
+                    <div class="partners-headline">
+                        <div class="split-line-wrap"><span class="split-line">Reach</span></div>
+                        <div class="split-line-wrap"><span class="split-line">college</span></div>
+                        <div class="split-line-wrap"><span class="split-line">crowds</span></div>
+                        <div class="split-line-wrap"><span class="split-line accent">that care.</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="partners-grid">
+                <div class="partner-card tilt-card" data-tilt><div class="partner-card-inner"><span class="partner-num">01</span><h3 class="partner-title">Sponsorship</h3><p class="partner-desc">Plug your brand into Pune's most-watched college nights.</p><div class="partner-card-glow"></div></div></div>
+                <div class="partner-card tilt-card" data-tilt><div class="partner-card-inner"><span class="partner-num">02</span><h3 class="partner-title">Product Launches</h3><p class="partner-desc">Debut new products in front of Gen Z crowds who care.</p><div class="partner-card-glow"></div></div></div>
+                <div class="partner-card tilt-card" data-tilt><div class="partner-card-inner"><span class="partner-num">03</span><h3 class="partner-title">College Promotions</h3><p class="partner-desc">Direct reach into 16k+ students across Pune's top campuses.</p><div class="partner-card-glow"></div></div></div>
+                <div class="partner-card tilt-card" data-tilt><div class="partner-card-inner"><span class="partner-num">04</span><h3 class="partner-title">On-Ground Activations</h3><p class="partner-desc">Booths, stunts, samples — we bring the theatre.</p><div class="partner-card-glow"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== WHO CAN PARTNER ==================== -->
+    <section class="who-partner-section">
+        <div class="container">
+            <span class="section-label reveal-text">— Who Can Partner</span>
+            <div class="partner-tags-grid">
+                <div class="partner-tag-item"><span>Brands & Sponsors</span></div>
+                <div class="partner-tag-item"><span>Colleges & Committees</span></div>
+                <div class="partner-tag-item"><span>Artists & DJs</span></div>
+                <div class="partner-tag-item"><span>Event Venues</span></div>
+                <div class="partner-tag-item"><span>Food & Beverage</span></div>
+                <div class="partner-tag-item"><span>Fashion & Lifestyle</span></div>
+                <div class="partner-tag-item"><span>Content Creators</span></div>
+                <div class="partner-tag-item"><span>Media Partners</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CAMPUS AMBASSADORS ==================== -->
+    <section class="ambassador-section">
+        <div class="container">
+            <span class="section-label section-label-dark reveal-text">— Campus Ambassadors</span>
+            <div class="ambassador-grid">
+                <div class="ambassador-left">
+                    <div class="ambassador-image parallax-img image-reveal">
+                        <img src="images/rave-dj.jpg" alt="DJ performing" loading="lazy"
+                             data-light="images/dj-sunset.jpg" data-dark="images/rave-dj.jpg">
+                    </div>
+                </div>
+                <div class="ambassador-right">
+                    <div class="ambassador-headline">
+                        <div class="split-line-wrap"><span class="split-line dark">Run your</span></div>
+                        <div class="split-line-wrap"><span class="split-line dark">campus.</span></div>
+                        <div class="split-line-wrap"><span class="split-line accent-dark">Get paid to</span></div>
+                        <div class="split-line-wrap"><span class="split-line accent-dark">party.</span></div>
+                    </div>
+                    <ul class="ambassador-perks">
+                        <li class="perk-item"><span class="perk-star">✺</span>Free entry to every Littlane event</li>
+                        <li class="perk-item"><span class="perk-star">✺</span>Cash rewards & performance bonuses</li>
+                        <li class="perk-item"><span class="perk-star">✺</span>Backstage & artist meet access</li>
+                        <li class="perk-item"><span class="perk-star">✺</span>Certificate + LinkedIn credibility</li>
+                    </ul>
+                    <a href="#contact" class="btn-dark magnetic" data-magnetic><span class="btn-text">Apply Now</span><span class="btn-arrow">→</span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FAQ ==================== -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <div class="faq-headline">
+                <div class="split-line-wrap"><span class="split-line light">Got</span></div>
+                <div class="split-line-wrap"><span class="split-line orange">Questions?</span></div>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item"><button class="faq-question"><span>How do I book tickets?</span><span class="faq-icon">+</span></button><div class="faq-answer"><p>Tickets drop on our Instagram and partner platforms 2–3 weeks before every event. Follow @littlane for first access and early-bird pricing.</p></div></div>
+                <div class="faq-item"><button class="faq-question"><span>Are events open to everyone?</span><span class="faq-icon">+</span></button><div class="faq-answer"><p>Most of our events are open to all college students. Some exclusive events may require invitations. Follow us on Instagram for details.</p></div></div>
+                <div class="faq-item"><button class="faq-question"><span>Can my college collaborate?</span><span class="faq-icon">+</span></button><div class="faq-answer"><p>Absolutely! We love collaborating with college committees and student bodies. Reach out through our contact form or DM us on Instagram.</p></div></div>
+                <div class="faq-item"><button class="faq-question"><span>How can I become a campus ambassador?</span><span class="faq-icon">+</span></button><div class="faq-answer"><p>Fill out the application form or DM us on Instagram. We're always looking for energetic students to represent Littlane on campus.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT ==================== -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <span class="section-label reveal-text">— Contact</span>
+            <div class="contact-headline">
+                <div class="split-line-wrap"><span class="split-line">Let's build</span></div>
+                <div class="split-line-wrap"><span class="split-line accent">something</span></div>
+                <div class="split-line-wrap"><span class="split-line accent">unforgettable.</span></div>
+            </div>
+            <p class="contact-sub reveal-text">Got an idea, event, or collab? Drop us a line and we'll get back within 24 hours.</p>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="contact-info-item reveal-text"><span class="contact-info-label">Email</span><span class="contact-info-value">littlaneent@gmail.com</span></div>
+                    <div class="contact-info-item reveal-text"><span class="contact-info-label">Phone</span><span class="contact-info-value">+91 76669 45118</span></div>
+                    <div class="contact-info-item reveal-text"><span class="contact-info-label">Based in</span><span class="contact-info-value">Pune, India</span></div>
+                    <div class="contact-info-item reveal-text"><span class="contact-info-label">Instagram</span><span class="contact-info-value">@littlane.entertainment</span></div>
+                </div>
+                <form class="contact-form" id="contactForm" action="https://formsubmit.co/littlaneent@gmail.com" method="POST">
+                    <!-- FormSubmit Configuration -->
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_subject" value="New Inquiry from Littlane Website!">
+                    <div class="form-row">
+                        <div class="form-group form-float"><input type="text" id="form-name" name="name" required placeholder=" "><label for="form-name">Your Name</label><div class="form-line"></div></div>
+                        <div class="form-group form-float"><input type="email" id="form-email" name="email" required placeholder=" "><label for="form-email">Email</label><div class="form-line"></div></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group form-float"><input type="tel" id="form-phone" name="phone" placeholder=" "><label for="form-phone">Phone</label><div class="form-line"></div></div>
+                        <div class="form-group form-float"><select id="form-role" name="role" required><option value="" disabled selected></option><option value="college">College / Student Committee</option><option value="brand">Brand / Sponsor</option><option value="artist">Artist / DJ</option><option value="venue">Venue Partner</option><option value="ambassador">Campus Ambassador</option><option value="other">Other</option></select><label for="form-role">I'm here as</label><div class="form-line"></div></div>
+                    </div>
+                    <div class="form-group form-group-full form-float"><textarea id="form-message" name="message" rows="4" placeholder=" "></textarea><label for="form-message">Tell us the vibe — Event type, dates, budget, wild ideas…</label><div class="form-line"></div></div>
+                    <button type="submit" class="btn-primary magnetic" data-magnetic id="form-submit"><span class="btn-text">Send it</span><span class="btn-arrow">→</span></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-mega-text">LITTLANE</div>
+            <div class="footer-grid">
+                <div class="footer-col"><span class="footer-col-title">Studio</span><p class="footer-desc">Pune's premier college fest & entertainment crew. Crafting nights that leave a mark.</p></div>
+                <div class="footer-col"><span class="footer-col-title">Explore</span><a href="#crew" class="footer-link">The Crew</a><a href="#experience" class="footer-link">Experience</a><a href="#partners" class="footer-link">Partners</a><a href="#faq" class="footer-link">FAQ</a></div>
+                <div class="footer-col"><span class="footer-col-title">Follow</span><a href="https://instagram.com/littlane.entertainment" target="_blank" class="footer-link">Instagram</a><a href="#" class="footer-link">YouTube</a><a href="#" class="footer-link">LinkedIn</a><a href="mailto:littlaneent@gmail.com" class="footer-link">Email</a></div>
+            </div>
+            <div class="footer-bottom"><span>© 2026 Littlane Entertainment</span><span>Made in Pune</span></div>
+        </div>
+    </footer>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Point this at wherever server/server.js is running.
+        window.LITTLANE_API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '3000'
+            ? 'http://localhost:3000'
+            : window.location.origin;
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

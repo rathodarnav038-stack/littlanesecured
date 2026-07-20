@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/assets/(.*)", "destination": "/combined-app/dist/assets/$1" },
+    { "source": "/tickets", "destination": "/combined-app/dist/index.html" },
+    { "source": "/tickets/(.*)", "destination": "/combined-app/dist/index.html" },
+    { "source": "/dashboard", "destination": "/combined-app/dist/index.html" },
+    { "source": "/dashboard/(.*)", "destination": "/combined-app/dist/index.html" },
+    { "source": "/api/(.*)", "destination": "https://YOUR-RENDER-BACKEND-URL/api/$1" },
+    { "source": "/ticket-files/(.*)", "destination": "https://YOUR-RENDER-BACKEND-URL/ticket-files/$1" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

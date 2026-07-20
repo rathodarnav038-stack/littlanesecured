@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FRESHERS TAKEOVER — Sales Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{--bg:#0d0d0f;--card:#17171a;--border:#2a2a2e;--text:#f4f4f5;--muted:#9a9a9a;--accent:#A855F7;--ok:#22c55e;--bad:#ef4444;--warn:#f59e0b;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  header h1{margin:0;font-size:20px;}
+  header span{color:var(--muted);font-size:13px;}
+  .wrap{padding:24px 28px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .card .num{font-size:26px;font-weight:700;}
+  .card .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-top:4px;}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-size:13px;}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;background:var(--card);}
+  tr:hover td{background:#1c1c20;}
+  .pill{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;display:inline-block;}
+  .pill-ok{background:rgba(34,197,94,.15);color:var(--ok);}
+  .pill-bad{background:rgba(239,68,68,.15);color:var(--bad);}
+  .pill-warn{background:rgba(245,158,11,.15);color:var(--warn);}
+  .pill-muted{background:rgba(154,154,154,.15);color:var(--muted);}
+  .table-scroll{overflow-x:auto;}
+  input#keyInput{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;}
+  button{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;}
+  button:hover{opacity:.9;}
+  .gate{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;height:100vh;}
+  .gate p{color:var(--muted);font-size:13px;}
+  #app{display:none;}
+  .refresh-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .err-cell{color:var(--bad);max-width:220px;overflow:hidden;text-overflow:ellipsis;}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <h2>🎟 FRESHERS TAKEOVER — Admin</h2>
+  <p>Enter your admin key to view live sales data.</p>
+  <input id="keyInput" type="password" placeholder="Admin key">
+  <button onclick="login()">Unlock Dashboard</button>
+  <p id="gateError" style="color:#ef4444;"></p>
+</div>
+
+<div id="app">
+  <header>
+    <div>
+      <h1>🎟 FRESHERS TAKEOVER — Sales Dashboard</h1>
+      <span id="modeTag"></span>
+    </div>
+    <button onclick="logout()">Log out</button>
+  </header>
+  <div class="wrap">
+    <div class="cards" id="cards"></div>
+    <div class="refresh-row">
+      <span style="color:var(--muted);font-size:13px;">Auto-refreshes every 15s</span>
+      <button onclick="loadSales()">Refresh Now</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th><th>Status</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>Type</th><th>Qty</th><th>Amount</th><th>Payment ID</th><th>Ticket ID</th>
+            <th>Email Status</th><th>Last Error</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="salesBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let adminKey = sessionStorage.getItem('ft_admin_key') || '';
+
+function login(){
+  const val = document.getElementById('keyInput').value.trim();
+  if(!val) return;
+  adminKey = val;
+  sessionStorage.setItem('ft_admin_key', val);
+  boot();
+}
+function logout(){
+  sessionStorage.removeItem('ft_admin_key');
+  adminKey = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+}
+
+function statusPill(status){
+  const map = {
+    created: ['pill-muted','Awaiting payment'],
+    paid: ['pill-warn','Paid'],
+    ticket_generated: ['pill-warn','Ticket ready'],
+    emailed: ['pill-ok','Emailed ✓'],
+    email_failed: ['pill-bad','Email failed'],
+    ticket_generation_failed: ['pill-bad','Ticket failed'],
+    failed: ['pill-bad','Failed']
+  };
+  const [cls, label] = map[status] || ['pill-muted', status];
+  return `<span class="pill ${cls}">${label}</span>`;
+}
+
+async function loadSales(){
+  try{
+    const res = await fetch('/api/admin/sales', { headers: { 'x-admin-key': adminKey } });
+    if(res.status === 401){ logout(); return; }
+    const data = await res.json();
+    if(!data.success) return;
+
+    document.getElementById('modeTag').textContent = data.testMode ? 'TEST MODE — no real payments are being charged' : 'LIVE MODE';
+
+    const s = data.summary;
+    document.getElementById('cards').innerHTML = `
+      <div class="card"><div class="num">${s.totalOrders}</div><div class="label">Total Orders</div></div>
+      <div class="card"><div class="num">${s.paidOrders}</div><div class="label">Paid</div></div>
+      <div class="card"><div class="num">₹${s.totalRevenue}</div><div class="label">Revenue</div></div>
+      <div class="card"><div class="num">${s.emailFailures}</div><div class="label">Email Failures</div></div>
+      <div class="card"><div class="num">${s.ticketFailures}</div><div class="label">Ticket Failures</div></div>
+    `;
+
+    document.getElementById('salesBody').innerHTML = data.sales.map(row => {
+      const lastErr = (row.errorLog && row.errorLog.length) ? row.errorLog[row.errorLog.length-1].error : '';
+      return `<tr>
+        <td>${new Date(row.createdAt).toLocaleString('en-IN')}</td>
+        <td>${statusPill(row.status)}</td>
+        <td>${row.name || ''}</td>
+        <td>${row.email || ''}</td>
+        <td>${row.phone || ''}</td>
+        <td>${row.gender || ''}</td>
+        <td>${row.quantity || ''}</td>
+        <td>₹${row.amount || 0}</td>
+        <td>${row.paymentId || '—'}</td>
+        <td>${row.ticketId || '—'}</td>
+        <td>${row.emailStatus === 'sent' ? '<span class="pill pill-ok">Sent</span>' : row.emailStatus === 'failed' ? '<span class="pill pill-bad">Failed</span>' : '—'}</td>
+        <td class="err-cell" title="${lastErr}">${lastErr || ''}</td>
+        <td>${row.ticketId ? `<button onclick="resend('${row.ticketId}')">Resend</button>` : ''}</td>
+      </tr>`;
+    }).join('');
+  }catch(err){
+    console.error(err);
+  }
+}
+
+async function resend(ticketId){
+  const res = await fetch(`/api/ticket/${ticketId}/resend`, { method: 'POST' });
+  const data = await res.json();
+  alert(data.message);
+  loadSales();
+}
+
+function boot(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadSales();
+  setInterval(loadSales, 15000);
+}
+
+if(adminKey) boot();
+</script>
+</body>
+</html>
