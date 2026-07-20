@@ -178,41 +178,55 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
 
         const data = await res.json()
+
+        const mapGender = (g: string): TicketType => {
+          if (g === 'male') return 'Male Pass'
+          if (g === 'female') return 'Female Pass'
+          return 'General'
+        }
+
         if (data.result === 'success') {
-          await refreshTickets()
-          const matchedTicket = tickets.find(t => t.id === cleanId) || {
-            id: data.ticket.id,
-            event: data.ticket.event,
-            attendee: data.ticket.attendee,
-            email: data.ticket.email,
-            phone: data.ticket.phone,
-            dateLabel: 'TBA',
+          const t = data.ticket
+          // Build a fully-resolved ticket directly from server response
+          const resolvedTicket: Ticket = {
+            id: t.id,
+            event: t.event || 'FRESHERS TAKEOVER',
+            attendee: t.attendee || t.name || '—',
+            email: t.email || '—',
+            phone: t.phone || 'N/A',
+            dateLabel: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
             venue: 'Symbiosis Grounds, Pune',
-            ticketType: data.ticket.ticketType === 'male' ? 'Male Pass' : data.ticket.ticketType === 'female' ? 'Female Pass' : 'General',
-            price: `₹${data.ticket.amount}`,
-            qty: data.ticket.quantity || 1,
-            generatedBy: 'Admin',
-            generatedAt: data.ticket.generatedAt ? new Date(data.ticket.generatedAt).toLocaleString() : 'TBA',
+            ticketType: mapGender(t.ticketType || t.gender || ''),
+            price: `₹${t.amount || '—'}`,
+            qty: t.quantity || 1,
+            generatedBy: t.generatedBy || 'Littlane',
+            generatedAt: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
             status: 'scanned',
-            scannedBy: data.ticket.scannedBy,
-            scannedAt: data.ticket.scannedAt
+            scannedBy: t.scannedBy || scannedBy || 'Gate Staff',
+            scannedAt: t.scannedAt || new Date().toLocaleString()
           }
-          return {
-            result: 'success',
-            ticket: {
-              ...matchedTicket,
-              phone: data.ticket.phone,
-              status: 'scanned',
-              scannedBy: data.ticket.scannedBy,
-              scannedAt: data.ticket.scannedAt
-            } as Ticket
-          }
+          await refreshTickets()
+          return { result: 'success', ticket: resolvedTicket }
         } else if (data.result === 'rejected') {
-          const matchedTicket = tickets.find(t => t.id === cleanId)
-          return {
-            result: 'rejected',
-            ticket: matchedTicket
+          const t = data.ticket
+          const matchedTicket: Ticket = tickets.find(tk => tk.id === cleanId) || {
+            id: t.id,
+            event: t.event || 'FRESHERS TAKEOVER',
+            attendee: t.attendee || t.name || '—',
+            email: t.email || '—',
+            phone: t.phone || 'N/A',
+            dateLabel: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
+            venue: 'Symbiosis Grounds, Pune',
+            ticketType: mapGender(t.ticketType || t.gender || ''),
+            price: `₹${t.amount || '—'}`,
+            qty: t.quantity || 1,
+            generatedBy: t.generatedBy || 'Littlane',
+            generatedAt: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
+            status: 'scanned',
+            scannedBy: t.scannedBy,
+            scannedAt: t.scannedAt
           }
+          return { result: 'rejected', ticket: matchedTicket }
         }
       } catch (err) {
         console.error('Scan api error:', err)
