@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStore } from '../lib/store'
 import type { Ticket } from '../lib/store'
@@ -37,9 +37,26 @@ function AppShell() {
   // Session-only log of rejected/duplicate scans
   const [rejectedScans, setRejectedScans] = useState<RejectedScan[]>([])
 
+  // Synchronize state with browser history back gestures
+  useEffect(() => {
+    window.history.replaceState({ name: 'dashboard' }, '')
+
+    const handlePop = (e: PopStateEvent) => {
+      if (e.state && e.state.name) {
+        setPrevDepth(DEPTH[screen.name])
+        setScreen(e.state as Screen)
+      } else {
+        setScreen({ name: 'dashboard' })
+      }
+    }
+    window.addEventListener('popstate', handlePop)
+    return () => window.removeEventListener('popstate', handlePop)
+  }, [screen])
+
   function go(next: Screen) {
     setPrevDepth(DEPTH[screen.name])
     setScreen(next)
+    window.history.pushState(next, '')
   }
 
   async function handleScan(raw: string) {

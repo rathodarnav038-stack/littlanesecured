@@ -126,12 +126,12 @@ export default function QRScanner({ onBack, onScan }: Props) {
         >
           <motion.button
             onClick={onBack}
-            whileTap={{ scale: 0.85 }}
-            whileHover={{ scale: 1.08 }}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 backdrop-blur"
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            className="w-11 h-11 flex items-center justify-center rounded-xl bg-white/15 backdrop-blur border border-white/25"
           >
-            <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-              <path d="M6 1L1 6l5 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <svg width="9" height="15" viewBox="0 0 7 12" fill="none">
+              <path d="M6 1L1 6l5 5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </motion.button>
           <LittixLogo dark={true} size="sm" />

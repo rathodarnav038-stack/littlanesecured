@@ -43,16 +43,16 @@ export default function ScanSuccess({ dark, ticket, onBack, onScanNext }: Props)
       >
         <motion.button
           onClick={onBack}
-          whileTap={{ scale: 0.85 }}
-          whileHover={{ scale: 1.08 }}
-          className={`w-8 h-8 flex items-center justify-center rounded-full ${dark ? 'bg-[#1A1A1A]' : 'bg-white shadow-sm'}`}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
+          className={`w-10 h-10 flex items-center justify-center rounded-xl border ${dark ? 'bg-[#1A1A1A] border-[#2A2A2A]' : 'bg-white shadow-sm border-zinc-200'} text-[#A855F7]`}
         >
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-            <path d="M6 1L1 6l5 5" stroke={dark ? '#fff' : '#111'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="8" height="14" viewBox="0 0 7 12" fill="none">
+            <path d="M6 1L1 6l5 5" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </motion.button>
         <LittixLogo dark={dark} size="sm" />
-        <div className="w-8" />
+        <div className="w-10" />
       </motion.div>
 
       <div className="flex flex-col items-center pt-10 pb-6 px-5">
