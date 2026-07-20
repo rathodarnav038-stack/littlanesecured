@@ -8,8 +8,8 @@
     { "source": "/tickets/(.*)", "destination": "/combined-app/dist/index.html" },
     { "source": "/dashboard", "destination": "/combined-app/dist/index.html" },
     { "source": "/dashboard/(.*)", "destination": "/combined-app/dist/index.html" },
-    { "source": "/api/(.*)", "destination": "https://YOUR-RENDER-BACKEND-URL/api/$1" },
-    { "source": "/ticket-files/(.*)", "destination": "https://YOUR-RENDER-BACKEND-URL/ticket-files/$1" },
+    { "source": "/api/(.*)", "destination": "https://littlanefinal.onrender.com/api/$1" },
+    { "source": "/ticket-files/(.*)", "destination": "https://littlanefinal.onrender.com/ticket-files/$1" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
