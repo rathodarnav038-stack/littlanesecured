@@ -20,6 +20,8 @@ export interface RejectedScan {
   ticket: Ticket | null
   rawCode?: string
   timestamp: string
+  reason: 'duplicate' | 'cancelled' | 'invalid'
+  attemptNumber: number  // How many times this ticket has been rejected this session
 }
 
 const DEPTH: Record<Screen['name'], number> = {
@@ -62,22 +64,40 @@ function AppShell() {
   async function handleScan(raw: string) {
     const cleaned = raw.replace(/^LITTIX:/i, '').replace(/^#/, '')
     const outcome = await scanTicket(cleaned, 'Gate Staff')
+
+    // IST timestamp
+    const now = new Date()
+    const ist = new Date(now.getTime() + 5.5 * 60 * 60 * 1000)
+    const rawH = ist.getUTCHours()
+    const ampm = rawH >= 12 ? 'PM' : 'AM'
+    const h12 = rawH % 12 === 0 ? 12 : rawH % 12
+    const mm = ist.getUTCMinutes().toString().padStart(2, '0')
+    const timestamp = `${h12}:${mm} ${ampm}`
+
     if (outcome.result === 'success' && outcome.ticket) {
       go({ name: 'scan-success', ticket: outcome.ticket })
     } else if (outcome.result === 'rejected' && outcome.ticket) {
-      // Log rejected (duplicate) scan to session
+      const isCancel = outcome.ticket.status === 'cancelled' || (outcome.ticket.scannedAt === 'Cancelled by Admin')
+      const reason: RejectedScan['reason'] = isCancel ? 'cancelled' : 'duplicate'
+      // Count how many times this ticket ID has already been rejected this session
+      const prevCount = rejectedScans.filter(r => (r.ticket?.id === outcome.ticket!.id || r.rawCode === cleaned)).length
       setRejectedScans(prev => [{
         ticket: outcome.ticket!,
         rawCode: cleaned,
-        timestamp: new Date().toLocaleTimeString('en-IN')
+        timestamp,
+        reason,
+        attemptNumber: prevCount + 1  // 1st duplicate = attempt #1 (2nd scan overall)
       }, ...prev])
       go({ name: 'scan-rejected', ticket: outcome.ticket })
     } else {
-      // Log not-found scan to session
+      // Not found in DB
+      const prevCount = rejectedScans.filter(r => r.rawCode === cleaned).length
       setRejectedScans(prev => [{
         ticket: null,
         rawCode: cleaned,
-        timestamp: new Date().toLocaleTimeString('en-IN')
+        timestamp,
+        reason: 'invalid',
+        attemptNumber: prevCount + 1
       }, ...prev])
       go({ name: 'scan-rejected', ticket: null, rawCode: cleaned })
     }

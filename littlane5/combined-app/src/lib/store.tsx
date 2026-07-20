@@ -224,24 +224,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           return { result: 'success', ticket: resolvedTicket }
         } else if (data.result === 'rejected') {
           const t = data.ticket
-          const matchedTicket: Ticket = tickets.find(tk => tk.id === cleanId) || {
-            id: t.id,
+          // Server sends name as attendee field; map all fields correctly
+          const matchedTicket: Ticket = {
+            id: t.id || t.ticketId || cleanId,
             event: t.event || 'FRESHERS TAKEOVER',
             attendee: t.attendee || t.name || '—',
             email: t.email || '—',
             phone: t.phone || 'N/A',
-            dateLabel: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
+            dateLabel: fmtIST(t.generatedAt),
             venue: 'Flo The Brewery, Pune',
             ticketType: mapGender(t.ticketType || t.gender || ''),
             price: `₹${t.amount || '—'}`,
             qty: t.quantity || 1,
             generatedBy: t.generatedBy || 'Littlane',
-            generatedAt: t.generatedAt ? new Date(t.generatedAt).toLocaleString() : 'TBA',
-            status: 'scanned',
-            scannedBy: t.scannedBy,
-            scannedAt: t.scannedAt
+            generatedAt: fmtIST(t.generatedAt),
+            status: (t.status === 'cancelled' ? 'scanned' : 'scanned') as any,
+            scannedBy: t.scannedBy || undefined,
+            scannedAt: t.scannedAt || undefined,
+            // Carry cancelled marker for the UI to detect
+            ...(t.status === 'cancelled' ? { _cancelled: true } as any : {})
           }
-          return { result: 'rejected', ticket: matchedTicket }
+          // Override with live store data if we have it (most up-to-date)
+          const liveTicket = tickets.find(tk => tk.id === (t.id || t.ticketId || cleanId))
+          return { result: 'rejected', ticket: liveTicket || matchedTicket, serverTicket: t }
+
         }
       } catch (err) {
         console.error('Scan api error:', err)

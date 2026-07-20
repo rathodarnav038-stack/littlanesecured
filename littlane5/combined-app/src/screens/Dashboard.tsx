@@ -201,7 +201,26 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
             <p className={`text-xs text-center py-8 ${subText}`}>No failed scans in this session.</p>
           ) : (
             filteredFailed.map((item, i) => {
-              const canClick = !!item.ticket;
+              const canClick = !!item.ticket
+              // Badge color + label by reason
+              const badgeStyle =
+                item.reason === 'cancelled'
+                  ? 'bg-[#F59E0B]/15 text-[#F59E0B]'
+                  : item.reason === 'invalid'
+                  ? 'bg-[#6B7280]/15 text-[#9CA3AF]'
+                  : 'bg-[#EF4444]/15 text-[#EF4444]'
+              const badgeLabel =
+                item.reason === 'cancelled' ? 'Cancelled' : item.reason === 'invalid' ? 'Invalid' : 'Duplicate'
+              // Attempt ordinal: 1→"2nd scan", 2→"3rd scan" etc.
+              const ordinal = (n: number) => {
+                const s = n + 1  // 1st attempt = 2nd scan overall
+                const sfx = s === 1 ? 'st' : s === 2 ? 'nd' : s === 3 ? 'rd' : 'th'
+                return `${s}${sfx} scan attempt`
+              }
+              const shortId = item.rawCode
+                ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase())
+                : 'UNKNOWN'
+
               return canClick ? (
                 <button
                   key={i}
@@ -210,15 +229,23 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
                   <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
-                    #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
+                    #{shortId}
                   </span>
-                  <div className="flex-1">
-                    <span className={`text-xs font-semibold block ${text}`}>{item.ticket.attendee}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className={`text-xs font-semibold block truncate ${text}`}>{item.ticket!.attendee}</span>
                     <p className={`text-[9px] ${subText} mt-0.5`}>
-                      Already scanned at {item.ticket.scannedAt} · logged at {item.timestamp}
+                      {item.ticket!.ticketType} · {ordinal(item.attemptNumber)}
                     </p>
+                    {item.reason === 'duplicate' && item.ticket!.scannedAt && (
+                      <p className={`text-[9px] text-[#EF4444]/70 mt-0.5`}>
+                        First scanned: {item.ticket!.scannedAt}
+                      </p>
+                    )}
+                    <p className={`text-[9px] ${subText} mt-0.5`}>Rejected at {item.timestamp}</p>
                   </div>
-                  <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Duplicate</span>
+                  <span className={`${badgeStyle} text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0 ml-1`}>
+                    {badgeLabel}
+                  </span>
                 </button>
               ) : (
                 <div
@@ -227,19 +254,25 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
                   <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
-                    #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
+                    #{shortId}
                   </span>
-                  <div className="flex-1">
-                    <span className={`text-xs font-semibold block ${text}`}>Unknown Scan</span>
-                    <p className={`text-[9px] ${subText} mt-0.5`}>Ticket ID not in database · logged at {item.timestamp}</p>
+                  <div className="flex-1 min-w-0">
+                    <span className={`text-xs font-semibold block ${text}`}>Unknown Ticket</span>
+                    <p className={`text-[9px] ${subText} mt-0.5`}>
+                      {ordinal(item.attemptNumber)} · Not found in database
+                    </p>
+                    <p className={`text-[9px] ${subText} mt-0.5`}>Rejected at {item.timestamp}</p>
                   </div>
-                  <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Invalid</span>
+                  <span className="bg-[#6B7280]/15 text-[#9CA3AF] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex-shrink-0 ml-1">
+                    Invalid
+                  </span>
                 </div>
-              );
+              )
             })
           )
         )}
       </div>
+
 
       <div className={`px-4 py-3 border-t ${navBg}`}>
         <motion.button
