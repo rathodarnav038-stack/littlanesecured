@@ -3,6 +3,8 @@ import { useState } from 'react'
 interface TicketsProps {
   sales: any[]
   onResend: (ticketId: string) => Promise<void>
+  adminKey: string
+  onReload: () => Promise<void>
 }
 
 interface Ticket {
@@ -41,11 +43,42 @@ function Badge({ label, bg, color }: { label: string; bg: string; color: string 
   return <span style={{ backgroundColor: bg, color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>{label}</span>
 }
 
-export default function Tickets({ sales = [], onResend }: TicketsProps) {
+export default function Tickets({ sales = [], onResend, adminKey, onReload }: TicketsProps) {
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+  
   // Only show records with generated tickets
   const ticketSales = sales.filter(s => s.ticketId)
 
+  const handleCancel = async (ticketId: string) => {
+    if (!window.confirm(`Are you sure you want to CANCEL ticket ${ticketId}? Scanning it at the gate will be rejected.`)) {
+      return
+    }
+    setCancellingId(ticketId)
+    try {
+      const res = await fetch('/api/admin/cancel-ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminKey
+        },
+        body: JSON.stringify({ ticketId })
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert(data.message)
+        await onReload()
+      } else {
+        alert('Failed: ' + data.message)
+      }
+    } catch (err) {
+      alert('Error cancelling ticket')
+    } finally {
+      setCancellingId(null)
+    }
+  }
+
   const tickets: Ticket[] = ticketSales.map((s: any) => {
+    const isCancelled = s.status === 'cancelled'
     const isScanned = s.status === 'scanned' || !!s.scannedAt
     return {
       id: s.ticketId,
@@ -58,7 +91,7 @@ export default function Tickets({ sales = [], onResend }: TicketsProps) {
       price: s.amount,
       generated: s.generatedAt ? new Date(s.generatedAt).toLocaleString('en-IN') : '—',
       expiry: 'Event End',
-      status: isScanned ? 'Scanned' : 'Active',
+      status: isCancelled ? 'Cancelled' : (isScanned ? 'Scanned' : 'Active'),
       qr: '✓',
       pdf: '✓',
       png: '✓'
@@ -114,18 +147,32 @@ export default function Tickets({ sales = [], onResend }: TicketsProps) {
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button
                             onClick={() => onResend(t.id)}
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', fontSize: '11px', fontWeight: 600, color: 'var(--foreground)', cursor: 'pointer' }}
+                            disabled={t.status === 'Cancelled'}
+                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', fontSize: '11px', fontWeight: 600, color: t.status === 'Cancelled' ? 'var(--muted-foreground)' : 'var(--foreground)', cursor: t.status === 'Cancelled' ? 'not-allowed' : 'pointer' }}
                           >
                             Resend Email
                           </button>
                           <a
-                            href={`/api/ticket/${t.id}/download`}
+                            href={t.status === 'Cancelled' ? '#' : `/api/ticket/${t.id}/download`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: 'none', backgroundColor: '#9333ea', color: 'white', textDecoration: 'none', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                            style={{ padding: '4px 10px', borderRadius: '6px', border: 'none', backgroundColor: t.status === 'Cancelled' ? '#fca5a5' : '#9333ea', color: 'white', textDecoration: 'none', fontSize: '11px', fontWeight: 600, cursor: t.status === 'Cancelled' ? 'not-allowed' : 'pointer' }}
                           >
                             Download PDF
                           </a>
+                          <button
+                            onClick={() => handleCancel(t.id)}
+                            disabled={t.status === 'Cancelled' || cancellingId === t.id}
+                            style={{
+                              padding: '4px 10px', borderRadius: '6px', border: 'none',
+                              backgroundColor: '#EF4444', color: 'white',
+                              fontSize: '11px', fontWeight: 600,
+                              cursor: t.status === 'Cancelled' || cancellingId === t.id ? 'not-allowed' : 'pointer',
+                              opacity: t.status === 'Cancelled' ? 0.4 : 1
+                            }}
+                          >
+                            {cancellingId === t.id ? '...' : 'Cancel'}
+                          </button>
                         </div>
                       </td>
                     </tr>

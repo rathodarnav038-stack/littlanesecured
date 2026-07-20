@@ -284,7 +284,7 @@ export default function App() {
       case 'payments':
         return <Orders sales={sales} onResend={handleResend} />
       case 'tickets':
-        return <Tickets sales={sales} onResend={handleResend} />
+        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={fetchSales} />
       case 'customers':
         return <Customers sales={sales} />
       case 'events':

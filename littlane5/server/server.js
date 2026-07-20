@@ -479,6 +479,33 @@ app.post('/api/admin/danger-wipe-test-data', async (req, res) => {
     }
 });
 
+// ==================== 6C. CANCEL DELIVERED TICKET (ADMIN ONLY) ====================
+app.post('/api/admin/cancel-ticket', async (req, res) => {
+    const clientKey = req.query.key || req.headers['x-admin-key'];
+    if (!clientKey || clientKey !== ADMIN_KEY) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    const { ticketId } = req.body || {};
+    if (!ticketId) {
+        return res.status(400).json({ success: false, message: 'Ticket ID is required' });
+    }
+    try {
+        const sale = await db.getByTicketId(ticketId);
+        if (!sale) {
+            return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+        await db.updateSaleRecord(sale.orderId, {
+            status: 'cancelled',
+            scannedAt: 'Cancelled by Admin',
+            scannedBy: 'Admin'
+        });
+        res.json({ success: true, message: `Ticket ${ticketId} cancelled successfully.` });
+    } catch (err) {
+        console.error('[CANCEL ERROR]', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ==================== 7. SCAN TICKET ====================
 app.post('/api/scan-ticket', async (req, res) => {
     const { ticketId, scannedBy } = req.body || {};
@@ -490,6 +517,26 @@ app.post('/api/scan-ticket', async (req, res) => {
         const sale = await db.getByTicketId(ticketId);
         if (!sale) {
             return res.json({ result: 'not_found' });
+        }
+
+        if (sale.status === 'cancelled') {
+            return res.json({
+                result: 'rejected',
+                ticket: {
+                    id: sale.ticketId,
+                    event: sale.event,
+                    attendee: sale.name,
+                    email: sale.email,
+                    phone: sale.phone,
+                    ticketType: sale.gender,
+                    quantity: sale.quantity,
+                    amount: sale.amount,
+                    generatedAt: sale.generatedAt,
+                    status: 'cancelled',
+                    scannedBy: 'Admin',
+                    scannedAt: 'Cancelled by Admin'
+                }
+            });
         }
 
         if (sale.status === 'scanned' || sale.scannedAt) {
