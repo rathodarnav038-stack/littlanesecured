@@ -5,11 +5,11 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://littlanefinal.onrender.com/api/$1" },
     { "source": "/ticket-files/(.*)", "destination": "https://littlanefinal.onrender.com/ticket-files/$1" },
-    { "source": "/assets/(.*)", "destination": "/combined-app/dist/assets/$1" },
-    { "source": "/tickets", "destination": "/dashboard/index.html" },
-    { "source": "/tickets/(.*)", "destination": "/dashboard/index.html" },
-    { "source": "/dashboard", "destination": "/dashboard/index.html" },
-    { "source": "/dashboard/(.*)", "destination": "/dashboard/index.html" },
+    { "source": "/tickets/(.*)", "destination": "https://littlanefinal.onrender.com/tickets/$1" },
+    { "source": "/tickets", "destination": "https://littlanefinal.onrender.com/tickets" },
+    { "source": "/dashboard/(.*)", "destination": "https://littlanefinal.onrender.com/dashboard/$1" },
+    { "source": "/dashboard", "destination": "https://littlanefinal.onrender.com/dashboard" },
+    { "source": "/assets/(.*)", "destination": "https://littlanefinal.onrender.com/assets/$1" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
