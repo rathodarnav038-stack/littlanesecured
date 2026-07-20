@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStore } from '../lib/store'
+import type { Ticket } from '../lib/store'
 import GenerateTicket from '../screens/GenerateTicket'
 import TicketCard from '../screens/TicketCard'
 import QRScanner from '../screens/QRScanner'
@@ -14,8 +15,8 @@ type Screen =
   | { name: 'generate' }
   | { name: 'ticket'; id: string }
   | { name: 'scanner' }
-  | { name: 'scan-success'; id: string }
-  | { name: 'scan-rejected'; id: string | null; rawCode?: string }
+  | { name: 'scan-success'; ticket: Ticket }
+  | { name: 'scan-rejected'; ticket: Ticket | null; rawCode?: string }
 
 const DEPTH: Record<Screen['name'], number> = {
   dashboard: 0,
@@ -38,13 +39,14 @@ function AppShell() {
 
   async function handleScan(raw: string) {
     const cleaned = raw.replace(/^LITTIX:/i, '').replace(/^#/, '')
-    const outcome = await scanTicket(cleaned, 'Maria Santos')
+    const outcome = await scanTicket(cleaned, 'Gate Staff')
     if (outcome.result === 'success' && outcome.ticket) {
-      go({ name: 'scan-success', id: outcome.ticket.id })
+      // Pass full ticket object directly — don't rely on store lookup after async refresh
+      go({ name: 'scan-success', ticket: outcome.ticket })
     } else if (outcome.result === 'rejected' && outcome.ticket) {
-      go({ name: 'scan-rejected', id: outcome.ticket.id })
+      go({ name: 'scan-rejected', ticket: outcome.ticket })
     } else {
-      go({ name: 'scan-rejected', id: null, rawCode: cleaned })
+      go({ name: 'scan-rejected', ticket: null, rawCode: cleaned })
     }
   }
 
@@ -78,33 +80,23 @@ function AppShell() {
   } else if (screen.name === 'scanner') {
     content = <QRScanner onBack={() => go({ name: 'dashboard' })} onScan={handleScan} />
   } else if (screen.name === 'scan-success') {
-    const ticket = findTicket(screen.id)
-    if (!ticket) {
-      content = (
-        <Dashboard
-          dark={dark}
-          onOpenTicket={(id) => go({ name: 'ticket', id })}
-          onScan={() => go({ name: 'scanner' })}
-          onGenerate={() => go({ name: 'generate' })}
-          onToggleTheme={toggleTheme}
-        />
-      )
-    } else {
-      content = (
-        <ScanSuccess
-          dark={dark}
-          ticket={ticket}
-          onBack={() => go({ name: 'dashboard' })}
-          onScanNext={() => go({ name: 'scanner' })}
-        />
-      )
-    }
+    // Use the ticket stored directly in screen state — no async lookup needed
+    key = `scan-success-${screen.ticket.id}`
+    content = (
+      <ScanSuccess
+        dark={dark}
+        ticket={screen.ticket}
+        onBack={() => go({ name: 'dashboard' })}
+        onScanNext={() => go({ name: 'scanner' })}
+      />
+    )
   } else if (screen.name === 'scan-rejected') {
-    const ticket = screen.id ? findTicket(screen.id) ?? null : null
+    // Use the ticket stored directly in screen state — no async lookup needed
+    key = `scan-rejected-${screen.ticket?.id ?? screen.rawCode}`
     content = (
       <ScanRejected
         dark={dark}
-        ticket={ticket}
+        ticket={screen.ticket}
         notFoundId={screen.rawCode}
         onBack={() => go({ name: 'dashboard' })}
         onScanNext={() => go({ name: 'scanner' })}
