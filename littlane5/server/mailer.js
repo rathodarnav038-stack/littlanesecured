@@ -93,45 +93,28 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
         if (fs.existsSync(BANNER_PATH)) attachments.push({ filename: 'banner.png', path: BANNER_PATH, cid: 'ticketbanner' });
 
         const html = `
-        <div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;background:#0d0d0f;border-radius:16px;overflow:hidden;">
-          <img src="cid:ticketbanner" alt="${EVENT_NAME}" style="width:100%;display:block;" />
-          <div style="background:#ffffff;padding:24px;">
-            <p style="color:#A855F7;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;">${EVENT_NAME}</p>
-            <h2 style="margin:0 0 4px;color:#0d0d0f;">${EVENT_DETAILS.brand}</h2>
-            <p style="margin:0 0 16px;color:#A855F7;font-size:13px;font-weight:600;">${EVENT_DETAILS.stage} · ${EVENT_DETAILS.admission}</p>
-            <p style="margin:0 0 16px;color:#555;font-size:13px;">📅 ${EVENT_DETAILS.date} &nbsp; ⏰ ${EVENT_DETAILS.time} &nbsp; 📍 ${EVENT_DETAILS.venue}</p>
-            <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
-            <table style="width:100%;font-size:13px;color:#0d0d0f;margin-bottom:16px;">
-              <tr>
-                <td style="color:#999;font-size:11px;">TICKET TYPE<br><b style="color:#0d0d0f;font-size:14px;">${genderLabel}</b></td>
-                <td style="color:#999;font-size:11px;text-align:center;">QTY<br><b style="color:#0d0d0f;font-size:14px;">${quantity}</b></td>
-                <td style="color:#999;font-size:11px;text-align:right;">PRICE<br><b style="color:#0d0d0f;font-size:14px;">₹${amount}</b></td>
-              </tr>
-            </table>
-            <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
-            <p style="color:#999;font-size:11px;margin:0;">TICKET ID</p>
-            <p style="color:#0d0d0f;font-size:15px;font-weight:700;margin:2px 0 16px;">${ticketId}</p>
-            <div style="text-align:center;margin:16px 0;">
-              <img src="cid:ticketqr" alt="QR code" style="width:160px;height:160px;" />
-              <p style="color:#999;font-size:11px;margin-top:8px;">Show this QR code at entry</p>
-            </div>
-            <p style="text-align:center;margin:20px 0 4px;font-weight:700;color:#0d0d0f;">LITTLANE •</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111111; font-size: 15px; line-height: 1.6;">
+          <p>Hi ${name},</p>
+          <p>Thanks for booking your <strong>${EVENT_NAME}</strong> pass! Your Ticket ID is <strong>${ticketId}</strong>.</p>
+          
+          <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
+            <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">🎟️ Ticket Guidelines</p>
+            <ul style="margin: 0; padding-left: 20px; color: #333333;">
+              <li style="margin-bottom: 8px;"><strong>Your QR code is unique and valid for one-time entry only.</strong></li>
+              <li style="margin-bottom: 8px;"><strong>Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</strong></li>
+              <li style="margin-bottom: 8px;"><strong>Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</strong></li>
+              <li style="margin-bottom: 8px;"><strong>Keep your ticket ready on your phone or as a printed copy.</strong></li>
+              <li style="margin-bottom: 8px;"><strong>Duplicate, tampered, or already-scanned tickets will not be accepted.</strong></li>
+            </ul>
+            <p style="margin: 15px 0 0; font-size: 16px; font-weight: 900; color: #ff0000; text-transform: uppercase; letter-spacing: 0.05em;">NO EXCUSES IN ANY CASES</p>
           </div>
-          <div style="padding:16px 24px;background:#0d0d0f;text-align:center;">
-            <a href="${downloadUrl}" style="background:#A855F7;color:#fff;padding:10px 22px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:inline-block;">Download Ticket</a>
-          </div>
-        </div>
-        <div style="font-family:Arial,sans-serif;max-width:420px;margin:20px auto;padding:0 12px;color:#f4f4f5;font-size:13px;line-height:1.6;">
-          <p style="font-size:14px;font-weight:bold;margin-bottom:12px;color:#ffffff;">🎟️ Ticket Guidelines</p>
-          <ul style="margin:0 0 16px;padding-left:20px;color:#cccccc;">
-            <li style="margin-bottom:6px;">Your QR code is unique and valid for one-time entry only.</li>
-            <li style="margin-bottom:6px;">Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</li>
-            <li style="margin-bottom:6px;">Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</li>
-            <li style="margin-bottom:6px;">Keep your ticket ready on your phone or as a printed copy.</li>
-            <li style="margin-bottom:6px;">Duplicate, tampered, or already-scanned tickets will not be accepted.</li>
-          </ul>
-          <p style="margin:0 0 16px;font-weight:bold;color:#ff3333;font-size:14px;">NO EXCUSES IN ANY CASES</p>
-          <p style="margin:0;color:#aaaaaa;">Find your ticket in the PDF attached below.</p>
+
+          <p style="font-size: 16px; font-weight: bold; color: #000000;">Find your ticket in the PDF attached below.</p>
+          
+          <p style="margin-top: 30px; font-size: 13px; color: #666666;">
+            See you on the dancefloor!<br>
+            <strong>— LITTLANE Entertainment</strong>
+          </p>
         </div>`;
 
         const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
