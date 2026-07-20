@@ -31,22 +31,31 @@ async function getTransporter() {
     if (transporter) return transporter;
 
     if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-        const dns = require('dns');
+        const dns = require('dns').promises;
+        let smtpIp = process.env.SMTP_HOST;
+        try {
+            const addresses = await dns.resolve4(process.env.SMTP_HOST);
+            if (addresses && addresses.length > 0) {
+                smtpIp = addresses[0]; // Use resolved IPv4 address directly
+                console.log(`[Mailer] Resolved SMTP host ${process.env.SMTP_HOST} to IPv4: ${smtpIp}`);
+            }
+        } catch (dnsErr) {
+            console.warn(`[Mailer] DNS resolution for ${process.env.SMTP_HOST} failed, using default fallback:`, dnsErr.message);
+        }
+
         transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
+            host: smtpIp,
             port: 587,
-            secure: false, // false for 587 (STARTTLS)
+            secure: false,
             auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
             tls: {
                 rejectUnauthorized: false,
-                minVersion: 'TLSv1.2'
+                minVersion: 'TLSv1.2',
+                servername: process.env.SMTP_HOST // keeps SSL validation working with IP address
             },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
-            socketTimeout: 15000,
-            lookup: (hostname, options, callback) => {
-                dns.lookup(hostname, { family: 4 }, callback);
-            }
+            socketTimeout: 15000
         });
         return transporter;
     }
