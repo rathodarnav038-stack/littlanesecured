@@ -53,8 +53,34 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-export default function Settings() {
+interface SettingsProps {
+  adminKey: string
+}
+
+export default function Settings({ adminKey }: SettingsProps) {
   const [tab, setTab] = useState<SettingsTab>('smtp')
+  const [wiping, setWiping] = useState(false)
+
+  const handleWipe = async () => {
+    if (!window.confirm("WARNING: This will permanently delete all ticket sales and reset revenue stats to ₹0. Are you sure?")) {
+      return
+    }
+    setWiping(true)
+    try {
+      const res = await fetch(`/api/admin/danger-wipe-test-data?key=${adminKey}`, { method: 'POST' })
+      const data = await res.json()
+      if (data.success) {
+        alert(data.message)
+        window.location.reload()
+      } else {
+        alert("Wipe failed: " + data.message)
+      }
+    } catch (err) {
+      alert("Error executing wipe command.")
+    } finally {
+      setWiping(false)
+    }
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -212,7 +238,32 @@ export default function Settings() {
                       <div style={{ fontFamily: 'monospace', marginTop: '2px' }}>{log.ip}</div>
                     </div>
                   </div>
-                ))}
+              </div>
+
+              {/* Danger Zone */}
+              <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#ef4444', margin: '0 0 8px' }}>Danger Zone</h4>
+                <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginBottom: '14px' }}>
+                  Wipe all test sales, logs, and reset revenue counts back to zero. This action is permanent and cannot be undone.
+                </p>
+                <button
+                  onClick={handleWipe}
+                  disabled={wiping}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: wiping ? '#fca5a5' : '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: wiping ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 8px rgba(239,68,68,0.25)',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {wiping ? 'Clearing Data...' : 'Wipe All Test Data'}
+                </button>
               </div>
             </div>
           )}
