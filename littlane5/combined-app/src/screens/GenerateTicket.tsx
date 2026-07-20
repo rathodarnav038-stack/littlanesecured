@@ -195,7 +195,7 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
             Ticket Type
           </label>
           <div className="flex gap-2">
-            {(['Male Pass', 'Female Pass', 'General', 'VIP'] as TicketType[]).map((t) => (
+            {(['Male Pass', 'Female Pass'] as TicketType[]).map((t) => (
               <motion.button
                 key={t}
                 onClick={() => setTicketType(t)}
