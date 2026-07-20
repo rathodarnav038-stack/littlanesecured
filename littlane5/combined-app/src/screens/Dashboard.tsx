@@ -7,12 +7,13 @@ import type { RejectedScan } from '../littix/App'
 
 interface Props {
   dark: boolean
+  onOpenTicket: (id: string) => void
   onScan: () => void
   onToggleTheme: () => void
   rejectedScans: RejectedScan[]
 }
 
-export default function Dashboard({ dark, onScan, onToggleTheme, rejectedScans }: Props) {
+export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, rejectedScans }: Props) {
   const { tickets } = useStore()
   const [activeTab, setActiveTab] = useState<'scanned' | 'failed'>('scanned')
   const [search, setSearch] = useState('')
@@ -193,9 +194,12 @@ export default function Dashboard({ dark, onScan, onToggleTheme, rejectedScans }
               <motion.p key="empty-scanned" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`text-xs text-center py-8 ${subText}`}>No scanned tickets yet.</motion.p>
             ) : (
               filteredScanned.map((ticket, i) => (
-                <div
+                <motion.button
                   key={ticket.id}
-                  className="px-4 py-3 border-b flex items-start text-left w-full"
+                  onClick={() => onOpenTicket(ticket.id)}
+                  whileHover={{ backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)' }}
+                  whileTap={{ scale: 0.985 }}
+                  className="px-4 py-3 border-b flex items-start text-left w-full cursor-pointer transition-colors duration-200"
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
                   <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
@@ -210,35 +214,44 @@ export default function Dashboard({ dark, onScan, onToggleTheme, rejectedScans }
                   <span className="bg-[#22C55E]/15 text-[#22C55E] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                     Success
                   </span>
-                </div>
+                </motion.button>
               ))
             )
           ) : (
             filteredFailed.length === 0 ? (
               <motion.p key="empty-failed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`text-xs text-center py-8 ${subText}`}>No failed scans in this session.</motion.p>
             ) : (
-              filteredFailed.map((item, i) => (
-                <div
-                  key={i}
-                  className="px-4 py-3 border-b flex items-start text-left w-full"
-                  style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
-                >
-                  <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
-                    #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
-                  </span>
-                  <div className="flex-1">
-                    <span className={`text-xs font-semibold block ${text}`}>
-                      {item.ticket ? item.ticket.attendee : 'Unknown Scan'}
+              filteredFailed.map((item, i) => {
+                const canClick = !!item.ticket;
+                const Wrapper = canClick ? motion.button : 'div';
+                return (
+                  <Wrapper
+                    key={i}
+                    {...(canClick ? {
+                      onClick: () => onOpenTicket(item.ticket!.id),
+                      whileHover: { backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)' },
+                      whileTap: { scale: 0.985 }
+                    } : {})}
+                    className={`px-4 py-3 border-b flex items-start text-left w-full ${canClick ? 'cursor-pointer transition-colors duration-200' : ''}`}
+                    style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
+                  >
+                    <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                      #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
                     </span>
-                    <p className={`text-[9px] ${subText} mt-0.5`}>
-                      {item.ticket ? `Already scanned at ${item.ticket.scannedAt}` : 'Ticket ID not in database'} · logged at {item.timestamp}
-                    </p>
-                  </div>
-                  <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    {item.ticket ? 'Duplicate' : 'Invalid'}
-                  </span>
-                </div>
-              ))
+                    <div className="flex-1">
+                      <span className={`text-xs font-semibold block ${text}`}>
+                        {item.ticket ? item.ticket.attendee : 'Unknown Scan'}
+                      </span>
+                      <p className={`text-[9px] ${subText} mt-0.5`}>
+                        {item.ticket ? `Already scanned at ${item.ticket.scannedAt}` : 'Ticket ID not in database'} · logged at {item.timestamp}
+                      </p>
+                    </div>
+                    <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {item.ticket ? 'Duplicate' : 'Invalid'}
+                    </span>
+                  </Wrapper>
+                );
+              })
             )
           )}
         </AnimatePresence>
