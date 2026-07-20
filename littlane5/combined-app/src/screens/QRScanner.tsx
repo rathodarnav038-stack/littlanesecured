@@ -61,7 +61,7 @@ export default function QRScanner({ onBack, onScan }: Props) {
           if (code && code.data) {
             scannedRef.current = true
             setDetected(true)
-            window.setTimeout(() => onScan(code.data), 320)
+            onScan(code.data)
             return
           }
         }
@@ -113,8 +113,8 @@ export default function QRScanner({ onBack, onScan }: Props) {
 
       <motion.div
         className="absolute inset-0"
-        animate={{ backgroundColor: detected ? 'rgba(34,197,94,0.25)' : 'rgba(0,0,0,0.45)' }}
-        transition={{ duration: 0.3 }}
+        animate={{ backgroundColor: detected ? 'rgba(168,85,247,0.2)' : 'rgba(0,0,0,0.45)' }}
+        transition={{ duration: 0.2 }}
       />
 
       <div className="relative flex flex-col min-h-screen">
@@ -157,6 +157,7 @@ export default function QRScanner({ onBack, onScan }: Props) {
             animate={{ opacity: 1, scale: detected ? 1.06 : 1 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
+            {/* Viewfinder corner lines */}
             {[
               { top: 0, left: 0, rotate: '0deg' },
               { top: 0, right: 0, rotate: '90deg' },
@@ -173,7 +174,7 @@ export default function QRScanner({ onBack, onScan }: Props) {
                   ...style,
                   width: 36,
                   height: 36,
-                  borderColor: detected ? '#22C55E' : cornerColor,
+                  borderColor: detected ? '#A855F7' : cornerColor,
                   borderTopWidth: 3,
                   borderLeftWidth: 3,
                   borderTopLeftRadius: 6,
@@ -195,29 +196,6 @@ export default function QRScanner({ onBack, onScan }: Props) {
                 transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               />
             )}
-            <AnimatePresence>
-              {detected && (
-                <motion.div
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.4 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-                >
-                  <div className="w-16 h-16 rounded-full bg-[#22C55E] flex items-center justify-center" style={{ boxShadow: '0 0 30px rgba(34,197,94,0.7)' }}>
-                    <motion.svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                      <motion.path
-                        d="M6 14l5 5 11-11"
-                        stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </motion.svg>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
 
           <motion.p
