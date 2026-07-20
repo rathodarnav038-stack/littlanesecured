@@ -137,7 +137,7 @@ export default function App() {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState('1')
+  const [manualAmount, setManualAmount] = useState('349')
   const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
 
   const fetchSales = async () => {
@@ -223,7 +223,7 @@ export default function App() {
         setManualName('')
         setManualEmail('')
         setManualPhone('')
-        setManualAmount('2')
+        setManualAmount('349')
         fetchSales()
       } else {
         alert(`Failed: ${data.message}`)
@@ -236,9 +236,9 @@ export default function App() {
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
     if (val === 'male') {
-      setManualAmount('1')
+      setManualAmount('349')
     } else if (val === 'female') {
-      setManualAmount('2')
+      setManualAmount('249')
     }
   }
 
@@ -517,16 +517,14 @@ export default function App() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
-                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>TICKET TIER / GENDER</label>
+                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PASS TYPE</label>
                   <select
                     value={manualGender}
                     onChange={e => handleManualGenderChange(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                   >
-                    <option value="male">Male Pass (₹1)</option>
-                    <option value="female">Female Pass (₹2)</option>
-                    <option value="VIP">VIP Ticket (₹189)</option>
-                    <option value="Backstage">Backstage (₹349)</option>
+                    <option value="male">Male Pass (₹349)</option>
+                    <option value="female">Female Pass (₹249)</option>
                   </select>
                 </div>
                 <div>
