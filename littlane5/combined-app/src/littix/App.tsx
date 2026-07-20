@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStore } from '../lib/store'
 import type { Ticket } from '../lib/store'
-import GenerateTicket from '../screens/GenerateTicket'
 import TicketCard from '../screens/TicketCard'
 import QRScanner from '../screens/QRScanner'
 import ScanSuccess from '../screens/ScanSuccess'
@@ -12,7 +11,6 @@ import PageTransition from '../components/PageTransition'
 
 type Screen =
   | { name: 'dashboard' }
-  | { name: 'generate' }
   | { name: 'ticket'; id: string }
   | { name: 'scanner' }
   | { name: 'scan-success'; ticket: Ticket }
@@ -20,7 +18,6 @@ type Screen =
 
 const DEPTH: Record<Screen['name'], number> = {
   dashboard: 0,
-  generate: 1,
   ticket: 1,
   scanner: 1,
   'scan-success': 2,
@@ -61,16 +58,7 @@ function AppShell() {
         dark={dark}
         onOpenTicket={(id) => go({ name: 'ticket', id })}
         onScan={() => go({ name: 'scanner' })}
-        onGenerate={() => go({ name: 'generate' })}
         onToggleTheme={toggleTheme}
-      />
-    )
-  } else if (screen.name === 'generate') {
-    content = (
-      <GenerateTicket
-        dark={dark}
-        onBack={() => go({ name: 'dashboard' })}
-        onGenerated={(id) => go({ name: 'ticket', id })}
       />
     )
   } else if (screen.name === 'ticket') {

@@ -8,7 +8,6 @@ interface Props {
   dark: boolean
   onOpenTicket: (id: string) => void
   onScan: () => void
-  onGenerate: () => void
   onToggleTheme: () => void
 }
 
@@ -33,7 +32,7 @@ function StatusPill({ status }: { status: string }) {
   )
 }
 
-export default function Dashboard({ dark, onOpenTicket, onScan, onGenerate, onToggleTheme }: Props) {
+export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme }: Props) {
   const { tickets } = useStore()
   const [activeFilter, setActiveFilter] = useState<'all' | 'scanned' | 'pending'>('all')
   const [search, setSearch] = useState('')
@@ -260,27 +259,19 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onGenerate, onTo
       </div>
 
       <motion.div
-        className={`flex gap-2 px-4 py-3 border-t ${navBg}`}
+        className={`px-4 py-3 border-t ${navBg}`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <motion.button
-          onClick={onGenerate}
+          onClick={onScan}
           whileHover={{ scale: 1.02, boxShadow: '0 6px 28px rgba(168,85,247,0.45)' }}
           whileTap={{ scale: 0.96 }}
-          className="flex-1 bg-[#A855F7] text-white text-xs font-bold py-3 rounded-2xl flex items-center justify-center gap-1.5"
+          className="w-full bg-[#A855F7] text-white text-xs font-bold py-3 rounded-2xl flex items-center justify-center gap-1.5"
           style={{ boxShadow: '0 4px 20px rgba(168,85,247,0.3)' }}
         >
-          + New Ticket
-        </motion.button>
-        <motion.button
-          onClick={onScan}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.96 }}
-          className={`flex-1 text-xs font-bold py-3 rounded-2xl border flex items-center justify-center gap-1.5 ${dark ? 'bg-[#1A1A1A] border-[#2A2A2A] text-white' : 'bg-white border-[#E4E4E7] text-[#111]'}`}
-        >
-          Scan Ticket
+          📷 Scan Ticket
         </motion.button>
       </motion.div>
     </div>
