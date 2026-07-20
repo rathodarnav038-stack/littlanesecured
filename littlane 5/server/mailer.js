@@ -12,6 +12,7 @@ async function getTransporter() {
     if (transporter) return transporter;
 
     if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+        const dns = require('dns');
         transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: 465,
@@ -20,7 +21,10 @@ async function getTransporter() {
             tls: { rejectUnauthorized: false },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
-            socketTimeout: 15000
+            socketTimeout: 15000,
+            lookup: (hostname, options, callback) => {
+                dns.lookup(hostname, { family: 4 }, callback);
+            }
         });
         return transporter;
     }
