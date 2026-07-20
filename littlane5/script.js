@@ -143,6 +143,7 @@ class BookingPopup{
         // Init flyer BEFORE the early return so it always works
         this.flyerOverlay = document.getElementById('flyerOverlay');
         this.flyerImg = document.getElementById('flyerImg');
+        this.flyerClose = document.getElementById('flyerClose');
         
         if (this.flyerOverlay) {
             // Auto open the flyer after 1 second on page load
@@ -394,13 +395,17 @@ class ThemeToggle{
         this.btn=document.getElementById('themeToggle');
         this.label=document.getElementById('toggleLabel');
         if(!this.btn)return;
-        this.isDark=true;
+        this.isDark=false; // default to light (sundowner)
+        document.documentElement.dataset.theme = 'light';
+        if (this.label) this.label.textContent = 'Rave Mode';
         this.btn.addEventListener('click',()=>this.toggle());
     }
     toggle(){
         this.isDark=!this.isDark;
         document.documentElement.dataset.theme=this.isDark?'dark':'light';
-        this.label.textContent=this.isDark?'Sundowner Theme':'Rave Mode';
+        if (this.label) {
+            this.label.textContent = this.isDark ? 'Sundowner Mode' : 'Rave Mode';
+        }
         // Swap images
         document.querySelectorAll('[data-light][data-dark]').forEach(img=>{
             const src=this.isDark?img.dataset.dark:img.dataset.light;

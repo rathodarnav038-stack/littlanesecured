@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,18 +34,18 @@
 
     <!-- ==================== BOOKING FORM POPUP (LITTIX STYLE) ==================== -->
     <style>
-        .littix-form { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1rem; }
-        .littix-field { display: flex; flex-direction: column; gap: 0.375rem; }
-        .littix-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; color: #A0A0A0; }
+        .littix-form { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 0.75rem; }
+        .littix-field { display: flex; flex-direction: column; gap: 0.25rem; }
+        .littix-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; color: #A0A0A0; }
         html[data-theme="light"] .littix-label { color: #6B6B6B; }
-        .littix-input { border-radius: 1rem; padding: 0.875rem 1rem; font-size: 0.875rem; outline: none; transition: all 0.25s; border: 1px solid #2A2A2A; background-color: #1A1A1A; color: #ffffff; }
+        .littix-input { border-radius: 0.75rem; padding: 0.75rem 0.875rem; font-size: 0.825rem; outline: none; transition: all 0.25s; border: 1px solid #2A2A2A; background-color: #1A1A1A; color: #ffffff; }
         html[data-theme="light"] .littix-input { border: 1px solid #E4E4E7; background-color: #ffffff; color: #111111; }
         .littix-input:focus { border-color: #A855F7; box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
-        .littix-btn { width: 100%; border: none; cursor: pointer; border-radius: 1rem; padding: 1rem; font-weight: 700; font-size: 1rem; background-color: #A855F7; color: white; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 24px rgba(168,85,247,0.35); transition: transform 0.2s, box-shadow 0.2s; }
-        .littix-btn:hover { transform: scale(1.02); box-shadow: 0 8px 32px rgba(168,85,247,0.5); }
+        .littix-btn { width: 100%; border: none; cursor: pointer; border-radius: 0.75rem; padding: 0.85rem; font-weight: 700; font-size: 0.95rem; background-color: #A855F7; color: white; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 20px rgba(168,85,247,0.25); transition: transform 0.2s, box-shadow 0.2s; }
+        .littix-btn:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(168,85,247,0.4); }
         .littix-btn:active { transform: scale(0.97); }
-        #bookingPopup { border-radius: 1.5rem; background: var(--bg); overflow: hidden; }
-        .littix-rate { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem; text-align: center; }
+        #bookingPopup { border-radius: 1.25rem; background: var(--bg); overflow: hidden; max-height: 82vh; display: flex; flex-direction: column; }
+        .littix-rate { font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-align: center; }
         html[data-theme="light"] .littix-rate { color: #111111; }
 
         /* ==================== EVENT FLYER POPUP STYLES ==================== */
@@ -73,7 +73,7 @@
         }
         .flyer-container {
             position: relative;
-            max-width: min(92vw, 480px);
+            max-width: min(92vw, 420px);
             width: 100%;
             background: #000;
             border-radius: 1.25rem;
@@ -113,53 +113,27 @@
             width: 100%;
             height: auto;
             display: block;
-            max-height: 88vh;
+            max-height: 80vh;
             object-fit: cover;
-        }
-        .flyer-selling-banner {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.92));
-            padding: 2rem 1rem 1rem;
-            text-align: center;
-        }
-        @keyframes sellingPulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.04); }
-        }
-        .flyer-selling-text {
-            display: inline-block;
-            font-size: 1.15rem;
-            font-weight: 900;
-            color: #F59E0B;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            text-shadow: 0 0 16px rgba(245, 158, 11, 0.7), 0 2px 4px rgba(0,0,0,0.8);
-            animation: sellingPulse 1.6s ease-in-out infinite;
         }
 
         @media (max-width: 480px) {
             .flyer-container {
-                max-width: 96vw;
+                max-width: 92vw;
                 border-radius: 1rem;
-            }
-            .flyer-selling-text {
-                font-size: 1rem;
             }
         }
     </style>
     <div class="event-popup-overlay" id="bookingOverlay" style="display: none; align-items: center; justify-content: center;">
-        <div class="event-popup" id="bookingPopup" style="max-width: 420px; width: 100%; padding: 2rem 1.5rem;">
-            <button class="event-close" id="bookingClose" aria-label="Close" style="top: 1rem; right: 1rem; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text);">✕</button>
+        <div class="event-popup" id="bookingPopup" style="max-width: 380px; width: 100%; padding: 1.5rem 1.25rem;">
+            <button class="event-close" id="bookingClose" aria-label="Close" style="top: 0.75rem; right: 0.75rem; background: rgba(0,0,0,0.1); border: none; font-size: 1rem; cursor: pointer; color: var(--text); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; z-index: 100;">✕</button>
 
             <!-- FORM STEP -->
-            <div id="bookingFormStep">
-                <div style="display: flex; flex-direction: column; gap: 0.375rem; margin-bottom: 1.5rem;">
-                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A855F7;">FRESHERS TAKEOVER</span>
-                    <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 0;">Book Your Pass</h2>
-                    <p style="font-size: 0.875rem; color: #A0A0A0; margin: 0;">Female Pass ₹2 · Male Pass ₹1</p>
+            <div id="bookingFormStep" style="overflow-y: auto; max-height: calc(82vh - 3rem); padding-right: 4px;">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
+                    <span style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A855F7;">FRESHERS TAKEOVER</span>
+                    <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0;">Book Your Pass</h2>
+                    <p style="font-size: 0.8rem; color: #A0A0A0; margin: 0;">Female Pass ₹2 · Male Pass ₹1</p>
                 </div>
                 <form id="ticketBookingForm" class="littix-form">
                     <div class="littix-field">
@@ -174,7 +148,7 @@
                         <label class="littix-label" for="b_phone">Phone Number</label>
                         <input class="littix-input" type="tel" id="b_phone" name="phone" placeholder="+91 98765 43210" required>
                     </div>
-                    <div style="display: flex; gap: 1rem;">
+                    <div style="display: flex; gap: 0.75rem;">
                         <div class="littix-field" style="flex: 1;">
                             <label class="littix-label" for="b_gender">Pass Type</label>
                             <select class="littix-input" id="b_gender" name="gender" required>
@@ -182,16 +156,16 @@
                                 <option value="male">Male Pass (₹1)</option>
                             </select>
                         </div>
-                        <div class="littix-field" style="width: 80px;">
+                        <div class="littix-field" style="width: 70px;">
                             <label class="littix-label" for="b_quantity">Qty</label>
                             <input class="littix-input" type="number" id="b_quantity" name="quantity" min="1" max="20" value="1" required style="text-align: center;">
                         </div>
                     </div>
-                    <div style="margin-top: 1rem;">
+                    <div style="margin-top: 0.75rem;">
                         <div class="littix-rate">Total: <span id="b_totalRate">₹0</span></div>
-                        <p id="b_formError" style="display:none; color:#f87171; font-size:0.8rem; margin: 0 0 0.75rem;"></p>
+                        <p id="b_formError" style="display:none; color:#f87171; font-size:0.75rem; margin: 0 0 0.5rem;"></p>
                         <button type="submit" class="littix-btn" id="b_submitBtn">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                                 <rect x="1" y="1" width="16" height="16" rx="3" stroke="white" stroke-width="1.5" />
                                 <path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
@@ -202,72 +176,74 @@
             </div>
 
             <!-- SUCCESS STEP — "My Ticket" card -->
-            <div id="bookingSuccessStep" style="display:none; max-height: 80vh; overflow-y: auto; padding-right: 4px;">
-                <p style="text-align:center; font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 1rem;">You're in! 🎉</p>
+            <div id="bookingSuccessStep" style="display:none; overflow-y: auto; max-height: calc(82vh - 3rem); padding-right: 4px; padding-top: 0.5rem;">
+                <p style="text-align:center; font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 0 0 0.75rem;">You're in! 🎉</p>
 
-                <div style="background:#0d0d0f; border-radius:16px; overflow:hidden; max-width:340px; margin:0 auto; box-shadow:0 10px 30px rgba(0,0,0,0.4); border: 1px solid #1a1a1a;">
+                <div style="background:#0d0d0f; border-radius:12px; overflow:hidden; max-width:300px; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.4); border: 1px solid #1a1a1a;">
                     <!-- Banner with badges -->
                     <div style="position:relative;">
                         <img src="images/freshers-takeover-banner.png" alt="FRESHERS TAKEOVER" style="width:100%; display:block; aspect-ratio:1/1; object-fit:cover;">
-                        <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.7); color:#fff; border: 1px solid rgba(255,255,255,0.25); font-size:0.65rem; font-weight:700; padding:4px 10px; border-radius:99px;">NOT SCANNED</span>
-                        <span style="position:absolute; top:10px; right:10px; background:#22c55e; color:#fff; font-size:0.65rem; font-weight:700; padding:4px 10px; border-radius:99px;">ACTIVE</span>
+                        <span style="position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.7); color:#fff; border: 1px solid rgba(255,255,255,0.25); font-size:0.55rem; font-weight:700; padding:2px 8px; border-radius:99px;">NOT SCANNED</span>
+                        <span style="position:absolute; top:8px; right:8px; background:#22c55e; color:#fff; font-size:0.55rem; font-weight:700; padding:2px 8px; border-radius:99px;">ACTIVE</span>
                     </div>
 
                     <!-- White details panel -->
-                    <div style="background:#ffffff; padding:1.25rem; color: #0d0d0f;">
-                        <h3 style="margin:0 0 0.2rem; font-size:1.15rem; font-weight:900; color:#0d0d0f; letter-spacing:0.02em;">FRESHERS TAKEOVER</h3>
-                        <p style="margin:0 0 0.6rem; font-size:0.78rem; font-weight:700; color:#A855F7; text-transform:uppercase; letter-spacing:0.05em;">Main Stage · General Admission</p>
+                    <div style="background:#ffffff; padding:1rem; color: #0d0d0f;">
+                        <p style="margin:0 0 0.5rem; font-size:0.7rem; font-weight:700; color:#A855F7; text-transform:uppercase; letter-spacing:0.05em;">Main Stage · General Admission</p>
 
                         <!-- Attendee Name -->
-                        <div style="margin-bottom: 0.8rem; background: #fafafa; padding: 6px 12px; border-radius: 8px; border: 1px solid #eee;">
-                            <span style="font-size:0.6rem; color:#888; text-transform:uppercase; display:block; margin-bottom: 1px;">Attendee Name</span>
-                            <span id="b_sumAttendeeName" style="font-size: 0.85rem; font-weight: 700; color: #111;"></span>
+                        <div style="margin-bottom: 0.6rem; background: #fafafa; padding: 4px 10px; border-radius: 6px; border: 1px solid #eee;">
+                            <span style="font-size:0.55rem; color:#888; text-transform:uppercase; display:block; margin-bottom: 1px;">Attendee Name</span>
+                            <span id="b_sumAttendeeName" style="font-size: 0.8rem; font-weight: 700; color: #111;"></span>
                         </div>
 
-                        <div style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:0.8rem;">
-                            <span id="b_pillDate" style="background:#f2f2f5; color:#333; font-size:0.68rem; font-weight:600; padding:4px 8px; border-radius:99px;"></span>
-                            <span id="b_pillTime" style="background:#f2f2f5; color:#333; font-size:0.68rem; font-weight:600; padding:4px 8px; border-radius:99px;"></span>
-                            <span id="b_pillVenue" style="background:#f2f2f5; color:#333; font-size:0.68rem; font-weight:600; padding:4px 8px; border-radius:99px;"></span>
+                        <div style="display:flex; gap:0.25rem; flex-wrap:wrap; margin-bottom:0.6rem;">
+                            <span id="b_pillDate" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
+                            <span id="b_pillTime" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
+                            <span id="b_pillVenue" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
                         </div>
 
-                        <hr style="border:none; border-top:1px solid #eee; margin:0.8rem 0;">
+                        <hr style="border:none; border-top:1px solid #eee; margin:0.6rem 0;">
 
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.6rem;">
                             <div>
-                                <div style="font-size:0.6rem; color:#888; text-transform:uppercase;">Pass Type</div>
-                                <div id="b_sumType" style="font-size:0.85rem; font-weight:700; color:#0d0d0f;"></div>
+                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Pass Type</div>
+                                <div id="b_sumType" style="font-size:0.8rem; font-weight:700; color:#0d0d0f;"></div>
                             </div>
                             <div style="text-align:center;">
-                                <div style="font-size:0.6rem; color:#888; text-transform:uppercase;">Qty</div>
-                                <div id="b_sumQty" style="font-size:0.85rem; font-weight:700; color:#0d0d0f;"></div>
+                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Qty</div>
+                                <div id="b_sumQty" style="font-size:0.8rem; font-weight:700; color:#0d0d0f;"></div>
                             </div>
                             <div style="text-align:right;">
-                                <div style="font-size:0.6rem; color:#888; text-transform:uppercase;">Price</div>
-                                <div id="b_sumPrice" style="font-size:0.85rem; font-weight:700; color:#A855F7;"></div>
+                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Price</div>
+                                <div id="b_sumPrice" style="font-size:0.8rem; font-weight:700; color:#A855F7;"></div>
                             </div>
                         </div>
 
-                        <hr style="border:none; border-top:1px solid #eee; margin:0.8rem 0;">
+                        <hr style="border:none; border-top:1px solid #eee; margin:0.6rem 0;">
 
-                        <div style="font-size:0.6rem; color:#888; text-transform:uppercase;">Ticket ID</div>
-                        <div id="b_sumTicketId" style="font-size:0.9rem; font-weight:700; color:#0d0d0f; margin-bottom:0.2rem; letter-spacing:0.02em;"></div>
-                        <div id="b_sumGeneratedBy" style="font-size:0.62rem; color:#888; margin-bottom:0.8rem;"></div>
+                        <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Ticket ID</div>
+                        <div id="b_sumTicketId" style="font-size:0.8rem; font-weight:700; color:#0d0d0f; margin-bottom:0.2rem; letter-spacing:0.02em;"></div>
+                        <div id="b_sumGeneratedBy" style="font-size:0.58rem; color:#888; margin-bottom:0.6rem;"></div>
 
-                        <div style="text-align:center; margin: 0.4rem 0 0.6rem;">
-                            <img id="b_qrImg" src="" alt="Ticket QR" style="width:120px; height:120px; display:inline-block;">
-                            <p style="font-size:0.62rem; color:#888; margin-top:0.25rem; margin-bottom:0;">Show QR code at entry</p>
+                        <div style="text-align:center; margin: 0.4rem 0 0.5rem;">
+                            <img id="b_qrImg" src="" alt="Ticket QR" style="width:110px; height:110px; display:inline-block;">
+                            <p style="font-size:0.58rem; color:#888; margin-top:0.2rem; margin-bottom:0;">Show QR code at entry</p>
                         </div>
 
-                        <p style="text-align:center; font-weight:800; color:#000000; margin:0; font-size:0.7rem; letter-spacing:0.05em;">LITTLANE ENTERTAINMENT</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.6rem;">
+                            <p style="font-weight:900; color:#A855F7; margin:0; font-size:0.7rem; letter-spacing:0.02em;">FRESHERS TAKEOVER</p>
+                            <p style="font-weight:700; color:#888; margin:0; font-size:0.55rem; letter-spacing:0.05em;">LITTLANE</p>
+                        </div>
                     </div>
                 </div>
 
-                <div id="b_successEmailBox" style="margin-top:0.8rem; border:1px solid #22c55e; border-radius:10px; padding:0.5rem 0.8rem; text-align:center;">
-                    <span style="color:#22c55e; font-weight:700; font-size:0.78rem;">✓ <span id="b_successEmailMsg">Sent to your email</span></span>
+                <div id="b_successEmailBox" style="margin-top:0.6rem; border:1px solid #22c55e; border-radius:8px; padding:0.4rem 0.6rem; text-align:center;">
+                    <span style="color:#22c55e; font-weight:700; font-size:0.7rem;">✓ <span id="b_successEmailMsg">Sent to your email</span></span>
                 </div>
-                <p id="b_emailErrorMsg" style="display:none; color:#f87171; font-size:0.72rem; margin-top: 0.6rem; text-align:center;"></p>
+                <p id="b_emailErrorMsg" style="display:none; color:#f87171; font-size:0.68rem; margin-top: 0.5rem; text-align:center;"></p>
 
-                <a id="b_downloadBtn" href="#" class="littix-btn" style="text-decoration:none; display:flex; margin-top:0.8rem; padding: 0.8rem;" download>Download Ticket (PDF)</a>
+                <a id="b_downloadBtn" href="#" class="littix-btn" style="text-decoration:none; display:flex; margin-top:0.6rem; padding: 0.65rem; font-size:0.85rem;" download>Download Ticket (PDF)</a>
             </div>
         </div>
     </div>
@@ -277,9 +253,6 @@
         <div class="flyer-container">
             <button class="flyer-close" id="flyerClose" aria-label="Close">✕</button>
             <img class="flyer-img" id="flyerImg" src="images/event-poster.jpg" alt="Freshers Takeover Flyer">
-            <div class="flyer-selling-banner">
-                <span class="flyer-selling-text">⚡ Buy Fast — Selling Out! ⚡</span>
-            </div>
         </div>
     </div>
 
