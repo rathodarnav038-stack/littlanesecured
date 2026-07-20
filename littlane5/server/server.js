@@ -272,7 +272,28 @@ app.post('/api/verify-payment', async (req, res) => {
 app.get('/api/ticket/:ticketId/download', async (req, res) => {
     const sale = await db.getByTicketId(req.params.ticketId);
     if (!sale) return res.status(404).send('Ticket not found.');
+    
     const filePath = path.join(TICKETS_DIR, `${sale.ticketId}.pdf`);
+    
+    // Dynamically rebuild the PDF if it has been deleted or lost on restart/redeploy
+    if (!fs2.existsSync(filePath)) {
+        try {
+            console.log(`[Ticket Download] File not found for ${sale.ticketId}. Rebuilding...`);
+            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General';
+            await buildTicketPdf({
+                ticketId: sale.ticketId,
+                name: sale.name,
+                email: sale.email,
+                gender: tType,
+                quantity: sale.quantity || 1,
+                amount: sale.amount || 0,
+                createdAt: sale.generatedAt || sale.createdAt || new Date().toISOString()
+            });
+        } catch (err) {
+            console.error('[Ticket Download] Failed to rebuild ticket PDF:', err.message);
+        }
+    }
+
     res.download(filePath, `${EVENT.name.replace(/\s+/g, '-')}-${sale.ticketId}.pdf`, err => {
         if (err) res.status(404).send('Ticket file not found. Please contact support.');
     });
@@ -285,6 +306,26 @@ app.post('/api/ticket/:ticketId/resend', async (req, res) => {
     if (!sale) return res.status(404).json({ success: false, message: 'Ticket not found.' });
 
     const pdfPath = path.join(TICKETS_DIR, `${sale.ticketId}.pdf`);
+    
+    // Rebuild the PDF if it has been deleted or lost on restart/redeploy
+    if (!fs2.existsSync(pdfPath)) {
+        try {
+            console.log(`[Ticket Resend] File not found for ${sale.ticketId}. Rebuilding...`);
+            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General';
+            await buildTicketPdf({
+                ticketId: sale.ticketId,
+                name: sale.name,
+                email: sale.email,
+                gender: tType,
+                quantity: sale.quantity || 1,
+                amount: sale.amount || 0,
+                createdAt: sale.generatedAt || sale.createdAt || new Date().toISOString()
+            });
+        } catch (err) {
+            console.error('[Ticket Resend] Failed to rebuild ticket PDF:', err.message);
+        }
+    }
+
     const downloadUrl = `${BASE_URL}/api/ticket/${sale.ticketId}/download`;
     const result = await sendTicketEmail({ to: sale.email, name: sale.name, ticketId: sale.ticketId, pdfPath, downloadUrl });
 
