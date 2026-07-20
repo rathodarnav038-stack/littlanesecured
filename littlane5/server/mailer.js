@@ -115,6 +115,21 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
               <img src="cid:ticketqr" alt="QR code" style="width:160px;height:160px;" />
               <p style="color:#999;font-size:11px;margin-top:8px;">Show this QR code at entry</p>
             </div>
+            <div style="background:#fef2f2;border:1px solid #fee2e2;border-radius:12px;padding:16px;margin:20px 0 16px;font-size:12px;color:#991b1b;line-height:1.6;">
+              <p style="margin:0 0 10px;font-weight:700;font-size:13px;display:flex;align-items:center;color:#ef4444;">
+                🎟️ Ticket Guidelines
+              </p>
+              <ul style="margin:0;padding-left:16px;">
+                <li style="margin-bottom:6px;">Your QR code is unique and valid for one-time entry only.</li>
+                <li style="margin-bottom:6px;">Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</li>
+                <li style="margin-bottom:6px;">Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</li>
+                <li style="margin-bottom:6px;">Keep your ticket ready on your phone or as a printed copy.</li>
+                <li style="margin-bottom:8px;">Duplicate, tampered, or already-scanned tickets will not be accepted.</li>
+              </ul>
+              <p style="margin:8px 0 0;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#b91c1c;">
+                🚨 NO EXCUSES IN ANY CASES
+              </p>
+            </div>
             <p style="text-align:center;margin:20px 0 4px;font-weight:700;color:#0d0d0f;">Lit<span style="color:#A855F7;">tix</span> •</p>
           </div>
           <div style="padding:16px 24px;background:#0d0d0f;text-align:center;">
@@ -123,7 +138,7 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
         </div>`;
 
         const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
-        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\nYou can also download it anytime here: ${downloadUrl}\n\nSee you on the dancefloor!\n— Littlane Entertainment`;
+        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\n🚨 NO EXCUSES IN ANY CASES\n\nYou can also download it anytime here: ${downloadUrl}\n\nSee you on the dancefloor!\n— Littlane Entertainment`;
 
         // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)
         if (process.env.BREVO_API_KEY) {
