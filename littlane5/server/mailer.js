@@ -138,33 +138,50 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
                 });
             }
 
-            const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'api-key': process.env.BREVO_API_KEY,
-                    'content-type': 'application/json'
+            const payload = JSON.stringify({
+                sender: {
+                    name: "Littlane Events",
+                    email: fromEmail.replace(/.*<(.*)>/, '$1') || "events@littlane.com"
                 },
-                body: JSON.stringify({
-                    sender: {
-                        name: "Littlane Events",
-                        email: fromEmail.replace(/.*<(.*)>/, '$1') || "events@littlane.com"
-                    },
-                    to: [{ email: to, name: name }],
-                    subject: subject,
-                    htmlContent: html,
-                    textContent: text,
-                    attachment: brevoAttachments
-                })
+                to: [{ email: to, name: name }],
+                subject: subject,
+                htmlContent: html,
+                textContent: text,
+                attachment: brevoAttachments
             });
 
-            const resData = await response.json();
-            if (!response.ok) {
-                throw new Error(resData.message || 'Brevo API request failed');
-            }
+            return new Promise((resolve, reject) => {
+                const https = require('https');
+                const req = https.request('https://api.brevo.com/v3/smtp/email', {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'api-key': process.env.BREVO_API_KEY,
+                        'content-type': 'application/json',
+                        'content-length': Buffer.byteLength(payload)
+                    }
+                }, (res) => {
+                    let data = '';
+                    res.on('data', (chunk) => data += chunk);
+                    res.on('end', () => {
+                        try {
+                            const resData = JSON.parse(data);
+                            if (res.statusCode >= 200 && res.statusCode < 300) {
+                                console.log('[Mailer] Brevo send response:', resData);
+                                resolve({ success: true, messageId: resData.messageId });
+                            } else {
+                                reject(new Error(resData.message || 'Brevo API request failed'));
+                            }
+                        } catch (e) {
+                            reject(new Error('Failed to parse Brevo API response'));
+                        }
+                    });
+                });
 
-            console.log('[Mailer] Brevo send response:', resData);
-            return { success: true, messageId: resData.messageId };
+                req.on('error', (err) => reject(err));
+                req.write(payload);
+                req.end();
+            });
         }
 
         // 2. If Mailgun is configured, use Mailgun API
