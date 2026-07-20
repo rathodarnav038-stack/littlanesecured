@@ -56,8 +56,12 @@ app.use('/assets', express.static(path.join(_distDir, 'assets')));
 
 app.get('/tickets', (req, res) => res.sendFile(distIndexHtml));
 app.get('/tickets/:splat', (req, res) => res.sendFile(distIndexHtml));
-app.get('/dashboard', (req, res) => res.sendFile(distIndexHtml));
-app.get('/dashboard/:splat', (req, res) => res.sendFile(distIndexHtml));
+
+// Admin dashboard — serve the static HTML panel (no React build needed)
+const adminHtmlPath = path.join(__dirname, 'admin', 'index.html');
+app.get('/admin', (req, res) => res.sendFile(adminHtmlPath));
+app.get('/dashboard', (req, res) => res.sendFile(adminHtmlPath));
+app.get('/dashboard/:splat', (req, res) => res.sendFile(adminHtmlPath));
 
 // Serve original Littlane HTML site (index.html + script.js + styles.css) for everything else
 const _staticCandidates = [
