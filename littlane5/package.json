@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "cd server && npm start",
-    "build": "cd combined-app && npm install && npm run build && cp ../index.html ./dist/index.html && cp ../styles.css ./dist/styles.css && cp ../script.js ./dist/script.js && cp -r ../images ./dist/images && cp ./dist/index.html ../dashboard.html",
+    "build": "cd combined-app && npm install && npm run build && cp ../index.html ./dist/index.html && cp ../styles.css ./dist/styles.css && cp ../script.js ./dist/script.js && cp -r ../images ./dist/images && mkdir -p ../dashboard && cp ./dist/index.html ../dashboard/index.html",
     "dev": "concurrently \"cd combined-app && npm run dev\" \"cd server && node server.js\""
   },
   "keywords": [],

@@ -6,10 +6,10 @@
     { "source": "/api/(.*)", "destination": "https://littlanefinal.onrender.com/api/$1" },
     { "source": "/ticket-files/(.*)", "destination": "https://littlanefinal.onrender.com/ticket-files/$1" },
     { "source": "/assets/(.*)", "destination": "/combined-app/dist/assets/$1" },
-    { "source": "/tickets", "destination": "/dashboard.html" },
-    { "source": "/tickets/(.*)", "destination": "/dashboard.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/dashboard/(.*)", "destination": "/dashboard.html" },
+    { "source": "/tickets", "destination": "/dashboard/index.html" },
+    { "source": "/tickets/(.*)", "destination": "/dashboard/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard/index.html" },
+    { "source": "/dashboard/(.*)", "destination": "/dashboard/index.html" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
