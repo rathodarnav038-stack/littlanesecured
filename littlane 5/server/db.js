@@ -51,7 +51,7 @@ async function updateSaleRecord(orderId, updates) {
                 updatedAt: new Date().toISOString()
             } 
         },
-        { new: true, lean: true }
+        { returnDocument: 'after', lean: true }
     );
     if (!updated) return null;
     return updated;
