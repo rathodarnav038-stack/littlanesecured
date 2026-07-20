@@ -236,6 +236,7 @@ export default function Settings({ adminKey }: SettingsProps) {
                     <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', textAlign: 'right', flexShrink: 0 }}>
                       <div>{log.time}</div>
                       <div style={{ fontFamily: 'monospace', marginTop: '2px' }}>{log.ip}</div>
+                    </div>
                   </div>
                 ))}
               </div>
