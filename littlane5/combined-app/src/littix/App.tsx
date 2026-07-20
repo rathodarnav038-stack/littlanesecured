@@ -75,6 +75,7 @@ function AppShell() {
     content = (
       <Dashboard
         dark={dark}
+        onOpenTicket={(id) => go({ name: 'ticket', id })}
         onScan={() => go({ name: 'scanner' })}
         onToggleTheme={toggleTheme}
         rejectedScans={rejectedScans}
