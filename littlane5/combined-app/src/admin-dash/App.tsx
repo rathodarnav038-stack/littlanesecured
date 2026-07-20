@@ -130,6 +130,7 @@ export default function App() {
   })
   const [testMode, setTestMode] = useState(true)
   const [showManualModal, setShowManualModal] = useState(false)
+  const [isManualSubmitting, setIsManualSubmitting] = useState(false)
 
   // Manual generation state
   const [manualName, setManualName] = useState('')
@@ -195,10 +196,12 @@ export default function App() {
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isManualSubmitting) return
     if (!manualName.trim() || !manualEmail.trim()) {
       alert('Name and Email are required')
       return
     }
+    setIsManualSubmitting(true)
     try {
       const res = await fetch('/api/admin/generate-ticket', {
         method: 'POST',
@@ -230,6 +233,8 @@ export default function App() {
       }
     } catch (err) {
       alert('Error creating manual ticket')
+    } finally {
+      setIsManualSubmitting(false)
     }
   }
 
@@ -538,8 +543,31 @@ export default function App() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                <button type="submit" style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#22C55E', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Generate & Email</button>
-                <button type="button" onClick={() => setShowManualModal(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)', cursor: 'pointer' }}>Cancel</button>
+                <button
+                  type="submit"
+                  disabled={isManualSubmitting}
+                  style={{
+                    flex: 1, padding: '12px', borderRadius: '8px', border: 'none',
+                    backgroundColor: isManualSubmitting ? '#a3e635' : '#22C55E',
+                    color: 'white', fontWeight: 600,
+                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isManualSubmitting ? 'Processing...' : 'Generate & Email'}
+                </button>
+                <button
+                  type="button"
+                  disabled={isManualSubmitting}
+                  onClick={() => setShowManualModal(false)}
+                  style={{
+                    flex: 1, padding: '12px', borderRadius: '8px',
+                    border: '1px solid var(--border)', backgroundColor: 'var(--muted)',
+                    color: 'var(--foreground)',
+                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
