@@ -129,7 +129,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           event: input.event,
           ticketType: input.ticketType,
           quantity: 1,
-          amount: input.ticketType === 'VIP' ? 189 : input.ticketType === 'Backstage' ? 349 : 89
+          amount: 0
         })
       })
 

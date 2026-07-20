@@ -64,7 +64,7 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
   const [attendee, setAttendee] = useState('')
   const [email, setEmail] = useState('')
   const [datetime, setDatetime] = useState('')
-  const [ticketType, setTicketType] = useState<TicketType>('General')
+  const [ticketType, setTicketType] = useState<TicketType>('Male Pass')
   const [error, setError] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
 
@@ -195,7 +195,7 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
             Ticket Type
           </label>
           <div className="flex gap-2">
-            {(['General', 'VIP', 'Backstage'] as TicketType[]).map((t) => (
+            {(['Male Pass', 'Female Pass', 'General', 'VIP'] as TicketType[]).map((t) => (
               <motion.button
                 key={t}
                 onClick={() => setTicketType(t)}

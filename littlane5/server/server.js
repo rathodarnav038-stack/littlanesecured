@@ -364,9 +364,22 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
     }
 
     const qty = parseInt(quantity, 10) || 1;
-    const finalAmount = parseFloat(amount) || 0;
     const evtName = event || EVENT.name;
     const tType = ticketType || (gender === 'male' ? 'Male Pass' : gender === 'female' ? 'Female Pass' : 'General');
+    
+    // Compute price dynamically from single source of truth: PRICING
+    let finalAmount = parseFloat(amount) || 0;
+    if (finalAmount === 0) {
+        const lowerType = tType.toLowerCase();
+        if (lowerType.includes('female')) {
+            finalAmount = PRICING.female * qty;
+        } else if (lowerType.includes('male')) {
+            finalAmount = PRICING.male * qty;
+        } else {
+            // General or other fallback
+            finalAmount = 249 * qty;
+        }
+    }
 
     try {
         const orderId = `order_manual_${crypto.randomBytes(8).toString('hex')}`;
