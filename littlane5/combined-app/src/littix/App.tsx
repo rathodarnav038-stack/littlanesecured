@@ -16,6 +16,12 @@ type Screen =
   | { name: 'scan-success'; ticket: Ticket }
   | { name: 'scan-rejected'; ticket: Ticket | null; rawCode?: string }
 
+export interface RejectedScan {
+  ticket: Ticket | null
+  rawCode?: string
+  timestamp: string
+}
+
 const DEPTH: Record<Screen['name'], number> = {
   dashboard: 0,
   ticket: 1,
@@ -28,6 +34,8 @@ function AppShell() {
   const { dark, toggleTheme, tickets, findTicket, scanTicket } = useStore()
   const [screen, setScreen] = useState<Screen>({ name: 'dashboard' })
   const [prevDepth, setPrevDepth] = useState(0)
+  // Session-only log of rejected/duplicate scans
+  const [rejectedScans, setRejectedScans] = useState<RejectedScan[]>([])
 
   function go(next: Screen) {
     setPrevDepth(DEPTH[screen.name])
@@ -38,11 +46,22 @@ function AppShell() {
     const cleaned = raw.replace(/^LITTIX:/i, '').replace(/^#/, '')
     const outcome = await scanTicket(cleaned, 'Gate Staff')
     if (outcome.result === 'success' && outcome.ticket) {
-      // Pass full ticket object directly — don't rely on store lookup after async refresh
       go({ name: 'scan-success', ticket: outcome.ticket })
     } else if (outcome.result === 'rejected' && outcome.ticket) {
+      // Log rejected (duplicate) scan to session
+      setRejectedScans(prev => [{
+        ticket: outcome.ticket!,
+        rawCode: cleaned,
+        timestamp: new Date().toLocaleTimeString('en-IN')
+      }, ...prev])
       go({ name: 'scan-rejected', ticket: outcome.ticket })
     } else {
+      // Log not-found scan to session
+      setRejectedScans(prev => [{
+        ticket: null,
+        rawCode: cleaned,
+        timestamp: new Date().toLocaleTimeString('en-IN')
+      }, ...prev])
       go({ name: 'scan-rejected', ticket: null, rawCode: cleaned })
     }
   }
@@ -56,9 +75,9 @@ function AppShell() {
     content = (
       <Dashboard
         dark={dark}
-        onOpenTicket={(id) => go({ name: 'ticket', id })}
         onScan={() => go({ name: 'scanner' })}
         onToggleTheme={toggleTheme}
+        rejectedScans={rejectedScans}
       />
     )
   } else if (screen.name === 'ticket') {
@@ -68,7 +87,6 @@ function AppShell() {
   } else if (screen.name === 'scanner') {
     content = <QRScanner onBack={() => go({ name: 'dashboard' })} onScan={handleScan} />
   } else if (screen.name === 'scan-success') {
-    // Use the ticket stored directly in screen state — no async lookup needed
     key = `scan-success-${screen.ticket.id}`
     content = (
       <ScanSuccess
@@ -79,7 +97,6 @@ function AppShell() {
       />
     )
   } else if (screen.name === 'scan-rejected') {
-    // Use the ticket stored directly in screen state — no async lookup needed
     key = `scan-rejected-${screen.ticket?.id ?? screen.rawCode}`
     content = (
       <ScanRejected
