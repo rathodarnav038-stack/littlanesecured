@@ -341,6 +341,7 @@ class BookingPopup{
         document.getElementById('b_sumType').textContent = genderLabel;
         document.getElementById('b_sumQty').textContent = result.quantity;
         document.getElementById('b_sumPrice').textContent = `₹${result.amount}`;
+        document.getElementById('b_sumAttendeeName').textContent = result.name || 'Attendee';
 
         document.getElementById('b_sumTicketId').textContent = result.ticketId;
         document.getElementById('b_sumGeneratedBy').textContent =
