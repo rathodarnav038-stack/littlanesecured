@@ -175,10 +175,9 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
             <p className={`text-sm text-center py-12 ${subText}`}>No scanned tickets yet.</p>
           ) : (
             filteredScanned.map((ticket) => (
-              <button
+              <div
                 key={ticket.id}
-                onClick={() => onOpenTicket(ticket.id)}
-                className="px-4 py-4 border-b flex items-center text-left w-full active:opacity-75 transition-opacity duration-100 min-h-[64px]"
+                className="px-4 py-4 border-b flex items-center text-left w-full min-h-[64px]"
                 style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
               >
                 <span className={`text-xs font-mono font-bold ${subText}`} style={{ width: 85, flexShrink: 0 }}>
@@ -193,7 +192,7 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                 <span className="bg-[#22C55E]/15 text-[#22C55E] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex-shrink-0">
                   Success
                 </span>
-              </button>
+              </div>
             ))
           )
         ) : (
@@ -220,10 +219,9 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                 : 'UNKNOWN'
 
               return canClick ? (
-                <button
+                <div
                   key={i}
-                  onClick={() => onOpenTicket(item.ticket!.id)}
-                  className="px-4 py-4 border-b flex items-center text-left w-full active:opacity-75 transition-opacity duration-100 min-h-[70px]"
+                  className="px-4 py-4 border-b flex items-center text-left w-full min-h-[70px]"
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
                   <span className={`text-xs font-mono font-bold ${subText}`} style={{ width: 85, flexShrink: 0 }}>
@@ -243,7 +241,7 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
                   <span className={`${badgeStyle} text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex-shrink-0`}>
                     {badgeLabel}
                   </span>
-                </button>
+                </div>
               ) : (
                 <div
                   key={i}
