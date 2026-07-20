@@ -100,13 +100,15 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
           <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
             <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">🎟️ Ticket Guidelines</p>
             <ul style="margin: 0; padding-left: 20px; color: #333333;">
-              <li style="margin-bottom: 8px;"><strong>Your QR code is unique and valid for one-time entry only.</strong></li>
-              <li style="margin-bottom: 8px;"><strong>Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</strong></li>
-              <li style="margin-bottom: 8px;"><strong>Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</strong></li>
-              <li style="margin-bottom: 8px;"><strong>Keep your ticket ready on your phone or as a printed copy.</strong></li>
-              <li style="margin-bottom: 8px;"><strong>Duplicate, tampered, or already-scanned tickets will not be accepted.</strong></li>
+              <li style="margin-bottom: 8px;">Your QR code is unique and valid for one-time entry only.</li>
+              <li style="margin-bottom: 8px;">Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</li>
+              <li style="margin-bottom: 8px;">Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</li>
+              <li style="margin-bottom: 8px;">Keep your ticket ready on your phone or as a printed copy.</li>
+              <li style="margin-bottom: 8px;">Duplicate, tampered, or already-scanned tickets will not be accepted.</li>
             </ul>
-            <p style="margin: 15px 0 0; font-size: 16px; font-weight: 900; color: #ff0000; text-transform: uppercase; letter-spacing: 0.05em;">NO EXCUSES IN ANY CASES</p>
+            <p style="margin: 15px 0 0; font-size: 13px; font-weight: bold; color: #ff0000; line-height: 1.4;">
+              <strong>NO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.</strong>
+            </p>
           </div>
 
           <p style="font-size: 16px; font-weight: bold; color: #000000;">Find your ticket in the PDF attached below.</p>
@@ -118,7 +120,7 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
         </div>`;
 
         const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
-        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES IN ANY CASES\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
+        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
 
         // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)
         if (process.env.BREVO_API_KEY) {
