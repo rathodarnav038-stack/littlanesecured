@@ -204,7 +204,6 @@ class BookingPopup{
         };
 
         document.getElementById('b_gender').addEventListener('change', calculateRate);
-        document.getElementById('b_quantity').addEventListener('input', calculateRate);
         calculateRate(); // Initial calc
 
         this.bookingForm.addEventListener('submit', (e) => {
@@ -222,17 +221,37 @@ class BookingPopup{
         this.formError.style.display = 'none';
         this.formError.textContent = '';
     }
-    setLoading(loading){
+    setLoading(loading, stage = 'payment'){
         this.submitBtn.disabled = loading;
         this.submitBtn.style.opacity = loading ? '0.7' : '1';
-        this.submitLabel.textContent = loading ? 'Processing…' : 'Pay & Get Pass';
+        if (!loading) {
+            this.submitLabel.textContent = 'Pay & Get Pass';
+        } else if (stage === 'generating') {
+            this.submitLabel.innerHTML = 'Generating ticket… <span style="font-size:0.75em;font-weight:400;display:block;margin-top:4px;color:#fde68a;">⚠️ Do NOT refresh or close this page</span>';
+        } else {
+            this.submitLabel.textContent = 'Processing…';
+        }
     }
 
     async handleSubmit(){
         this.clearError();
         const formData = new FormData(this.bookingForm);
         const data = Object.fromEntries(formData.entries());
-        this.setLoading(true);
+
+        // --- Email validation ---
+        const emailVal = (data.email || '').trim().toLowerCase();
+        const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+        const badTlds = ['.con', '.cmo', '.ocm', '.cim', '.gmal', '.gamil', '.gmaill'];
+        if (!emailRegex.test(emailVal)) {
+            this.showError('Please enter a valid email address (e.g. yourname@gmail.com)');
+            return;
+        }
+        if (badTlds.some(tld => emailVal.endsWith(tld))) {
+            this.showError(`"${emailVal}" looks like a typo. Please double-check your email address.`);
+            return;
+        }
+
+        this.setLoading(true, 'payment');
 
         // ---- Step 1: create the order on the server ----
         let order;
@@ -303,6 +322,7 @@ class BookingPopup{
     }
 
     async verifyPayment(payload){
+        this.setLoading(true, 'generating');
         try {
             const res = await fetch(`${this.apiBase}/api/verify-payment`, {
                 method: 'POST',
