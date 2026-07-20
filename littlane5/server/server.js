@@ -496,13 +496,15 @@ app.post('/api/scan-ticket', async (req, res) => {
             });
         }
 
-        const now = new Date();
+        // IST = UTC + 5:30
+        const utcNow = new Date();
+        const ist = new Date(utcNow.getTime() + 5.5 * 60 * 60 * 1000);
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const rawHour = now.getHours();
+        const rawHour = ist.getUTCHours();
         const ampm = rawHour >= 12 ? 'PM' : 'AM';
         const hour12 = rawHour % 12 === 0 ? 12 : rawHour % 12;
-        const mm = now.getMinutes().toString().padStart(2, '0');
-        const scannedAtStr = `${months[now.getMonth()]} ${now.getDate()}, ${hour12}:${mm} ${ampm}`;
+        const mm = ist.getUTCMinutes().toString().padStart(2, '0');
+        const scannedAtStr = `${months[ist.getUTCMonth()]} ${ist.getUTCDate()}, ${hour12}:${mm} ${ampm}`;
 
         await db.updateSaleRecord(sale.orderId, {
             status: 'scanned',

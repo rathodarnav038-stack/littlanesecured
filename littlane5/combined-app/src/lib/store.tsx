@@ -1,5 +1,20 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
+// Format any date as IST (UTC+5:30) 12-hour AM/PM — works on server (UTC) and client devices
+function fmtIST(date: Date | string | null | undefined): string {
+  if (!date) return 'TBA'
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (isNaN(d.getTime())) return 'TBA'
+  // Shift to IST (+5:30)
+  const ist = new Date(d.getTime() + 5.5 * 60 * 60 * 1000)
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const rawH = ist.getUTCHours()
+  const ampm = rawH >= 12 ? 'PM' : 'AM'
+  const h12 = rawH % 12 === 0 ? 12 : rawH % 12
+  const m = ist.getUTCMinutes().toString().padStart(2, '0')
+  return `${months[ist.getUTCMonth()]} ${ist.getUTCDate()}, ${h12}:${m} ${ampm}`
+}
+
 export type TicketType = 'General' | 'VIP' | 'Backstage' | 'Male Pass' | 'Female Pass'
 export type TicketStatus = 'pending' | 'scanned'
 
@@ -77,13 +92,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               attendee: sale.name,
               email: sale.email,
               phone: sale.phone || '',
-              dateLabel: sale.generatedAt ? new Date(sale.generatedAt).toLocaleString() : 'TBA',
+              dateLabel: fmtIST(sale.generatedAt),
               venue: 'Symbiosis Grounds, Pune',
               ticketType: sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General',
               price: `₹${sale.amount}`,
               qty: sale.quantity || 1,
               generatedBy: 'Admin',
-              generatedAt: sale.generatedAt ? new Date(sale.generatedAt).toLocaleString() : 'TBA',
+              generatedAt: fmtIST(sale.generatedAt),
               status: isScanned ? 'scanned' : 'pending',
               scannedBy: sale.scannedBy || undefined,
               scannedAt: sale.scannedAt || undefined
@@ -200,26 +215,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             price: `₹${t.amount || '—'}`,
             qty: t.quantity || 1,
             generatedBy: t.generatedBy || 'Littlane',
-            generatedAt: t.generatedAt ? (() => {
-              const d = new Date(t.generatedAt)
-              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-              const rawH = d.getHours()
-              const ampm = rawH >= 12 ? 'PM' : 'AM'
-              const h12 = rawH % 12 === 0 ? 12 : rawH % 12
-              const m = d.getMinutes().toString().padStart(2, '0')
-              return `${months[d.getMonth()]} ${d.getDate()}, ${h12}:${m} ${ampm}`
-            })() : 'TBA',
+            generatedAt: fmtIST(t.generatedAt),
             status: 'scanned',
             scannedBy: t.scannedBy || scannedBy || 'Gate Staff',
-            scannedAt: t.scannedAt || (() => {
-              const now = new Date()
-              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-              const rawH = now.getHours()
-              const ampm = rawH >= 12 ? 'PM' : 'AM'
-              const h12 = rawH % 12 === 0 ? 12 : rawH % 12
-              const m = now.getMinutes().toString().padStart(2, '0')
-              return `${months[now.getMonth()]} ${now.getDate()}, ${h12}:${m} ${ampm}`
-            })()
+            scannedAt: t.scannedAt || fmtIST(new Date())
           }
           await refreshTickets()
           return { result: 'success', ticket: resolvedTicket }
