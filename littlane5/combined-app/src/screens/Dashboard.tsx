@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import LittixLogo from '../components/LittixLogo'
 import AnimatedCounter from '../components/AnimatedCounter'
 import { useStore } from '../lib/store'
@@ -58,48 +58,27 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
   return (
     <div className={`${bg} flex flex-col w-full min-h-screen`} style={{ fontFamily: 'Inter, sans-serif' }}>
 
-      <motion.div
-        className={`flex items-center justify-between px-4 py-3 border-b ${navBg} sticky top-0 z-10 backdrop-blur`}
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
+      <div className={`flex items-center justify-between px-4 py-3 border-b ${navBg} sticky top-0 z-10 backdrop-blur-md`}>
         <LittixLogo dark={dark} size="sm" />
         <span className={`text-sm font-semibold ${text}`}>Scanner Panel</span>
         <motion.button
           onClick={onToggleTheme}
           whileTap={{ scale: 0.85 }}
-          whileHover={{ scale: 1.08 }}
           className={`w-8 h-8 flex items-center justify-center rounded-full ${dark ? 'bg-[#1A1A1A]' : 'bg-white shadow-sm'}`}
+          style={{ willChange: 'transform' }}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {dark ? (
-              <motion.svg
-                key="moon"
-                width="15" height="15" viewBox="0 0 15 15" fill="none"
-                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <path d="M13 8.5A5.5 5.5 0 116.5 2a4.5 4.5 0 006.5 6.5z" stroke="#A0A0A0" strokeWidth="1.3" strokeLinejoin="round" />
-              </motion.svg>
-            ) : (
-              <motion.svg
-                key="sun"
-                width="15" height="15" viewBox="0 0 15 15" fill="none"
-                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <circle cx="7.5" cy="7.5" r="3" stroke="#6B6B6B" strokeWidth="1.3" />
-                <path d="M7.5 0.5v2M7.5 12v2M14.5 7.5h-2M2.5 7.5h-2M12.5 2.5l-1.4 1.4M3.9 11.1l-1.4 1.4M12.5 12.5l-1.4-1.4M3.9 3.9L2.5 2.5" stroke="#6B6B6B" strokeWidth="1.3" strokeLinecap="round" />
-              </motion.svg>
-            )}
-          </AnimatePresence>
+          {dark ? (
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path d="M13 8.5A5.5 5.5 0 116.5 2a4.5 4.5 0 006.5 6.5z" stroke="#A0A0A0" strokeWidth="1.3" strokeLinejoin="round" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <circle cx="7.5" cy="7.5" r="3" stroke="#6B6B6B" strokeWidth="1.3" />
+              <path d="M7.5 0.5v2M7.5 12v2M14.5 7.5h-2M2.5 7.5h-2M12.5 2.5l-1.4 1.4M3.9 11.1l-1.4 1.4M12.5 12.5l-1.4-1.4M3.9 3.9L2.5 2.5" stroke="#6B6B6B" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+          )}
         </motion.button>
-      </motion.div>
+      </div>
 
       {/* Stats row specific to Scan Panel */}
       <div className="flex gap-2 px-4 pt-4 pb-2">
@@ -186,93 +165,92 @@ export default function Dashboard({ dark, onOpenTicket, onScan, onToggleTheme, r
         <span style={{ width: 66 }} className="text-right">Outcome</span>
       </div>
 
-      {/* Scans lists */}
-      <div className="flex flex-col overflow-y-auto flex-1">
-        <AnimatePresence mode="popLayout">
-          {activeTab === 'scanned' ? (
-            filteredScanned.length === 0 ? (
-              <motion.p key="empty-scanned" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`text-xs text-center py-8 ${subText}`}>No scanned tickets yet.</motion.p>
-            ) : (
-              filteredScanned.map((ticket, i) => (
-                <motion.button
-                  key={ticket.id}
-                  onClick={() => onOpenTicket(ticket.id)}
-                  whileHover={{ backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)' }}
-                  whileTap={{ scale: 0.985 }}
-                  className="px-4 py-3 border-b flex items-start text-left w-full cursor-pointer transition-colors duration-200"
+      {/* Scans lists — no AnimatePresence on list items for iPhone performance */}
+      <div
+        className="flex flex-col overflow-y-auto flex-1"
+        style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}
+      >
+        {activeTab === 'scanned' ? (
+          filteredScanned.length === 0 ? (
+            <p className={`text-xs text-center py-8 ${subText}`}>No scanned tickets yet.</p>
+          ) : (
+            filteredScanned.map((ticket) => (
+              <button
+                key={ticket.id}
+                onClick={() => onOpenTicket(ticket.id)}
+                className="px-4 py-3 border-b flex items-start text-left w-full active:opacity-70 transition-opacity duration-100"
+                style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
+              >
+                <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                  #{ticket.id.length > 8 ? ticket.id.slice(-8).toUpperCase() : ticket.id.toUpperCase()}
+                </span>
+                <div className="flex-1">
+                  <span className={`text-xs font-semibold block ${text}`}>{ticket.attendee}</span>
+                  <p className={`text-[9px] ${subText} mt-0.5`}>
+                    {ticket.ticketType} · Scanned by {ticket.scannedBy} at {ticket.scannedAt}
+                  </p>
+                </div>
+                <span className="bg-[#22C55E]/15 text-[#22C55E] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Success
+                </span>
+              </button>
+            ))
+          )
+        ) : (
+          filteredFailed.length === 0 ? (
+            <p className={`text-xs text-center py-8 ${subText}`}>No failed scans in this session.</p>
+          ) : (
+            filteredFailed.map((item, i) => {
+              const canClick = !!item.ticket;
+              return canClick ? (
+                <button
+                  key={i}
+                  onClick={() => onOpenTicket(item.ticket!.id)}
+                  className="px-4 py-3 border-b flex items-start text-left w-full active:opacity-70 transition-opacity duration-100"
                   style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
                 >
                   <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
-                    #{ticket.id.length > 8 ? ticket.id.slice(-8).toUpperCase() : ticket.id.toUpperCase()}
+                    #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
                   </span>
                   <div className="flex-1">
-                    <span className={`text-xs font-semibold block ${text}`}>{ticket.attendee}</span>
+                    <span className={`text-xs font-semibold block ${text}`}>{item.ticket.attendee}</span>
                     <p className={`text-[9px] ${subText} mt-0.5`}>
-                      {ticket.ticketType} · Scanned by {ticket.scannedBy} at {ticket.scannedAt}
+                      Already scanned at {item.ticket.scannedAt} · logged at {item.timestamp}
                     </p>
                   </div>
-                  <span className="bg-[#22C55E]/15 text-[#22C55E] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    Success
+                  <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Duplicate</span>
+                </button>
+              ) : (
+                <div
+                  key={i}
+                  className="px-4 py-3 border-b flex items-start text-left w-full"
+                  style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
+                >
+                  <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
+                    #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
                   </span>
-                </motion.button>
-              ))
-            )
-          ) : (
-            filteredFailed.length === 0 ? (
-              <motion.p key="empty-failed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`text-xs text-center py-8 ${subText}`}>No failed scans in this session.</motion.p>
-            ) : (
-              filteredFailed.map((item, i) => {
-                const canClick = !!item.ticket;
-                const Wrapper = canClick ? motion.button : 'div';
-                return (
-                  <Wrapper
-                    key={i}
-                    {...(canClick ? {
-                      onClick: () => onOpenTicket(item.ticket!.id),
-                      whileHover: { backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)' },
-                      whileTap: { scale: 0.985 }
-                    } : {})}
-                    className={`px-4 py-3 border-b flex items-start text-left w-full ${canClick ? 'cursor-pointer transition-colors duration-200' : ''}`}
-                    style={{ borderColor: dark ? '#1A1A1A' : '#F2F2F2' }}
-                  >
-                    <span className={`text-[10px] font-mono font-semibold ${subText}`} style={{ width: 90, flexShrink: 0 }}>
-                      #{item.rawCode ? (item.rawCode.length > 8 ? item.rawCode.slice(-8).toUpperCase() : item.rawCode.toUpperCase()) : 'UNKNOWN'}
-                    </span>
-                    <div className="flex-1">
-                      <span className={`text-xs font-semibold block ${text}`}>
-                        {item.ticket ? item.ticket.attendee : 'Unknown Scan'}
-                      </span>
-                      <p className={`text-[9px] ${subText} mt-0.5`}>
-                        {item.ticket ? `Already scanned at ${item.ticket.scannedAt}` : 'Ticket ID not in database'} · logged at {item.timestamp}
-                      </p>
-                    </div>
-                    <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      {item.ticket ? 'Duplicate' : 'Invalid'}
-                    </span>
-                  </Wrapper>
-                );
-              })
-            )
-          )}
-        </AnimatePresence>
+                  <div className="flex-1">
+                    <span className={`text-xs font-semibold block ${text}`}>Unknown Scan</span>
+                    <p className={`text-[9px] ${subText} mt-0.5`}>Ticket ID not in database · logged at {item.timestamp}</p>
+                  </div>
+                  <span className="bg-[#EF4444]/15 text-[#EF4444] text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Invalid</span>
+                </div>
+              );
+            })
+          )
+        )}
       </div>
 
-      <motion.div
-        className={`px-4 py-3 border-t ${navBg}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-      >
+      <div className={`px-4 py-3 border-t ${navBg}`}>
         <motion.button
           onClick={onScan}
-          whileHover={{ scale: 1.02, boxShadow: '0 6px 28px rgba(168,85,247,0.45)' }}
           whileTap={{ scale: 0.96 }}
           className="w-full bg-[#A855F7] text-white text-xs font-bold py-3 rounded-2xl flex items-center justify-center gap-1.5"
-          style={{ boxShadow: '0 4px 20px rgba(168,85,247,0.3)' }}
+          style={{ boxShadow: '0 4px 20px rgba(168,85,247,0.3)', willChange: 'transform' }}
         >
           📷 Scan Ticket
         </motion.button>
-      </motion.div>
+      </div>
     </div>
   )
 }

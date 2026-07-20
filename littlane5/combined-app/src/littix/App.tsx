@@ -128,10 +128,13 @@ function AppShell() {
   }
 
   return (
-    <div className={`min-h-screen w-full ${bg} transition-colors duration-500`}>
+    <div
+      className={`min-h-screen w-full ${bg}`}
+      style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none' }}
+    >
       <div className="w-full max-w-[520px] mx-auto min-h-screen relative overflow-hidden">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={key} className="w-full">
+        <AnimatePresence mode="sync" initial={false}>
+          <motion.div key={key} className="w-full absolute inset-x-0 top-0">
             <PageTransition variant={screen.name === 'scanner' ? 'fade' : direction}>{content}</PageTransition>
           </motion.div>
         </AnimatePresence>

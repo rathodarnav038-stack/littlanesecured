@@ -11,6 +11,42 @@ body {
   color: #fff;
   margin: 0;
   padding: 0;
+  /* Eliminate 300ms tap delay on all elements */
+  touch-action: manipulation;
+  /* Prevent rubber-band scroll on the body itself */
+  overscroll-behavior: none;
+  /* Smooth font rendering on iOS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Eliminate tap highlight flash on iOS */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent text selection on interactive elements (no accidental copy on fast taps) */
+button, [role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Momentum scrolling for all scrollable areas on iOS */
+.overflow-y-auto, .overflow-x-auto, .overflow-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Promote animated elements to their own GPU layer */
+.animate-shake-x, [style*="will-change"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Hide scrollbar on mobile (cleaner look) */
+@media (max-width: 640px) {
+  ::-webkit-scrollbar { display: none; }
+  * { scrollbar-width: none; }
 }
 
 /* Subtle scrollbars — visible but minimal */
