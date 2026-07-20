@@ -12,6 +12,7 @@
     --ease:cubic-bezier(.16,1,.3,1);--ease2:cubic-bezier(.77,0,.175,1);
     --theme-transition:.8s var(--ease);
 }
+body{background:var(--bg);color:var(--dark)}
 
 /* ==================== RAVE / RED MODE ==================== */
 [data-theme="dark"]{
