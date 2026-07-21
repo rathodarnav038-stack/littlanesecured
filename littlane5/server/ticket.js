@@ -100,10 +100,10 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         doc.font('Helvetica-Bold').fontSize(12).fillColor('#111111').text(`Attendee: ${name}`, 24, y);
         y += 22;
 
-        // Info pills: date / time / venue
+        // Info pills: date / time / venue (Aura Genesis: date only)
         const pillY = y;
         const pillH = 26;
-        const infoPills = [eventDate, EVENT_DETAILS.time, EVENT_DETAILS.venue];
+        const infoPills = isAura ? [eventDate] : [eventDate, EVENT_DETAILS.time, EVENT_DETAILS.venue];
         let px = 24;
         infoPills.forEach(text => {
             const w = 30 + text.length * 6.5;

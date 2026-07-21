@@ -113,11 +113,16 @@ export default function TicketCard({ dark, ticket, onBack }: Props) {
             <p className="text-sm font-semibold text-[#A855F7] mt-0.5">Main Stage · {ticket.ticketType} Admission</p>
 
             <div className="flex gap-2 mt-3 flex-wrap">
-              {[
-                { icon: '📅', label: ticket.dateLabel.split('·')[0]?.trim() || ticket.dateLabel },
-                { icon: '⏰', label: ticket.dateLabel.split('·')[1]?.trim() || '' },
-                { icon: '📍', label: ticket.venue },
-              ].filter((c) => c.label).map(({ icon, label }, i) => (
+              {(ticket.event && ticket.event.toUpperCase().includes('AURA')
+                ? [
+                    { icon: '📅', label: ticket.dateLabel.split('·')[0]?.trim() || ticket.dateLabel },
+                  ]
+                : [
+                    { icon: '📅', label: ticket.dateLabel.split('·')[0]?.trim() || ticket.dateLabel },
+                    { icon: '⏰', label: ticket.dateLabel.split('·')[1]?.trim() || '' },
+                    { icon: '📍', label: ticket.venue },
+                  ]
+              ).filter((c) => c.label).map(({ icon, label }, i) => (
                 <motion.div
                   key={label}
                   initial={{ opacity: 0, y: 8 }}
