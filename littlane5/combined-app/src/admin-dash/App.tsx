@@ -154,7 +154,7 @@ export default function App() {
       const res = await fetch(`/api/admin/sales?key=${encodeURIComponent(keyToUse)}`)
       const data = await res.json().catch(() => ({}))
       if (res.status === 401 || !res.ok || !data.success) {
-        const errReason = data.message || 'Access Denied: Invalid admin password. Dashboard is restricted to built terminal device.'
+        const errReason = data.message || 'Access Denied: Dashboard is bound to its original deployment device.'
         handleLogout(errReason)
         return false
       }
