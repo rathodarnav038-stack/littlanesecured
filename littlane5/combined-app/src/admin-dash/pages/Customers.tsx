@@ -45,11 +45,18 @@ export default function Customers({ sales, adminKey }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [search, setSearch] = useState('')
 
-  // Deduplicate by orderId first to prevent double-counting
+  // Deduplicate by orderId first, then by paymentId
+  // (Razorpay webhooks can fire twice creating 2 records for the same real payment)
   const seenOrderIds = new Set<string>()
+  const seenPaymentIds = new Set<string>()
   const deduped = sales.filter(s => {
     if (!s.orderId || seenOrderIds.has(s.orderId)) return false
     seenOrderIds.add(s.orderId)
+    // Skip duplicate paymentIds (same Razorpay txn recorded twice)
+    if (s.paymentId && s.paymentId !== 'manual' && s.paymentId !== '—' && s.paymentId !== '-') {
+      if (seenPaymentIds.has(s.paymentId)) return false
+      seenPaymentIds.add(s.paymentId)
+    }
     return true
   })
 

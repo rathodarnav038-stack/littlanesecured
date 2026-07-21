@@ -182,6 +182,12 @@ app.post('/api/verify-payment', async (req, res) => {
             }
         }
 
+        // Idempotency guard: if already paid/processed, don't double-charge
+        if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)) {
+            console.log(`[verify-payment] Order ${orderId} already processed (status: ${sale.status}) — skipping duplicate.`);
+            return res.json({ success: true, ticketId: sale.ticketId, alreadyProcessed: true });
+        }
+
         await db.updateSaleRecord(orderId, { status: 'paid', paymentId, paidAt: new Date().toISOString() });
 
         // ---- Generate the ticket (PDF + QR) ----
