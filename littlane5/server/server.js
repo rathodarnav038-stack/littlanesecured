@@ -83,7 +83,7 @@ function computeAmount(gender, quantity) {
 
 function requireAdmin(req, res, next) {
     const key = req.headers['x-admin-key'] || req.query.key;
-    if (key !== ADMIN_KEY) return res.status(401).json({ success: false, message: 'Unauthorized' });
+    if (key !== ADMIN_KEY) return res.status(401).json({ success: false, message: 'Access Denied: Invalid admin password. Dashboard is restricted to built terminal device.' });
     next();
 }
 

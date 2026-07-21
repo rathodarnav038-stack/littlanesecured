@@ -120,6 +120,9 @@ export default function App() {
   const [search, setSearch] = useState('')
   const [adminKey, setAdminKey] = useState(sessionStorage.getItem('ft_admin_key') || localStorage.getItem('ft_admin_key') || '')
   const [keyInput, setKeyInput] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
+  const [authError, setAuthError] = useState('')
   const [sales, setSales] = useState<any[]>([])
   const [summary, setSummary] = useState<any>({
     totalOrders: 0,
@@ -141,46 +144,66 @@ export default function App() {
   const [manualAmount, setManualAmount] = useState('349')
   const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
 
-  const fetchSales = async () => {
-    if (!adminKey) return
+  const fetchSales = async (keyToUse = adminKey) => {
+    if (!keyToUse) {
+      setIsAuthenticated(false)
+      setAuthChecking(false)
+      return false
+    }
     try {
-      const res = await fetch(`/api/admin/sales?key=${adminKey}`)
-      if (res.status === 401) {
-        handleLogout()
-        return
+      const res = await fetch(`/api/admin/sales?key=${encodeURIComponent(keyToUse)}`)
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 401 || !res.ok || !data.success) {
+        const errReason = data.message || 'Access Denied: Invalid admin password. Dashboard is restricted to built terminal device.'
+        handleLogout(errReason)
+        return false
       }
-      const data = await res.json()
-      if (data.success) {
-        setSales(data.sales)
-        setSummary(data.summary)
-        setTestMode(data.testMode)
-      }
+      setSales(data.sales)
+      setSummary(data.summary)
+      setTestMode(data.testMode)
+      setIsAuthenticated(true)
+      setAuthError('')
+      setAuthChecking(false)
+      return true
     } catch (err) {
       console.error('Error fetching sales:', err)
+      setAuthChecking(false)
+      return false
     }
   }
 
   useEffect(() => {
     if (adminKey) {
-      fetchSales()
-      const interval = setInterval(fetchSales, 10000)
+      fetchSales(adminKey)
+      const interval = setInterval(() => fetchSales(adminKey), 10000)
       return () => clearInterval(interval)
+    } else {
+      setAuthChecking(false)
+      setIsAuthenticated(false)
     }
   }, [adminKey])
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const trimmed = keyInput.trim()
     if (!trimmed) return
-    sessionStorage.setItem('ft_admin_key', trimmed)
-    localStorage.setItem('ft_admin_key', trimmed)
-    setAdminKey(trimmed)
+    setAuthChecking(true)
+    setAuthError('')
+    const ok = await fetchSales(trimmed)
+    if (ok) {
+      sessionStorage.setItem('ft_admin_key', trimmed)
+      localStorage.setItem('ft_admin_key', trimmed)
+      setAdminKey(trimmed)
+    }
   }
 
-  const handleLogout = () => {
+  const handleLogout = (errMsg = '') => {
     sessionStorage.removeItem('ft_admin_key')
     localStorage.removeItem('ft_admin_key')
     setAdminKey('')
+    setIsAuthenticated(false)
+    setAuthChecking(false)
     setSales([])
+    if (errMsg) setAuthError(errMsg)
   }
 
   const handleResend = async (ticketId: string) => {
@@ -253,7 +276,23 @@ export default function App() {
     }
   }
 
-  if (!adminKey) {
+  if (authChecking && adminKey) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', justifyContent: 'center', height: '100vh',
+        backgroundColor: '#0d0d0f', color: '#f4f4f5', fontFamily: "'Inter', sans-serif"
+      }}>
+        <div style={{
+          width: '28px', height: '28px', borderRadius: '50%',
+          border: '3px solid rgba(168,85,247,0.2)', borderTopColor: '#A855F7',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+        <p style={{ color: '#9a9a9a', fontSize: '13px', margin: 0 }}>Authenticating admin key...</p>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', justifyContent: 'center', height: '100vh',
@@ -261,6 +300,14 @@ export default function App() {
       }}>
         <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700 }}>🎟 LitTix Enterprise Admin</h2>
         <p style={{ color: '#9a9a9a', fontSize: '13px', margin: 0 }}>Enter your admin key to unlock the dashboard.</p>
+        {authError && (
+          <div style={{
+            color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+            padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 500, width: '260px', textAlign: 'center'
+          }}>
+            {authError}
+          </div>
+        )}
         <input
           type="password"
           value={keyInput}
@@ -272,11 +319,16 @@ export default function App() {
             padding: '10px 14px', borderRadius: '10px', fontSize: '14px', outline: 'none', width: '260px'
           }}
         />
-        <button onClick={handleLogin} style={{
-          backgroundColor: '#A855F7', color: '#fff', border: 'none', padding: '10px 20px',
-          borderRadius: '10px', fontWeight: 600, cursor: 'pointer', fontSize: '14px', width: '260px'
-        }}>
-          Unlock Dashboard
+        <button
+          onClick={handleLogin}
+          disabled={authChecking}
+          style={{
+            backgroundColor: '#A855F7', color: '#fff', border: 'none', padding: '10px 20px',
+            borderRadius: '10px', fontWeight: 600, cursor: authChecking ? 'not-allowed' : 'pointer',
+            fontSize: '14px', width: '260px', opacity: authChecking ? 0.6 : 1
+          }}
+        >
+          {authChecking ? 'Verifying...' : 'Unlock Dashboard'}
         </button>
       </div>
     )
