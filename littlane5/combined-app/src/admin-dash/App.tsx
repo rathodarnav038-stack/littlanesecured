@@ -288,7 +288,7 @@ export default function App() {
       case 'customers':
         return <Customers sales={sales} />
       case 'events':
-        return <Events sales={sales} />
+        return <Events sales={sales} adminKey={adminKey} onNavigateToTickets={() => setPage('tickets')} />
       case 'email':
         return <EmailDelivery sales={sales} onResend={handleResend} />
       case 'refunds':
@@ -480,13 +480,25 @@ export default function App() {
             <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>Generate Manual Ticket</h3>
             <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>EVENT NAME</label>
-                <input
-                  type="text"
+                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>SELECT EVENT</label>
+                <select
                   value={manualEvent}
-                  onChange={e => setManualEvent(e.target.value)}
+                  onChange={e => {
+                    const evt = e.target.value
+                    setManualEvent(evt)
+                    if (evt === 'AURA GENESIS') {
+                      setManualGender('aura')
+                      setManualAmount('350')
+                    } else if (manualGender === 'aura') {
+                      setManualGender('male')
+                      setManualAmount('349')
+                    }
+                  }}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
-                />
+                >
+                  <option value="FRESHERS TAKEOVER">FRESHERS TAKEOVER</option>
+                  <option value="AURA GENESIS">AURA GENESIS</option>
+                </select>
               </div>
               <div>
                 <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE NAME</label>
@@ -528,8 +540,9 @@ export default function App() {
                     onChange={e => handleManualGenderChange(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                   >
-                    <option value="male">Male Pass (₹349)</option>
-                    <option value="female">Female Pass (₹249)</option>
+                    <option value="male">Freshers Male Pass (₹349)</option>
+                    <option value="female">Freshers Female Pass (₹249)</option>
+                    <option value="aura">Aura Genesis Pass (₹350)</option>
                   </select>
                 </div>
                 <div>

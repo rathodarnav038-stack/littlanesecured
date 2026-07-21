@@ -49,14 +49,21 @@ function pill(doc, { x, y, w, h, bg, textColor, label, fontSize = 8 }) {
         .text(label, x, y + (h - fontSize) / 2 - 1, { width: w, align: 'center' });
 }
 
+const AURA_BANNER_PATH = path.join(__dirname, 'aura-genesis-banner.jpg');
+
 /**
  * Renders the "Littix"-style ticket PDF: banner artwork with NOT SCANNED /
  * ACTIVE badges, then a white details panel with pills, ticket type/qty/
  * price, ticket ID, QR code, and the Littix wordmark.
  */
-async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount, createdAt }) {
+async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount, createdAt, event }) {
     const filePath = path.join(TICKETS_DIR, `${ticketId}.pdf`);
     const qrPngBuffer = await buildQrBuffer(ticketId);
+
+    const isAura = event && event.toUpperCase().includes('AURA');
+    const brandName = isAura ? 'AURA GENESIS' : EVENT_DETAILS.brand;
+    const eventDate = isAura ? '14 AUG 2026' : EVENT_DETAILS.date;
+    const bannerFile = isAura ? AURA_BANNER_PATH : BANNER_PATH;
 
     const W = 380;
     const BANNER_H = 380;
@@ -67,7 +74,9 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         doc.pipe(stream);
 
         // ---- Banner artwork ----
-        if (fs.existsSync(BANNER_PATH)) {
+        if (fs.existsSync(bannerFile)) {
+            doc.image(bannerFile, 0, 0, { width: W, height: BANNER_H });
+        } else if (fs.existsSync(BANNER_PATH)) {
             doc.image(BANNER_PATH, 0, 0, { width: W, height: BANNER_H });
         } else {
             doc.rect(0, 0, W, BANNER_H).fill('#0d0d0f');
@@ -81,7 +90,7 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         let y = BANNER_H + 22;
         doc.rect(0, BANNER_H, W, 900 - BANNER_H).fill('#ffffff');
 
-        doc.font('Helvetica-Bold').fontSize(20).fillColor('#0d0d0f').text(EVENT_DETAILS.brand, 24, y);
+        doc.font('Helvetica-Bold').fontSize(20).fillColor('#0d0d0f').text(brandName, 24, y);
         y += 28;
         const passLabel = GENDER_LABEL[gender] || gender;
         doc.font('Helvetica-Bold').fontSize(11).fillColor('#A855F7')
@@ -94,7 +103,7 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         // Info pills: date / time / venue
         const pillY = y;
         const pillH = 26;
-        const infoPills = [EVENT_DETAILS.date, EVENT_DETAILS.time, EVENT_DETAILS.venue];
+        const infoPills = [eventDate, EVENT_DETAILS.time, EVENT_DETAILS.venue];
         let px = 24;
         infoPills.forEach(text => {
             const w = 30 + text.length * 6.5;
@@ -154,5 +163,6 @@ module.exports = {
     buildQrBuffer,
     buildTicketPdf,
     TICKETS_DIR,
-    BANNER_PATH
+    BANNER_PATH,
+    AURA_BANNER_PATH
 };

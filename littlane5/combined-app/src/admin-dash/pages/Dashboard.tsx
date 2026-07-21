@@ -44,6 +44,7 @@ const formatRevenue = (v: number) => {
 export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d' | '30d' | '90d' | 'year'>('7d')
   const [activeMetric, setActiveMetric] = useState<'revenue' | 'orders' | 'tickets'>('revenue')
+  const [eventModal, setEventModal] = useState<null | { label: string; tickets: any[] }>(null)
 
   // Calculate live statistics from sales
   const paidSales = sales.filter(s => ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status))
@@ -59,6 +60,52 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   const emailFailures = sales.filter(s => s.emailStatus === 'failed').length
   const ticketFailures = sales.filter(s => s.status === 'ticket_generation_failed').length
   const qrScannedCount = sales.filter(s => s.status === 'scanned' || !!s.scannedAt).length
+
+  // Event breakdown
+  const freshersMale = paidSales.filter(s =>
+    (s.event || '').toUpperCase().includes('FRESHERS') &&
+    (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male'))
+  )
+  const freshersFemale = paidSales.filter(s =>
+    (s.event || '').toUpperCase().includes('FRESHERS') &&
+    (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female'))
+  )
+  const auraGenesis = paidSales.filter(s =>
+    (s.event || '').toUpperCase().includes('AURA')
+  )
+
+  const eventBreakdown = [
+    {
+      label: 'Freshers Male Pass',
+      emoji: '🧑',
+      color: '#6366f1',
+      gradient: 'linear-gradient(135deg, #4f46e5, #818cf8)',
+      tickets: freshersMale,
+      sold: freshersMale.reduce((a, s) => a + (s.quantity || 1), 0),
+      revenue: freshersMale.reduce((a, s) => a + (s.amount || 0), 0),
+      price: '₹349',
+    },
+    {
+      label: 'Freshers Female Pass',
+      emoji: '👩',
+      color: '#ec4899',
+      gradient: 'linear-gradient(135deg, #db2777, #f472b6)',
+      tickets: freshersFemale,
+      sold: freshersFemale.reduce((a, s) => a + (s.quantity || 1), 0),
+      revenue: freshersFemale.reduce((a, s) => a + (s.amount || 0), 0),
+      price: '₹249',
+    },
+    {
+      label: 'Aura Genesis',
+      emoji: '✨',
+      color: '#f59e0b',
+      gradient: 'linear-gradient(135deg, #d97706, #fbbf24)',
+      tickets: auraGenesis,
+      sold: auraGenesis.reduce((a, s) => a + (s.quantity || 1), 0),
+      revenue: auraGenesis.reduce((a, s) => a + (s.amount || 0), 0),
+      price: '₹350',
+    },
+  ]
 
   const kpis = [
     { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: '₹', color: '#9333ea', spark: [30, 45, 40, 60, 55, 75, 90] },
@@ -191,6 +238,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   }
 
   return (
+    <>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
@@ -255,6 +303,45 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             <Sparkline data={kpi.spark} color={kpi.color} />
           </div>
         ))}
+      </div>
+
+      {/* Event Sales Breakdown */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Event Sales Breakdown</h2>
+          <span style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>Click any event to view sold tickets</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+          {eventBreakdown.map((ev) => (
+            <div
+              key={ev.label}
+              onClick={() => setEventModal({ label: ev.label, tickets: ev.tickets })}
+              style={{
+                background: ev.gradient,
+                borderRadius: '16px',
+                padding: '20px',
+                cursor: 'pointer',
+                color: 'white',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: `0 4px 20px ${ev.color}40`,
+                transition: 'transform 0.15s, box-shadow 0.15s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 28px ${ev.color}50` }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px ${ev.color}40` }}
+            >
+              <div style={{ position: 'absolute', top: 16, right: 16, fontSize: '28px', opacity: 0.3 }}>{ev.emoji}</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, opacity: 0.85, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ev.label}</div>
+              <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '4px' }}>{ev.sold}</div>
+              <div style={{ fontSize: '11.5px', opacity: 0.8, marginBottom: '12px' }}>tickets sold · {ev.price} each</div>
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', fontWeight: 700 }}>₹{ev.revenue.toLocaleString()}</span>
+                <span style={{ fontSize: '11px', opacity: 0.75 }}>total revenue</span>
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '11px', opacity: 0.6, textAlign: 'right' }}>→ View sold tickets</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Chart + Live Feed */}
@@ -423,5 +510,102 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         </div>
       </div>
     </div>
+
+    {/* Event Modal: Sold Tickets List */}
+    {eventModal && (
+      <div
+        onClick={() => setEventModal(null)}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          backgroundColor: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            backgroundColor: 'var(--card)', border: '1px solid var(--border)',
+            borderRadius: '20px', padding: '28px', width: '580px', maxWidth: '95vw',
+            maxHeight: '80vh', display: 'flex', flexDirection: 'column',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>
+                {eventModal.label}
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--muted-foreground)' }}>
+                {eventModal.tickets.length} orders · {eventModal.tickets.reduce((a, s) => a + (s.quantity || 1), 0)} tickets sold
+              </p>
+            </div>
+            <button
+              onClick={() => setEventModal(null)}
+              style={{
+                width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border)',
+                backgroundColor: 'var(--muted)', cursor: 'pointer', color: 'var(--foreground)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+              }}
+            >✕</button>
+          </div>
+
+          {eventModal.tickets.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--muted-foreground)', fontSize: '13px' }}>
+              No tickets sold yet for this event.
+            </div>
+          ) : (
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* Header row */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr 120px 60px',
+                gap: '8px', padding: '8px 12px',
+                fontSize: '10px', fontWeight: 700, color: 'var(--muted-foreground)',
+                textTransform: 'uppercase', letterSpacing: '0.5px',
+              }}>
+                <span>Attendee</span>
+                <span>Email</span>
+                <span>Ticket ID</span>
+                <span style={{ textAlign: 'right' }}>Amount</span>
+              </div>
+              {eventModal.tickets.map((sale, i) => (
+                <div
+                  key={sale.orderId || i}
+                  style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr 120px 60px',
+                    gap: '8px', padding: '10px 12px',
+                    backgroundColor: 'var(--muted)', borderRadius: '10px',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {sale.name || 'Unknown'}
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '2px' }}>
+                      {sale.status === 'scanned' ? (
+                        <span style={{ color: '#f59e0b', fontWeight: 600 }}>● Scanned</span>
+                      ) : (
+                        <span style={{ color: '#22c55e', fontWeight: 600 }}>● Active</span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {sale.email}
+                  </div>
+                  <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--foreground)', fontWeight: 500 }}>
+                    #{sale.ticketId || '—'}
+                  </div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#9333ea', textAlign: 'right' }}>
+                    ₹{(sale.amount || 0).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+  </>
   )
 }

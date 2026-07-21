@@ -72,8 +72,8 @@ export default function TicketCard({ dark, ticket, onBack }: Props) {
         >
           <div className="relative overflow-hidden">
             <motion.img
-              src="/images/freshers-takeover-banner.png"
-              alt="Freshers Takeover Banner"
+              src={ticket.event && ticket.event.toUpperCase().includes('AURA') ? "/aura-genesis-banner.jpg" : "/images/freshers-takeover-banner.png"}
+              alt={ticket.event || "Banner"}
               className="w-full object-cover"
               style={{ height: 180 }}
               initial={{ scale: 1.15, opacity: 0 }}

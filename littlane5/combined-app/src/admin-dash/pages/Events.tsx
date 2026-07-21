@@ -11,50 +11,55 @@ interface Sale {
 
 interface Props {
   sales: Sale[]
-  adminKey: string
+  adminKey?: string
+  onNavigateToTickets?: () => void
 }
 
-export default function Events({ sales, adminKey }: Props) {
+export default function Events({ sales, adminKey, onNavigateToTickets }: Props) {
   // Aggregate data per event name
   const eventMap = new Map<string, { name: string; totalRevenue: number; ticketsSold: number; scanned: number; firstSale: string; lastSale: string }>()
 
+  // Always ensure default events exist in map
+  eventMap.set('FRESHERS TAKEOVER', {
+    name: 'FRESHERS TAKEOVER',
+    totalRevenue: 0,
+    ticketsSold: 0,
+    scanned: 0,
+    firstSale: '',
+    lastSale: ''
+  })
+  eventMap.set('AURA GENESIS', {
+    name: 'AURA GENESIS',
+    totalRevenue: 0,
+    ticketsSold: 0,
+    scanned: 0,
+    firstSale: '',
+    lastSale: ''
+  })
+
   sales.forEach(s => {
-    const name = s.event || 'Unknown Event'
-    const isPaid = s.status === 'paid' || s.status === 'scanned' || s.status === 'generated'
+    const name = s.event || 'FRESHERS TAKEOVER'
+    const isPaid = s.status === 'paid' || s.status === 'scanned' || s.status === 'generated' || s.status === 'ticket_generated' || s.status === 'emailed'
     const existing = eventMap.get(name)
     if (existing) {
-      existing.totalRevenue += isPaid ? s.amount : 0
+      existing.totalRevenue += isPaid ? (s.amount || 0) : 0
       existing.ticketsSold += isPaid ? 1 : 0
       existing.scanned += s.scannedAt ? 1 : 0
-      if (s.createdAt < existing.firstSale) existing.firstSale = s.createdAt
-      if (s.createdAt > existing.lastSale) existing.lastSale = s.createdAt
+      if (s.createdAt && (!existing.firstSale || s.createdAt < existing.firstSale)) existing.firstSale = s.createdAt
+      if (s.createdAt && (!existing.lastSale || s.createdAt > existing.lastSale)) existing.lastSale = s.createdAt
     } else {
       eventMap.set(name, {
         name,
-        totalRevenue: isPaid ? s.amount : 0,
+        totalRevenue: isPaid ? (s.amount || 0) : 0,
         ticketsSold: isPaid ? 1 : 0,
         scanned: s.scannedAt ? 1 : 0,
-        firstSale: s.createdAt,
-        lastSale: s.createdAt,
+        firstSale: s.createdAt || '',
+        lastSale: s.createdAt || '',
       })
     }
   })
 
   const events = Array.from(eventMap.values())
-
-  if (events.length === 0) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Events</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>No events yet — events will appear once orders are placed</p>
-        </div>
-        <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
-          🎪 Event data will appear once tickets are sold
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -71,11 +76,14 @@ export default function Events({ sales, adminKey }: Props) {
         {events.map((event, idx) => {
           const scanPct = event.ticketsSold > 0 ? Math.round((event.scanned / event.ticketsSold) * 100) : 0
           return (
-            <div key={event.name} style={{
-              backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)',
-              overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-              transition: 'transform 0.15s, box-shadow 0.15s',
-            }}
+            <div key={event.name} 
+              onClick={() => onNavigateToTickets && onNavigateToTickets()}
+              style={{
+                backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)',
+                overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                transition: 'transform 0.15s, box-shadow 0.15s',
+              }}
               onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(147,51,234,0.12)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 6px rgba(0,0,0,0.04)' }}
             >
@@ -95,7 +103,9 @@ export default function Events({ sales, adminKey }: Props) {
                 <div>
                   <div style={{ fontSize: '17px', fontWeight: 800, color: 'white', letterSpacing: '-0.3px' }}>{event.name}</div>
                   <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>
-                    Sales from {event.firstSale ? new Date(event.firstSale).toLocaleDateString() : '—'} to {event.lastSale ? new Date(event.lastSale).toLocaleDateString() : '—'}
+                    {event.firstSale && event.lastSale 
+                      ? `Sales from ${new Date(event.firstSale).toLocaleDateString()} to ${new Date(event.lastSale).toLocaleDateString()}` 
+                      : 'Active for Booking'}
                   </div>
                 </div>
               </div>

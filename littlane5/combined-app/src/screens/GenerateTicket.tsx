@@ -68,6 +68,13 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
   const [error, setError] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
 
+  function handleTicketTypeChange(t: TicketType) {
+    setTicketType(t)
+    if (t === 'Aura Genesis' && !datetime) {
+      setDatetime('2026-08-14T16:00')
+    }
+  }
+
   // Load real event config from server
   useEffect(() => {
     fetch('/api/admin/config?key=' + (localStorage.getItem('ft_admin_key') || sessionStorage.getItem('ft_admin_key') || 'change-me-admin-key'))
@@ -106,11 +113,16 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
     setError('')
     setStatus('loading')
     try {
+      // For Aura Genesis ticket type, override the event name
+      const resolvedEvent = ticketType === 'Aura Genesis' ? 'AURA GENESIS' : event.trim()
+      const resolvedDate = ticketType === 'Aura Genesis'
+        ? 'Aug 14, 2026 · 04:00 PM'
+        : formatDateLabel(datetime)
       const t = await addTicket({
-        event: event.trim(),
+        event: resolvedEvent,
         attendee: attendee.trim(),
         email: email.trim(),
-        dateLabel: formatDateLabel(datetime),
+        dateLabel: resolvedDate,
         ticketType,
       })
       setStatus('success')
@@ -194,11 +206,11 @@ export default function GenerateTicket({ dark, onBack, onGenerated }: Props) {
           <label className={`text-xs font-medium tracking-wide uppercase ${dark ? 'text-[#A0A0A0]' : 'text-[#6B6B6B]'}`}>
             Ticket Type
           </label>
-          <div className="flex gap-2">
-            {(['Male Pass', 'Female Pass'] as TicketType[]).map((t) => (
+          <div className="flex gap-2 flex-wrap">
+            {(['Male Pass', 'Female Pass', 'Aura Genesis'] as TicketType[]).map((t) => (
               <motion.button
                 key={t}
-                onClick={() => setTicketType(t)}
+                onClick={() => handleTicketTypeChange(t)}
                 whileTap={{ scale: 0.94 }}
                 className={`relative px-3 py-2 rounded-xl text-xs font-semibold border overflow-hidden ${
                   ticketType === t

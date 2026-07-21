@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const { EVENT_NAME, EVENT_DETAILS, GENDER_LABEL, BANNER_PATH } = require('./ticket');
+const { EVENT_NAME, EVENT_DETAILS, GENDER_LABEL, BANNER_PATH, AURA_BANNER_PATH } = require('./ticket');
 
 let transporter = null;
 let usingTestAccount = false;
@@ -81,8 +81,9 @@ async function getTransporter() {
  * PDF pass attached. Returns { success, error, previewUrl }.
  * previewUrl is only present when using the Ethereal test fallback.
  */
-async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, pdfPath, qrBuffer, downloadUrl }) {
+async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, pdfPath, qrBuffer, downloadUrl, event }) {
     try {
+        const eventTitle = event || EVENT_NAME;
         const genderLabel = GENDER_LABEL[gender] || gender;
         const fromEmail = process.env.EMAIL_FROM || '"Littlane Events" <events@littlane.com>';
 
@@ -90,12 +91,14 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
             { filename: `${ticketId}.pdf`, path: pdfPath }
         ];
         if (qrBuffer) attachments.push({ filename: 'qr.png', content: qrBuffer, cid: 'ticketqr' });
-        if (fs.existsSync(BANNER_PATH)) attachments.push({ filename: 'banner.png', path: BANNER_PATH, cid: 'ticketbanner' });
+        const bannerForEmail = (event && event.toUpperCase().includes('AURA') && fs.existsSync(AURA_BANNER_PATH))
+            ? AURA_BANNER_PATH : BANNER_PATH;
+        if (fs.existsSync(bannerForEmail)) attachments.push({ filename: 'banner.png', path: bannerForEmail, cid: 'ticketbanner' });
 
         const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111111; font-size: 15px; line-height: 1.6;">
           <p>Hi ${name},</p>
-          <p>Thanks for booking your <strong>${EVENT_NAME}</strong> pass! Your Ticket ID is <strong>${ticketId}</strong>.</p>
+          <p>Thanks for booking your <strong>${eventTitle}</strong> pass! Your Ticket ID is <strong>${ticketId}</strong>.</p>
           
           <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
             <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">🎟️ Ticket Guidelines</p>
@@ -119,8 +122,8 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
           </p>
         </div>`;
 
-        const subject = `Your ${EVENT_NAME} Pass — ${ticketId}`;
-        const text = `Hi ${name},\n\nThanks for booking your ${EVENT_NAME} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
+        const subject = `Your ${eventTitle} Pass — ${ticketId}`;
+        const text = `Hi ${name},\n\nThanks for booking your ${eventTitle} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
 
         // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)
         if (process.env.BREVO_API_KEY) {

@@ -196,7 +196,8 @@ app.post('/api/verify-payment', async (req, res) => {
                 gender: sale.gender,
                 quantity: sale.quantity,
                 amount: sale.amount,
-                createdAt: generatedAt
+                createdAt: generatedAt,
+                event: sale.event || 'FRESHERS TAKEOVER'
             });
             qrBuffer = await buildQrBuffer(ticketId);
             qrDataUrl = await buildQrDataUrl(ticketId);
@@ -226,7 +227,8 @@ app.post('/api/verify-payment', async (req, res) => {
             amount: sale.amount,
             pdfPath,
             qrBuffer,
-            downloadUrl
+            downloadUrl,
+            event: sale.event || 'FRESHERS TAKEOVER'
         });
 
         if (emailResult.success) {
@@ -405,7 +407,8 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
             gender: tType,
             quantity: qty,
             amount: finalAmount,
-            createdAt: generatedAt
+            createdAt: generatedAt,
+            event: evtName
         });
         const qrBuffer = await buildQrBuffer(ticketId);
         const qrDataUrl = await buildQrDataUrl(ticketId);
@@ -424,7 +427,8 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
             amount: finalAmount,
             pdfPath,
             qrBuffer,
-            downloadUrl
+            downloadUrl,
+            event: evtName
         });
 
         if (emailResult.success) {
