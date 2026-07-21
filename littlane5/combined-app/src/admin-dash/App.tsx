@@ -535,24 +535,44 @@ export default function App() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PASS TYPE</label>
-                  <select
-                    value={manualGender}
-                    onChange={e => handleManualGenderChange(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
-                  >
-                    <option value="male">Freshers Male Pass (₹349)</option>
-                    <option value="female">Freshers Female Pass (₹249)</option>
-                    <option value="aura">Aura Genesis Pass (₹350)</option>
-                  </select>
+                  {manualEvent === 'AURA GENESIS' ? (
+                    <div style={{
+                      width: '100%', padding: '10px', borderRadius: '8px',
+                      border: '1px solid #f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',
+                      color: '#d97706', fontWeight: 600, fontSize: '13px',
+                      display: 'flex', alignItems: 'center', gap: '6px'
+                    }}>
+                      ✨ Aura Genesis Pass
+                    </div>
+                  ) : (
+                    <select
+                      value={manualGender}
+                      onChange={e => handleManualGenderChange(e.target.value)}
+                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                    >
+                      <option value="male">Freshers Male Pass (₹349)</option>
+                      <option value="female">Freshers Female Pass (₹249)</option>
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PRICE (₹)</label>
-                  <input
-                    type="number"
-                    value={manualAmount}
-                    onChange={e => setManualAmount(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
-                  />
+                  {manualEvent === 'AURA GENESIS' ? (
+                    <div style={{
+                      width: '100%', padding: '10px', borderRadius: '8px',
+                      border: '1px solid #f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',
+                      color: '#d97706', fontWeight: 700, fontSize: '14px'
+                    }}>
+                      350
+                    </div>
+                  ) : (
+                    <input
+                      type="number"
+                      value={manualAmount}
+                      onChange={e => setManualAmount(e.target.value)}
+                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                    />
+                  )}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
