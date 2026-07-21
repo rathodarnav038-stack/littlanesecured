@@ -50,23 +50,25 @@ export default function Customers({ sales, adminKey }: Props) {
   sales.forEach(sale => {
     const key = sale.email
     const existing = customerMap.get(key)
-    const isPaid = sale.status === 'paid' || sale.status === 'scanned' || sale.status === 'generated'
+    const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)
     if (existing) {
       existing.orders += 1
-      existing.spend += isPaid ? sale.amount : 0
-      if (sale.createdAt > existing.lastPurchase) existing.lastPurchase = sale.createdAt
+      existing.spend += isPaid ? (sale.amount || 0) : 0
+      if (sale.createdAt && (!existing.lastPurchase || sale.createdAt > existing.lastPurchase)) {
+        existing.lastPurchase = sale.createdAt
+      }
     } else {
-      const initials = sale.name
+      const initials = (sale.name || 'Unknown')
         .split(' ')
         .map(w => w[0]?.toUpperCase() || '')
         .slice(0, 2)
         .join('')
       customerMap.set(key, {
-        name: sale.name,
+        name: sale.name || 'Unknown',
         email: sale.email,
         phone: sale.phone || '—',
         orders: 1,
-        spend: isPaid ? sale.amount : 0,
+        spend: isPaid ? (sale.amount || 0) : 0,
         lastPurchase: sale.createdAt || '',
         refunds: 0,
         avatar: initials || '??',
