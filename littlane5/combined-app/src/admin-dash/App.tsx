@@ -201,6 +201,11 @@ export default function App() {
       alert('Name and Email are required')
       return
     }
+    const isAura = manualEvent === 'AURA GENESIS'
+    const finalGender = isAura ? 'aura' : manualGender
+    const finalAmount = isAura ? '350' : manualAmount
+    const finalTicketType = isAura ? 'Aura Genesis' : (manualGender === 'female' ? 'Female Pass' : 'Male Pass')
+
     setIsManualSubmitting(true)
     try {
       const res = await fetch('/api/admin/generate-ticket', {
@@ -213,9 +218,10 @@ export default function App() {
           name: manualName,
           email: manualEmail,
           phone: manualPhone,
-          gender: manualGender,
+          gender: finalGender,
+          ticketType: finalTicketType,
           quantity: manualQty,
-          amount: manualAmount,
+          amount: finalAmount,
           event: manualEvent
         })
       })
