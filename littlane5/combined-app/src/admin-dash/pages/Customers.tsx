@@ -45,22 +45,51 @@ export default function Customers({ sales, adminKey }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [search, setSearch] = useState('')
 
+  // Deduplicate by orderId first to prevent double-counting
+  const seenOrderIds = new Set<string>()
+  const deduped = sales.filter(s => {
+    if (!s.orderId || seenOrderIds.has(s.orderId)) return false
+    seenOrderIds.add(s.orderId)
+    return true
+  })
+
   // Derive real customers from sales data
   const customerMap = new Map<string, CustomerRecord>()
-  sales.forEach(sale => {
+  deduped.forEach(sale => {
     const key = sale.email
     const existing = customerMap.get(key)
     const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)
+    if (!isPaid) {
+      // Still register the customer if not seen yet, but don't count this order
+      if (!existing) {
+        const initials = (sale.name || 'Unknown')
+          .split(' ')
+          .map((w: string) => w[0]?.toUpperCase() || '')
+          .slice(0, 2)
+          .join('')
+        customerMap.set(key, {
+          name: sale.name || 'Unknown',
+          email: sale.email,
+          phone: sale.phone || '—',
+          orders: 0,
+          spend: 0,
+          lastPurchase: sale.createdAt || '',
+          refunds: 0,
+          avatar: initials || '??',
+        })
+      }
+      return
+    }
     if (existing) {
       existing.orders += 1
-      existing.spend += isPaid ? (sale.amount || 0) : 0
+      existing.spend += sale.amount || 0
       if (sale.createdAt && (!existing.lastPurchase || sale.createdAt > existing.lastPurchase)) {
         existing.lastPurchase = sale.createdAt
       }
     } else {
       const initials = (sale.name || 'Unknown')
         .split(' ')
-        .map(w => w[0]?.toUpperCase() || '')
+        .map((w: string) => w[0]?.toUpperCase() || '')
         .slice(0, 2)
         .join('')
       customerMap.set(key, {
@@ -68,7 +97,7 @@ export default function Customers({ sales, adminKey }: Props) {
         email: sale.email,
         phone: sale.phone || '—',
         orders: 1,
-        spend: isPaid ? (sale.amount || 0) : 0,
+        spend: sale.amount || 0,
         lastPurchase: sale.createdAt || '',
         refunds: 0,
         avatar: initials || '??',
@@ -76,7 +105,10 @@ export default function Customers({ sales, adminKey }: Props) {
     }
   })
 
-  const customers = Array.from(customerMap.values()).sort((a, b) => b.spend - a.spend)
+  // Only show customers who have at least one paid order
+  const customers = Array.from(customerMap.values())
+    .filter(c => c.orders > 0)
+    .sort((a, b) => b.spend - a.spend)
 
   const filtered = customers.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
