@@ -226,7 +226,7 @@ export default function App() {
     }
     const isAura = manualEvent === 'AURA GENESIS'
     const finalGender = isAura ? 'aura' : manualGender
-    const finalAmount = isAura ? '350' : manualAmount
+    const finalAmount = manualAmount  // always use what admin typed
     const finalTicketType = isAura ? 'Aura Genesis' : (manualGender === 'female' ? 'Female Pass' : 'Male Pass')
 
     setIsManualSubmitting(true)
@@ -615,22 +615,18 @@ export default function App() {
                 </div>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PRICE (₹)</label>
-                  {manualEvent === 'AURA GENESIS' ? (
-                    <div style={{
+                  <input
+                    type="number"
+                    value={manualAmount}
+                    onChange={e => setManualAmount(e.target.value)}
+                    style={{
                       width: '100%', padding: '10px', borderRadius: '8px',
-                      border: '1px solid #f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',
-                      color: '#d97706', fontWeight: 700, fontSize: '14px'
-                    }}>
-                      350
-                    </div>
-                  ) : (
-                    <input
-                      type="number"
-                      value={manualAmount}
-                      onChange={e => setManualAmount(e.target.value)}
-                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
-                    />
-                  )}
+                      border: manualEvent === 'AURA GENESIS' ? '1px solid #f59e0b' : '1px solid var(--border)',
+                      backgroundColor: manualEvent === 'AURA GENESIS' ? 'rgba(245,158,11,0.08)' : 'var(--muted)',
+                      color: manualEvent === 'AURA GENESIS' ? '#d97706' : 'var(--foreground)',
+                      fontWeight: manualEvent === 'AURA GENESIS' ? 700 : 400,
+                    }}
+                  />
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
