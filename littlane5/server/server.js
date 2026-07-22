@@ -15,8 +15,8 @@ app.use(express.json());
 // ==================== EVENT & PRICING ====================
 const EVENT = { name: EVENT_NAME };
 const PRICING = {
-    female: 249,
-    male: 349
+    female: 299,
+    male: 399
 };
 
 // ==================== RAZORPAY SETUP ====================

@@ -83,7 +83,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       tickets: freshersMale,
       sold: freshersMale.reduce((a, s) => a + (s.quantity || 1), 0),
       revenue: freshersMale.reduce((a, s) => a + (s.amount || 0), 0),
-      price: '₹349',
+      price: '₹399',
     },
     {
       label: 'Freshers Female Pass',
@@ -93,7 +93,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       tickets: freshersFemale,
       sold: freshersFemale.reduce((a, s) => a + (s.quantity || 1), 0),
       revenue: freshersFemale.reduce((a, s) => a + (s.amount || 0), 0),
-      price: '₹249',
+      price: '₹299',
     },
     {
       label: 'Aura Genesis',
