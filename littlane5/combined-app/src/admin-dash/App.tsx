@@ -141,7 +141,7 @@ export default function App() {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState('399')
+  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('ft_price_male') || '399')
   const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
 
   const fetchSales = async (keyToUse = adminKey) => {
@@ -255,7 +255,14 @@ export default function App() {
         setManualName('')
         setManualEmail('')
         setManualPhone('')
-        setManualAmount('349')
+        // Restore last saved price for current selection
+        if (manualEvent === 'AURA GENESIS') {
+          setManualAmount(localStorage.getItem('ft_price_aura') || '350')
+        } else if (manualGender === 'female') {
+          setManualAmount(localStorage.getItem('ft_price_female') || '299')
+        } else {
+          setManualAmount(localStorage.getItem('ft_price_male') || '399')
+        }
         fetchSales()
       } else {
         alert(`Failed: ${data.message}`)
@@ -270,9 +277,11 @@ export default function App() {
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
     if (val === 'male') {
-      setManualAmount('399')
+      const saved = localStorage.getItem('ft_price_male') || '399'
+      setManualAmount(saved)
     } else if (val === 'female') {
-      setManualAmount('299')
+      const saved = localStorage.getItem('ft_price_female') || '299'
+      setManualAmount(saved)
     }
   }
 
@@ -546,10 +555,10 @@ export default function App() {
                     setManualEvent(evt)
                     if (evt === 'AURA GENESIS') {
                       setManualGender('aura')
-                      setManualAmount('350')
+                      setManualAmount(localStorage.getItem('ft_price_aura') || '350')
                     } else if (manualGender === 'aura') {
                       setManualGender('male')
-                      setManualAmount('349')
+                      setManualAmount(localStorage.getItem('ft_price_male') || '399')
                     }
                   }}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
@@ -618,7 +627,12 @@ export default function App() {
                   <input
                     type="number"
                     value={manualAmount}
-                    onChange={e => setManualAmount(e.target.value)}
+                    onChange={e => {
+                      const val = e.target.value
+                      setManualAmount(val)
+                      const key = manualEvent === 'AURA GENESIS' ? 'ft_price_aura' : (manualGender === 'female' ? 'ft_price_female' : 'ft_price_male')
+                      localStorage.setItem(key, val)
+                    }}
                     style={{
                       width: '100%', padding: '10px', borderRadius: '8px',
                       border: manualEvent === 'AURA GENESIS' ? '1px solid #f59e0b' : '1px solid var(--border)',
