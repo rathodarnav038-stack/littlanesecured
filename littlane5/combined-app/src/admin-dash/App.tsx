@@ -141,7 +141,7 @@ export default function App() {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState('349')
+  const [manualAmount, setManualAmount] = useState('399')
   const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
 
   const fetchSales = async (keyToUse = adminKey) => {
@@ -270,9 +270,9 @@ export default function App() {
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
     if (val === 'male') {
-      setManualAmount('349')
+      setManualAmount('399')
     } else if (val === 'female') {
-      setManualAmount('249')
+      setManualAmount('299')
     }
   }
 
@@ -608,8 +608,8 @@ export default function App() {
                       onChange={e => handleManualGenderChange(e.target.value)}
                       style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                     >
-                      <option value="male">Freshers Male Pass (₹349)</option>
-                      <option value="female">Freshers Female Pass (₹249)</option>
+                      <option value="male">Freshers Male Pass (₹399)</option>
+                      <option value="female">Freshers Female Pass (₹299)</option>
                     </select>
                   )}
                 </div>
