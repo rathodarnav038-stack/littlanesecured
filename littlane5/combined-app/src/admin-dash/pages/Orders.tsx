@@ -207,6 +207,25 @@ function OrderDrawer({ order, onClose, onResend }: { order: Order; onClose: () =
               </div>
             </div>
           </Section>
+
+          {/* Errors */}
+          {order.errorLog && order.errorLog.length > 0 && (
+            <Section title="System Errors (Diagnostics)">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {order.errorLog.map((err: any, idx: number) => (
+                  <div key={idx} style={{ backgroundColor: '#fee2e2', borderRadius: '8px', padding: '12px', border: '1px solid #f87171' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase' }}>Stage: {err.stage}</span>
+                      <span style={{ fontSize: '10px', color: '#dc2626' }}>{new Date(err.at).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                      {err.error}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
         </div>
       </div>
 
