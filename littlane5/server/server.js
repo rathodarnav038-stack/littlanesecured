@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const db = require('./db');
+const { atomicClaimOrder } = db;
 const { EVENT_NAME, EVENT_DETAILS, generateTicketId, buildTicketPdf, buildQrDataUrl, buildQrBuffer, TICKETS_DIR } = require('./ticket');
 const { sendTicketEmail } = require('./mailer');
 
@@ -324,21 +325,16 @@ app.post('/api/webhook/razorpay', async (req, res) => {
             const paymentId = paymentEntity.id;
 
             if (!orderId) {
-                 return res.status(200).send('No order ID');
+                return res.status(200).send('No order ID');
             }
 
-            const sale = await db.getByOrderId(orderId);
+            // ATOMIC CLAIM — only one concurrent webhook can ever win this race.
+            // If status is no longer 'created', atomicClaimOrder returns null and we stop.
+            const sale = await atomicClaimOrder(orderId, paymentId);
             if (!sale) {
-                console.error(`[webhook] Order ${orderId} not found`);
-                return res.status(200).send('Order not found');
-            }
-
-            if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)) {
-                console.log(`[webhook] Order ${orderId} already processed (status: ${sale.status})`);
+                console.log(`[webhook] Order ${orderId} already claimed by another process — skipping duplicate.`);
                 return res.status(200).send('Already processed');
             }
-
-            await db.updateSaleRecord(orderId, { status: 'paid', paymentId, paidAt: new Date().toISOString() });
             
             const ticketId = generateTicketId();
             const generatedAt = new Date().toISOString();

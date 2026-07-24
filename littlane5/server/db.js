@@ -69,10 +69,33 @@ async function getAll() {
     return await Sale.find({}).sort({ createdAt: -1 }).lean();
 }
 
+/**
+ * Atomically transitions an order from 'created' → 'paid'.
+ * Returns the updated sale if THIS caller won the race, or null if another
+ * concurrent webhook/request already claimed it (status was no longer 'created').
+ * This completely prevents the double-ticket race condition.
+ */
+async function atomicClaimOrder(orderId, paymentId) {
+    const updated = await Sale.findOneAndUpdate(
+        { orderId, status: 'created' },  // ← only matches if still unclaimed
+        {
+            $set: {
+                status: 'paid',
+                paymentId,
+                paidAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }
+        },
+        { returnDocument: 'after', lean: true }
+    );
+    return updated; // null = already claimed by someone else
+}
+
 module.exports = {
     createSaleRecord,
     updateSaleRecord,
     getByOrderId,
     getByTicketId,
-    getAll
+    getAll,
+    atomicClaimOrder
 };
