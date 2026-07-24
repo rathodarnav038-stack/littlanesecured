@@ -120,42 +120,52 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
   // Map database sales to time periods for the chart
   const getChartData = () => {
-    // Basic aggregation by time for past records
-    const records = [...paidSales].reverse()
-    if (period === 'today') {
-      // Group by hours
-      const hours = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm', '11pm']
-      return hours.map((h, index) => {
-        // filter sales created in this range
-        const matching = records.filter(s => {
-          const hr = new Date(s.createdAt).getHours()
-          const start = index * 2.5
-          const end = (index + 1) * 2.5
-          return hr >= start && hr < end
-        })
-        return {
-          time: h,
-          revenue: matching.reduce((sum, s) => sum + s.amount, 0),
-          orders: matching.length,
-          tickets: matching.reduce((sum, s) => sum + s.quantity, 0)
+    const chartData = []
+    const now = new Date()
+
+    if (period === '7d') {
+      const dayMap = new Map<string, { revenue: number; orders: number; tickets: number }>()
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now)
+        d.setDate(d.getDate() - i)
+        const key = d.toLocaleDateString('en-IN', { weekday: 'short' })
+        dayMap.set(key, { revenue: 0, orders: 0, tickets: 0 })
+      }
+      paidSales.forEach(s => {
+        const d = new Date(s.paidAt || s.createdAt)
+        const key = d.toLocaleDateString('en-IN', { weekday: 'short' })
+        if (dayMap.has(key)) {
+          const cur = dayMap.get(key)!
+          cur.revenue += s.amount || 0
+          cur.orders += 1
+          cur.tickets += s.quantity || 1
         }
       })
+      chartData.push(...Array.from(dayMap.entries()).map(([time, v]) => ({ time, ...v })))
+    } else {
+      // Today (3-hour blocks)
+      const todayStr = now.toDateString()
+      const blocks = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm']
+      const blockMap = new Map<string, { revenue: number; orders: number; tickets: number }>()
+      blocks.forEach(b => blockMap.set(b, { revenue: 0, orders: 0, tickets: 0 }))
+      
+      paidSales.forEach(s => {
+        const d = new Date(s.paidAt || s.createdAt)
+        if (d.toDateString() === todayStr) {
+          const hour = d.getHours()
+          const blockIndex = Math.floor(hour / 3)
+          const key = blocks[blockIndex]
+          if (blockMap.has(key)) {
+            const cur = blockMap.get(key)!
+            cur.revenue += s.amount || 0
+            cur.orders += 1
+            cur.tickets += s.quantity || 1
+          }
+        }
+      })
+      chartData.push(...Array.from(blockMap.entries()).map(([time, v]) => ({ time, ...v })))
     }
-
-    // Default 7 days
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    return days.map((day, idx) => {
-      // Simple division of records over 7 slots
-      const startIdx = Math.floor((idx / 7) * records.length)
-      const endIdx = Math.floor(((idx + 1) / 7) * records.length)
-      const slice = records.slice(startIdx, endIdx)
-      return {
-        time: day,
-        revenue: slice.reduce((sum, s) => sum + s.amount, 0),
-        orders: slice.length,
-        tickets: slice.reduce((sum, s) => sum + s.quantity, 0)
-      }
-    })
+    return chartData
   }
 
   const chartData = getChartData()
