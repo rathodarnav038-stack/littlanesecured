@@ -490,7 +490,7 @@ app.post('/api/admin/toggle-presentation', requireAdmin, async (req, res) => {
         if (!orderId) {
             return res.status(400).json({ success: false, message: 'Missing orderId' });
         }
-        const updated = await updateSaleRecord(orderId, { showInPres });
+        const updated = await db.updateSaleRecord(orderId, { showInPres });
         if (!updated) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
