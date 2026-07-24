@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { StoreProvider } from './lib/store'
 import LittixApp from './littix/App'
 import AdminDashboard from './admin-dash/App'
+import PresentationApp from './admin-dash/PresentationApp'
 
 function MainAppShell() {
   const [path, setPath] = useState(window.location.pathname)
@@ -23,6 +24,10 @@ function MainAppShell() {
       clearInterval(interval)
     }
   }, [path])
+
+  if (path.startsWith('/dashhboard')) {
+    return <PresentationApp />
+  }
 
   if (path.startsWith('/dashboard')) {
     return <AdminDashboard />

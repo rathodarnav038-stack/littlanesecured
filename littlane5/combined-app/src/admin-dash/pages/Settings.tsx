@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
-type SettingsTab = 'smtp' | 'payments' | 'branding' | 'roles' | 'audit'
+type SettingsTab = 'smtp' | 'payments' | 'branding' | 'roles' | 'audit' | 'presentation'
 
 const tabs: { id: SettingsTab; label: string; icon: string }[] = [
+  { id: 'presentation', label: 'Presentation Mode', icon: '📺' },
   { id: 'smtp', label: 'SMTP Config', icon: '📧' },
   { id: 'payments', label: 'Payment Gateways', icon: '💳' },
   { id: 'branding', label: 'Branding', icon: '🎨' },
@@ -58,8 +59,51 @@ interface SettingsProps {
 }
 
 export default function Settings({ adminKey }: SettingsProps) {
-  const [tab, setTab] = useState<SettingsTab>('smtp')
+  const [tab, setTab] = useState<SettingsTab>('presentation')
   const [wiping, setWiping] = useState(false)
+  
+  const [presEnabled, setPresEnabled] = useState(true)
+  const [presRev, setPresRev] = useState('154500')
+  const [presTickets, setPresTickets] = useState('512')
+  const [presOrders, setPresOrders] = useState('450')
+  const [presSaving, setPresSaving] = useState(false)
+
+  // Load pres config
+  useState(() => {
+    fetch(`/api/admin/presentation-config?key=${adminKey}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && d.config) {
+          setPresEnabled(d.config.enabled)
+          if (d.config.revenue != null) setPresRev(String(d.config.revenue))
+          if (d.config.tickets != null) setPresTickets(String(d.config.tickets))
+          if (d.config.orders != null) setPresOrders(String(d.config.orders))
+        }
+      })
+      .catch(console.error)
+  })
+
+  const savePresConfig = async () => {
+    setPresSaving(true)
+    try {
+      const res = await fetch(`/api/admin/presentation-config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+        body: JSON.stringify({
+          enabled: presEnabled,
+          revenue: Number(presRev),
+          tickets: Number(presTickets),
+          orders: Number(presOrders)
+        })
+      })
+      const d = await res.json()
+      if (d.success) alert('Presentation settings saved! Open /dashhboard to view.')
+      else alert('Failed to save settings')
+    } catch (err) {
+      alert('Error saving settings')
+    }
+    setPresSaving(false)
+  }
 
   const handleWipe = async () => {
     if (!window.confirm("WARNING: This will permanently delete all ticket sales and reset revenue stats to ₹0. Are you sure?")) {
@@ -111,6 +155,39 @@ export default function Settings({ adminKey }: SettingsProps) {
 
         {/* Content */}
         <div style={{ flex: 1, backgroundColor: 'var(--card)', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+          {tab === 'presentation' && (
+            <div>
+              <Section title="Presentation Dashboard (/dashhboard)">
+                <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', marginBottom: '20px' }}>
+                  Configure what numbers are shown on the <b>/dashhboard</b> screen. 
+                  This is useful for displaying a custom overview without affecting real operations.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>Total Revenue (₹)</label>
+                    <input type="number" value={presRev} onChange={e => setPresRev(e.target.value)} style={{ width: '100%', padding: '9px 12px', backgroundColor: 'var(--muted)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', color: 'var(--foreground)', outline: 'none' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>Tickets Sold</label>
+                    <input type="number" value={presTickets} onChange={e => setPresTickets(e.target.value)} style={{ width: '100%', padding: '9px 12px', backgroundColor: 'var(--muted)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', color: 'var(--foreground)', outline: 'none' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)', display: 'block', marginBottom: '6px' }}>Total Orders</label>
+                    <input type="number" value={presOrders} onChange={e => setPresOrders(e.target.value)} style={{ width: '100%', padding: '9px 12px', backgroundColor: 'var(--muted)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', color: 'var(--foreground)', outline: 'none' }} />
+                  </div>
+                </div>
+              </Section>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button onClick={savePresConfig} disabled={presSaving} style={{ padding: '9px 18px', background: 'linear-gradient(135deg, #9333EA, #A855F7)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(147,51,234,0.3)', opacity: presSaving ? 0.6 : 1 }}>
+                  {presSaving ? 'Saving...' : 'Save Configuration'}
+                </button>
+                <a href="/dashhboard" target="_blank" rel="noreferrer" style={{ padding: '9px 18px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', borderRadius: '10px', fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', cursor: 'pointer', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                  Open Presentation Screen ↗
+                </a>
+              </div>
+            </div>
+          )}
+
           {tab === 'smtp' && (
             <div>
               <Section title="SMTP Configuration">

@@ -63,6 +63,8 @@ const adminHtmlPath = path.join(__dirname, 'admin', 'index.html');
 app.get('/admin', (req, res) => res.sendFile(adminHtmlPath));
 app.get('/dashboard', (req, res) => res.sendFile(adminHtmlPath));
 app.get('/dashboard/:splat', (req, res) => res.sendFile(adminHtmlPath));
+app.get('/dashhboard', (req, res) => res.sendFile(adminHtmlPath));
+app.get('/dashhboard/:splat', (req, res) => res.sendFile(adminHtmlPath));
 
 // Serve original Littlane HTML site (index.html + script.js + styles.css) for everything else
 const _staticCandidates = [
@@ -479,6 +481,35 @@ app.get('/api/admin/sales', requireAdmin, async (req, res) => {
 
 app.get('/api/admin/config', requireAdmin, (req, res) => {
     res.json({ success: true, event: EVENT.name, pricing: PRICING, testMode: TEST_MODE });
+});
+
+// ==================== PRESENTATION CONFIG ====================
+const PRES_CONFIG_PATH = path.join(__dirname, 'presentation-config.json');
+
+app.get('/api/admin/presentation-config', requireAdmin, (req, res) => {
+    try {
+        const fs = require('fs');
+        if (fs.existsSync(PRES_CONFIG_PATH)) {
+            const data = fs.readFileSync(PRES_CONFIG_PATH, 'utf-8');
+            res.json({ success: true, config: JSON.parse(data) });
+        } else {
+            res.json({ success: true, config: { enabled: false, revenue: null, orders: null, tickets: null } });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to read config' });
+    }
+});
+
+app.post('/api/admin/presentation-config', requireAdmin, (req, res) => {
+    try {
+        const fs = require('fs');
+        const { enabled, revenue, orders, tickets } = req.body;
+        const config = { enabled, revenue, orders, tickets };
+        fs.writeFileSync(PRES_CONFIG_PATH, JSON.stringify(config, null, 2));
+        res.json({ success: true, config });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Failed to save config' });
+    }
 });
 
 // ==================== 6. ADMIN — GENERATE TICKET MANUALLY ====================
