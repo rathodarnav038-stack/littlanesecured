@@ -39,9 +39,10 @@ const gradients = [
 interface Props {
   sales: Sale[]
   adminKey: string
+  globalSearch?: string
 }
 
-export default function Customers({ sales, adminKey }: Props) {
+export default function Customers({ sales, adminKey, globalSearch = '' }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [search, setSearch] = useState('')
 
@@ -123,10 +124,10 @@ export default function Customers({ sales, adminKey }: Props) {
     .filter(c => c.orders > 0)
     .sort((a, b) => b.spend - a.spend)
 
-  const filtered = customers.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = customers.filter(c => {
+    const q = (search || globalSearch).toLowerCase()
+    return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
+  })
 
   if (customers.length === 0) {
     return (

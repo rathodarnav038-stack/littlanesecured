@@ -5,6 +5,7 @@ interface TicketsProps {
   onResend: (ticketId: string) => Promise<void>
   adminKey: string
   onReload: () => Promise<void>
+  globalSearch?: string
 }
 
 interface Ticket {
@@ -43,11 +44,20 @@ function Badge({ label, bg, color }: { label: string; bg: string; color: string 
   return <span style={{ backgroundColor: bg, color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>{label}</span>
 }
 
-export default function Tickets({ sales = [], onResend, adminKey, onReload }: TicketsProps) {
+export default function Tickets({ sales = [], onResend, adminKey, onReload, globalSearch = '' }: TicketsProps) {
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   
-  // Only show records with generated tickets
-  const ticketSales = sales.filter(s => s.ticketId)
+  // Only show records with generated tickets and apply search if provided
+  const ticketSales = sales.filter(s => {
+    if (!s.ticketId) return false
+    const q = globalSearch.toLowerCase()
+    if (q) {
+      return (s.ticketId || '').toLowerCase().includes(q) || 
+             (s.name || '').toLowerCase().includes(q) || 
+             (s.email || '').toLowerCase().includes(q)
+    }
+    return true
+  })
 
   const handleCancel = async (ticketId: string) => {
     if (!window.confirm(`Are you sure you want to CANCEL ticket ${ticketId}? Scanning it at the gate will be rejected.`)) {

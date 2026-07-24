@@ -349,11 +349,11 @@ export default function App() {
         return <Dashboard sales={sales} summary={summary} testMode={testMode} onManualGenerate={() => setShowManualModal(true)} />
       case 'orders':
       case 'payments':
-        return <Orders sales={sales} onResend={handleResend} />
+        return <Orders sales={sales} onResend={handleResend} globalSearch={search} />
       case 'tickets':
-        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={fetchSales} />
+        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={fetchSales} globalSearch={search} />
       case 'customers':
-        return <Customers sales={sales} />
+        return <Customers sales={sales} adminKey={adminKey} globalSearch={search} />
       case 'events':
         return <Events sales={sales} adminKey={adminKey} onNavigateToTickets={() => setPage('tickets')} />
       case 'email':

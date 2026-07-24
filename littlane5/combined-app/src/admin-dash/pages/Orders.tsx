@@ -3,6 +3,7 @@ import { useState } from 'react'
 interface OrdersProps {
   sales: any[]
   onResend: (ticketId: string) => Promise<void>
+  globalSearch?: string
 }
 
 type PaymentStatus = 'Paid' | 'Pending' | 'Failed' | 'Refunded' | 'Cancelled'
@@ -265,9 +266,10 @@ function InfoGrid({ items }: { items: { label: string; value: React.ReactNode }[
   )
 }
 
-export default function Orders({ sales = [], onResend }: OrdersProps) {
+export default function Orders({ sales = [], onResend, globalSearch = '' }: OrdersProps) {
   const [selected, setSelected] = useState<Order | null>(null)
   const [filter, setFilter] = useState<string>('all')
+  const [gatewayFilter, setGatewayFilter] = useState<string>('all')
   const [searchQ, setSearchQ] = useState('')
 
   // Map SQLite sales rows to unified Order UI model
@@ -314,8 +316,10 @@ export default function Orders({ sales = [], onResend }: OrdersProps) {
 
   const filtered = orders.filter(o => {
     if (filter !== 'all' && o.paymentStatus.toLowerCase() !== filter) return false
-    if (searchQ) {
-      const q = searchQ.toLowerCase()
+    if (gatewayFilter !== 'all' && o.gateway.toLowerCase() !== gatewayFilter) return false
+    
+    const q = (searchQ || globalSearch).toLowerCase()
+    if (q) {
       return o.id.toLowerCase().includes(q) || o.buyer.toLowerCase().includes(q) || o.email.toLowerCase().includes(q) || o.txnId.toLowerCase().includes(q)
     }
     return true
@@ -368,6 +372,25 @@ export default function Orders({ sales = [], onResend }: OrdersProps) {
               }}
             >
               {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Gateway Filters */}
+        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
+          {(['all', 'razorpay', 'manual'] as const).map(g => (
+            <button
+              key={g}
+              onClick={() => setGatewayFilter(g)}
+              style={{
+                padding: '5px 12px', borderRadius: '7px', border: 'none',
+                backgroundColor: gatewayFilter === g ? '#3b82f6' : 'transparent',
+                color: gatewayFilter === g ? 'white' : 'var(--muted-foreground)',
+                fontSize: '12px', fontWeight: gatewayFilter === g ? 600 : 400,
+                cursor: 'pointer', textTransform: 'capitalize',
+              }}
+            >
+              {g === 'all' ? 'All Gateways' : g}
             </button>
           ))}
         </div>
