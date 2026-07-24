@@ -276,6 +276,97 @@ app.post('/api/verify-payment', async (req, res) => {
     }
 });
 
+// ==================== 2B. RAZORPAY WEBHOOK ====================
+const RZP_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
+
+app.post('/api/webhook/razorpay', async (req, res) => {
+    try {
+        const signature = req.headers['x-razorpay-signature'];
+        if (!signature || !RZP_WEBHOOK_SECRET) {
+            return res.status(400).send('Missing signature or secret');
+        }
+
+        const expectedSignature = crypto
+            .createHmac('sha256', RZP_WEBHOOK_SECRET)
+            .update(JSON.stringify(req.body))
+            .digest('hex');
+
+        if (expectedSignature !== signature) {
+            console.error('[webhook] Invalid signature');
+            return res.status(400).send('Invalid signature');
+        }
+
+        const event = req.body.event;
+        if (event === 'order.paid' || event === 'payment.captured') {
+            const paymentEntity = req.body.payload.payment.entity;
+            const orderId = paymentEntity.order_id;
+            const paymentId = paymentEntity.id;
+
+            if (!orderId) {
+                 return res.status(200).send('No order ID');
+            }
+
+            const sale = await db.getByOrderId(orderId);
+            if (!sale) {
+                console.error(`[webhook] Order ${orderId} not found`);
+                return res.status(200).send('Order not found');
+            }
+
+            if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)) {
+                console.log(`[webhook] Order ${orderId} already processed (status: ${sale.status})`);
+                return res.status(200).send('Already processed');
+            }
+
+            await db.updateSaleRecord(orderId, { status: 'paid', paymentId, paidAt: new Date().toISOString() });
+            
+            const ticketId = generateTicketId();
+            const generatedAt = new Date().toISOString();
+            let pdfPath, qrBuffer, qrDataUrl;
+            
+            try {
+                pdfPath = await buildTicketPdf({
+                    ticketId, name: sale.name, email: sale.email, gender: sale.gender,
+                    quantity: sale.quantity, amount: sale.amount, createdAt: generatedAt,
+                    event: sale.event || 'FRESHERS TAKEOVER'
+                });
+                qrBuffer = await buildQrBuffer(ticketId);
+                qrDataUrl = await buildQrDataUrl(ticketId);
+                await db.updateSaleRecord(orderId, { status: 'ticket_generated', ticketId, generatedAt });
+            } catch (genErr) {
+                console.error('[webhook] Ticket generation failed:', genErr.message);
+                await db.updateSaleRecord(orderId, {
+                    status: 'ticket_generation_failed',
+                    errorLog: [...(sale.errorLog || []), { at: new Date().toISOString(), stage: 'ticket_generation', error: genErr.message }]
+                });
+                return res.status(200).send('Ticket gen failed');
+            }
+
+            const downloadUrl = `${BASE_URL}/api/ticket/${ticketId}/download`;
+
+            const emailResult = await sendTicketEmail({
+                to: sale.email, name: sale.name, ticketId, gender: sale.gender,
+                quantity: sale.quantity, amount: sale.amount, pdfPath, qrBuffer,
+                downloadUrl, event: sale.event || 'FRESHERS TAKEOVER'
+            });
+
+            if (emailResult.success) {
+                await db.updateSaleRecord(orderId, { status: 'emailed', emailStatus: 'sent', emailError: null, emailPreviewUrl: emailResult.previewUrl || null });
+            } else {
+                await db.updateSaleRecord(orderId, {
+                    status: 'email_failed', emailStatus: 'failed', emailError: emailResult.error,
+                    errorLog: [...(sale.errorLog || []), { at: new Date().toISOString(), stage: 'email', error: emailResult.error }]
+                });
+            }
+            console.log(`[Webhook Ticket Issued] ${ticketId} for ${sale.email}`);
+        }
+
+        res.status(200).send('OK');
+    } catch (err) {
+        console.error('[webhook error]', err);
+        res.status(500).send('Webhook Error');
+    }
+});
+
 // ==================== 3. TICKET DOWNLOAD ====================
 app.get('/api/ticket/:ticketId/download', async (req, res) => {
     const sale = await db.getByTicketId(req.params.ticketId);
