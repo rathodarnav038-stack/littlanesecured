@@ -90,19 +90,31 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
     }
   }
 
+  // Optimistic UI updates
+  const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
+
   const togglePresMode = async (orderId: string, currentVal: boolean) => {
     if (!adminKey || isPresentation) return;
+    
+    const newVal = !currentVal;
+    // Instantly update UI
+    setOptimisticPres(prev => ({ ...prev, [orderId]: newVal }))
+
     try {
       const res = await fetch('/api/admin/toggle-presentation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
-        body: JSON.stringify({ orderId, showInPres: !currentVal })
+        body: JSON.stringify({ orderId, showInPres: newVal })
       })
-      if (res.ok && onReload) {
-        onReload();
+      if (!res.ok) {
+        // Revert if failed
+        setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
+        alert("Failed to update presentation mode.")
       }
     } catch (err) {
       console.error(err);
+      // Revert if failed
+      setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
     }
   }
 
@@ -175,20 +187,25 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
                       <td style={{ padding: '13px 14px', fontSize: '11.5px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>{t.generated}</td>
                       <td style={{ padding: '13px 14px' }}><Badge label={t.status} {...sc} /></td>
                       {!isPresentation && (
-                        <td style={{ padding: '13px 14px' }}>
+                        <td style={{ padding: '13px 14px', textAlign: 'center' }}>
                           <button
-                            onClick={e => { e.stopPropagation(); togglePresMode(t.orderId, !!t.showInPres); }}
-                            style={{
-                              padding: '4px 8px', borderRadius: '6px',
-                              border: t.showInPres ? '1px solid #9333ea' : '1px solid var(--border)',
-                              backgroundColor: t.showInPres ? '#f3e8ff' : 'var(--muted)',
-                              color: t.showInPres ? '#9333ea' : 'var(--muted-foreground)',
-                              fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                              display: 'flex', alignItems: 'center', gap: '4px'
+                            onClick={e => { 
+                              e.stopPropagation(); 
+                              const currentVal = optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : !!t.showInPres;
+                              togglePresMode(t.orderId, currentVal); 
                             }}
+                            style={{
+                              padding: '6px', borderRadius: '8px',
+                              border: 'none',
+                              backgroundColor: (optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '#f3e8ff' : 'var(--muted)',
+                              color: (optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '#9333ea' : 'var(--muted-foreground)',
+                              fontSize: '16px', cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              width: '32px', height: '32px', transition: 'all 0.1s'
+                            }}
+                            title={(optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? 'Visible on Presentation' : 'Hidden on Presentation'}
                           >
-                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: t.showInPres ? '#9333ea' : 'transparent', border: t.showInPres ? 'none' : '1px solid var(--muted-foreground)' }} />
-                            {t.showInPres ? 'Shown' : 'Hidden'}
+                            {(optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '👁️' : '🙈'}
                           </button>
                         </td>
                       )}
