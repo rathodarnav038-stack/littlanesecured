@@ -185,7 +185,28 @@ app.post('/api/verify-payment', async (req, res) => {
         // Idempotency guard: if already paid/processed, don't double-charge
         if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)) {
             console.log(`[verify-payment] Order ${orderId} already processed (status: ${sale.status}) — skipping duplicate.`);
-            return res.json({ success: true, ticketId: sale.ticketId, alreadyProcessed: true });
+            
+            // Build missing fields for the frontend success modal since webhook likely processed it first
+            const downloadUrl = `${BASE_URL}/api/ticket/${sale.ticketId}/download`;
+            const qrDataUrl = sale.ticketId ? await buildQrDataUrl(sale.ticketId).catch(() => '') : '';
+
+            return res.json({
+                success: true,
+                ticketId: sale.ticketId,
+                downloadUrl,
+                qrDataUrl,
+                emailSent: sale.emailStatus === 'sent',
+                emailError: sale.emailError,
+                event: sale.event || EVENT.name,
+                name: sale.name,
+                email: sale.email,
+                gender: sale.gender,
+                quantity: sale.quantity,
+                amount: sale.amount,
+                generatedAt: sale.generatedAt || sale.paidAt,
+                details: EVENT_DETAILS,
+                alreadyProcessed: true
+            });
         }
 
         await db.updateSaleRecord(orderId, { status: 'paid', paymentId, paidAt: new Date().toISOString() });
