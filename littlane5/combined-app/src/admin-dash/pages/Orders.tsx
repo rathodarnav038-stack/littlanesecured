@@ -4,6 +4,9 @@ interface OrdersProps {
   sales: any[]
   onResend: (ticketId: string) => Promise<void>
   globalSearch?: string
+  isPresentation?: boolean
+  adminKey?: string
+  onReload?: () => void
 }
 
 type PaymentStatus = 'Paid' | 'Pending' | 'Failed' | 'Refunded' | 'Cancelled'
@@ -31,6 +34,7 @@ interface Order {
   time: string
   ticketId: string
   errorLog: any[]
+  showInPres?: boolean
 }
 
 const paymentColors: Record<PaymentStatus, { bg: string; color: string }> = {
@@ -266,14 +270,14 @@ function InfoGrid({ items }: { items: { label: string; value: React.ReactNode }[
   )
 }
 
-export default function Orders({ sales = [], onResend, globalSearch = '' }: OrdersProps) {
+export default function Orders({ sales = [], onResend, globalSearch = '', isPresentation = false, adminKey = '', onReload }: OrdersProps) {
   const [selected, setSelected] = useState<Order | null>(null)
   const [filter, setFilter] = useState<string>('all')
   const [gatewayFilter, setGatewayFilter] = useState<string>('all')
   const [searchQ, setSearchQ] = useState('')
 
   // Map SQLite sales rows to unified Order UI model
-  const orders: Order[] = sales.map((s: any) => {
+  const orders: Order[] = useMemo(() => sales.map((s: any) => {
     let paymentStatus: PaymentStatus = 'Pending'
     if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)) {
       paymentStatus = 'Paid'
@@ -310,20 +314,46 @@ export default function Orders({ sales = [], onResend, globalSearch = '' }: Orde
       qrStatus: (s.status === 'scanned' || s.scannedAt) ? 'Scanned' : 'Not Scanned',
       time: s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—',
       ticketId: s.ticketId || '',
-      errorLog: s.errorLog || []
+      errorLog: s.errorLog || [],
+      showInPres: s.showInPres || false
     }
-  })
+  }), [sales])
 
   const filtered = orders.filter(o => {
-    if (filter !== 'all' && o.paymentStatus.toLowerCase() !== filter) return false
-    if (gatewayFilter !== 'all' && o.gateway.toLowerCase() !== gatewayFilter) return false
+    if (filter === 'paid' && o.paymentStatus !== 'Paid') return false
+    if (filter === 'pending' && o.paymentStatus !== 'Pending') return false
+    if (filter === 'failed' && o.paymentStatus !== 'Failed') return false
     
-    const q = (searchQ || globalSearch).toLowerCase()
-    if (q) {
-      return o.id.toLowerCase().includes(q) || o.buyer.toLowerCase().includes(q) || o.email.toLowerCase().includes(q) || o.txnId.toLowerCase().includes(q)
+    if (gatewayFilter === 'razorpay' && o.gateway !== 'Razorpay') return false
+    if (gatewayFilter === 'manual' && o.gateway !== 'Manual') return false
+
+    if (searchQ) {
+      const q = searchQ.toLowerCase()
+      if (!o.id.toLowerCase().includes(q) &&
+          !o.buyer.toLowerCase().includes(q) &&
+          !o.email.toLowerCase().includes(q) &&
+          !o.txnId.toLowerCase().includes(q)) {
+        return false
+      }
     }
     return true
   })
+
+  const togglePresMode = async (orderId: string, currentVal: boolean) => {
+    if (!adminKey || isPresentation) return;
+    try {
+      const res = await fetch('/api/admin/toggle-presentation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+        body: JSON.stringify({ orderId, showInPres: !currentVal })
+      })
+      if (res.ok && onReload) {
+        onReload();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   const totalAmount = filtered.reduce((a, o) => a + (o.paymentStatus === 'Paid' ? o.final : 0), 0)
 
@@ -422,6 +452,7 @@ export default function Orders({ sales = [], onResend, globalSearch = '' }: Orde
                   { label: 'Download', width: '90px' },
                   { label: 'QR', width: '120px' },
                   { label: 'Time', width: '180px' },
+                  ...(isPresentation ? [] : [{ label: 'Pres. Mode', width: '90px' }]),
                   { label: '', width: '80px' }
                 ].map(col => (
                   <th key={col.label} style={{
@@ -504,6 +535,24 @@ export default function Orders({ sales = [], onResend, globalSearch = '' }: Orde
                     <td style={{ padding: '13px 14px', fontSize: '11px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', width: '180px', minWidth: '180px' }}>
                       {o.time}
                     </td>
+                    {!isPresentation && (
+                      <td style={{ padding: '13px 14px', width: '90px', minWidth: '90px' }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); togglePresMode(o.id, !!o.showInPres); }}
+                          style={{
+                            padding: '4px 8px', borderRadius: '6px',
+                            border: o.showInPres ? '1px solid #9333ea' : '1px solid var(--border)',
+                            backgroundColor: o.showInPres ? '#f3e8ff' : 'var(--muted)',
+                            color: o.showInPres ? '#9333ea' : 'var(--muted-foreground)',
+                            fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '4px'
+                          }}
+                        >
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: o.showInPres ? '#9333ea' : 'transparent', border: o.showInPres ? 'none' : '1px solid var(--muted-foreground)' }} />
+                          {o.showInPres ? 'Shown' : 'Hidden'}
+                        </button>
+                      </td>
+                    )}
                     <td style={{ padding: '13px 14px', width: '80px', minWidth: '80px' }}>
                       <button
                         onClick={e => { e.stopPropagation(); setSelected(o) }}

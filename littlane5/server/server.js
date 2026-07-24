@@ -484,33 +484,26 @@ app.get('/api/admin/config', requireAdmin, (req, res) => {
 });
 
 // ==================== PRESENTATION CONFIG ====================
-const PRES_CONFIG_PATH = path.join(__dirname, 'presentation-config.json');
-
-app.get('/api/admin/presentation-config', requireAdmin, (req, res) => {
+app.post('/api/admin/toggle-presentation', requireAdmin, async (req, res) => {
     try {
-        const fs = require('fs');
-        if (fs.existsSync(PRES_CONFIG_PATH)) {
-            const data = fs.readFileSync(PRES_CONFIG_PATH, 'utf-8');
-            res.json({ success: true, config: JSON.parse(data) });
-        } else {
-            res.json({ success: true, config: { enabled: false, revenue: null, orders: null, tickets: null } });
+        const { orderId, showInPres } = req.body;
+        if (!orderId) {
+            return res.status(400).json({ success: false, message: 'Missing orderId' });
         }
+        const updated = await updateSaleRecord(orderId, { showInPres });
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+        res.json({ success: true, sale: updated });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Failed to read config' });
+        console.error('Error toggling presentation:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
-app.post('/api/admin/presentation-config', requireAdmin, (req, res) => {
-    try {
-        const fs = require('fs');
-        const { enabled, revenue, orders, tickets } = req.body;
-        const config = { enabled, revenue, orders, tickets };
-        fs.writeFileSync(PRES_CONFIG_PATH, JSON.stringify(config, null, 2));
-        res.json({ success: true, config });
-    } catch (err) {
-        res.status(500).json({ success: false, message: 'Failed to save config' });
-    }
-});
+// Remove old config endpoints as we are using real DB now
+// app.get('/api/admin/presentation-config', requireAdmin, (req, res) => { ... })
+// app.post('/api/admin/presentation-config', requireAdmin, (req, res) => { ... })
 
 // ==================== 6. ADMIN — GENERATE TICKET MANUALLY ====================
 app.post('/api/admin/generate-ticket', async (req, res) => {

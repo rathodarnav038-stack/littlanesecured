@@ -4,8 +4,9 @@ interface TicketsProps {
   sales: any[]
   onResend: (ticketId: string) => Promise<void>
   adminKey: string
-  onReload: () => Promise<void>
+  onReload: () => Promise<void> | void
   globalSearch?: string
+  isPresentation?: boolean
 }
 
 interface Ticket {
@@ -23,6 +24,8 @@ interface Ticket {
   qr: string
   pdf: string
   png: string
+  showInPres?: boolean
+  orderId: string
 }
 
 const typeColors: Record<string, { bg: string; color: string }> = {
@@ -44,7 +47,7 @@ function Badge({ label, bg, color }: { label: string; bg: string; color: string 
   return <span style={{ backgroundColor: bg, color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>{label}</span>
 }
 
-export default function Tickets({ sales = [], onResend, adminKey, onReload, globalSearch = '' }: TicketsProps) {
+export default function Tickets({ sales = [], onResend, adminKey, onReload, globalSearch = '', isPresentation = false }: TicketsProps) {
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   
   // Only show records with generated tickets and apply search if provided
@@ -87,6 +90,22 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
     }
   }
 
+  const togglePresMode = async (orderId: string, currentVal: boolean) => {
+    if (!adminKey || isPresentation) return;
+    try {
+      const res = await fetch('/api/admin/toggle-presentation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+        body: JSON.stringify({ orderId, showInPres: !currentVal })
+      })
+      if (res.ok && onReload) {
+        onReload();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const tickets: Ticket[] = ticketSales.map((s: any) => {
     const isCancelled = s.status === 'cancelled'
     const isScanned = s.status === 'scanned' || !!s.scannedAt
@@ -104,7 +123,9 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
       status: isCancelled ? 'Cancelled' : (isScanned ? 'Scanned' : 'Active'),
       qr: '✓',
       pdf: '✓',
-      png: '✓'
+      png: '✓',
+      showInPres: s.showInPres || false,
+      orderId: s.orderId
     }
   })
 
@@ -122,7 +143,7 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-                {['Ticket ID', 'Attendee', 'Event', 'Type', 'Qty', 'Price', 'Generated', 'Status', 'Actions'].map(h => (
+                {['Ticket ID', 'Attendee', 'Event', 'Type', 'Qty', 'Price', 'Generated', 'Status', ...(isPresentation ? [] : ['Pres. Mode']), 'Actions'].map(h => (
                   <th key={h} style={{ padding: '11px 14px', fontSize: '11px', fontWeight: 700, color: 'var(--muted-foreground)', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -153,6 +174,24 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
                       <td style={{ padding: '13px 14px', fontSize: '13px', fontWeight: 700, color: '#9333ea' }}>₹{t.price.toLocaleString()}</td>
                       <td style={{ padding: '13px 14px', fontSize: '11.5px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>{t.generated}</td>
                       <td style={{ padding: '13px 14px' }}><Badge label={t.status} {...sc} /></td>
+                      {!isPresentation && (
+                        <td style={{ padding: '13px 14px' }}>
+                          <button
+                            onClick={e => { e.stopPropagation(); togglePresMode(t.orderId, !!t.showInPres); }}
+                            style={{
+                              padding: '4px 8px', borderRadius: '6px',
+                              border: t.showInPres ? '1px solid #9333ea' : '1px solid var(--border)',
+                              backgroundColor: t.showInPres ? '#f3e8ff' : 'var(--muted)',
+                              color: t.showInPres ? '#9333ea' : 'var(--muted-foreground)',
+                              fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', gap: '4px'
+                            }}
+                          >
+                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: t.showInPres ? '#9333ea' : 'transparent', border: t.showInPres ? 'none' : '1px solid var(--muted-foreground)' }} />
+                            {t.showInPres ? 'Shown' : 'Hidden'}
+                          </button>
+                        </td>
+                      )}
                       <td style={{ padding: '13px 14px' }}>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button

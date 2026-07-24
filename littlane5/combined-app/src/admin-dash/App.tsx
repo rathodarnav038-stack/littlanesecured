@@ -114,7 +114,11 @@ const NavIcon = ({ id }: { id: Page }) => {
   return icons[id]
 }
 
-export default function App() {
+interface AppProps {
+  isPresentation?: boolean;
+}
+
+export default function App({ isPresentation = false }: AppProps) {
   const [page, setPage] = useState<Page>('dashboard')
   const [dark, setDark] = useState(false)
   const [search, setSearch] = useState('')
@@ -158,8 +162,31 @@ export default function App() {
         handleLogout(errReason)
         return false
       }
-      setSales(data.sales)
-      setSummary(data.summary)
+      const fetchedSales = data.sales || []
+      const filteredSales = isPresentation 
+        ? fetchedSales.filter((s: any) => s.showInPres)
+        : fetchedSales
+
+      // Recalculate summary if in presentation mode
+      let activeSummary = data.summary
+      if (isPresentation) {
+        const totalOrders = filteredSales.length
+        const paidOrders = filteredSales.filter((s: any) => s.status === 'paid').length
+        const totalRevenue = filteredSales
+          .filter((s: any) => s.status === 'paid')
+          .reduce((sum: number, s: any) => sum + (Number(s.amount) || 0), 0)
+        
+        activeSummary = {
+          totalOrders,
+          paidOrders,
+          totalRevenue,
+          emailFailures: 0,
+          ticketFailures: 0
+        }
+      }
+
+      setSales(filteredSales)
+      setSummary(activeSummary)
       setTestMode(data.testMode)
       setIsAuthenticated(true)
       setAuthError('')
@@ -349,9 +376,9 @@ export default function App() {
         return <Dashboard sales={sales} summary={summary} testMode={testMode} onManualGenerate={() => setShowManualModal(true)} />
       case 'orders':
       case 'payments':
-        return <Orders sales={sales} onResend={handleResend} globalSearch={search} />
+        return <Orders sales={sales} onResend={handleResend} globalSearch={search} isPresentation={isPresentation} adminKey={adminKey} onReload={() => fetchSales(adminKey)} />
       case 'tickets':
-        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={fetchSales} globalSearch={search} />
+        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={() => fetchSales(adminKey)} globalSearch={search} isPresentation={isPresentation} />
       case 'customers':
         return <Customers sales={sales} adminKey={adminKey} globalSearch={search} />
       case 'events':
