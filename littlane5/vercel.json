@@ -7,6 +7,8 @@
     { "src": "/assets/(.+)", "dest": "/app/assets/$1" },
     { "src": "/dashboard", "dest": "/app/index.html" },
     { "src": "/dashboard/(.*)", "dest": "/app/index.html" },
+    { "src": "/dashhboard", "dest": "/app/index.html" },
+    { "src": "/dashhboard/(.*)", "dest": "/app/index.html" },
     { "src": "/tickets", "dest": "/app/index.html" },
     { "src": "/tickets/(.*)", "dest": "/app/index.html" },
     { "src": "/(.*)", "dest": "/$1" }
