@@ -48,11 +48,14 @@ function Badge({ label, bg, color }: { label: string; bg: string; color: string 
 }
 
 export default function Tickets({ sales = [], onResend, adminKey, onReload, globalSearch = '', isPresentation = false }: TicketsProps) {
+  const [eventFilter, setEventFilter] = useState<string>('all')
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   
   // Only show records with generated tickets and apply search if provided
   const ticketSales = sales.filter(s => {
     if (!s.ticketId) return false
+    if (eventFilter !== 'all' && (s.event || 'FRESHERS TAKEOVER').toLowerCase() !== eventFilter) return false
+    
     const q = globalSearch.toLowerCase()
     if (q) {
       return (s.ticketId || '').toLowerCase().includes(q) || 
@@ -141,12 +144,37 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
     }
   })
 
+  const totalAmount = tickets.reduce((a, t) => a + t.price, 0)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Tickets</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>{tickets.length} tickets · All events</p>
+          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
+            {tickets.length} tickets · ₹{totalAmount.toLocaleString()} total
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Event Filters */}
+        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
+          {(['all', 'freshers takeover', 'aura genesis'] as const).map(e => (
+            <button
+              key={e}
+              onClick={() => setEventFilter(e)}
+              style={{
+                padding: '5px 12px', borderRadius: '7px', border: 'none',
+                backgroundColor: eventFilter === e ? '#10b981' : 'transparent',
+                color: eventFilter === e ? 'white' : 'var(--muted-foreground)',
+                fontSize: '12px', fontWeight: eventFilter === e ? 600 : 400,
+                cursor: 'pointer', textTransform: 'capitalize',
+              }}
+            >
+              {e === 'all' ? 'All Events' : e}
+            </button>
+          ))}
         </div>
       </div>
 

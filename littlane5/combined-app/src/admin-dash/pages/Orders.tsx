@@ -274,6 +274,7 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
   const [selected, setSelected] = useState<Order | null>(null)
   const [filter, setFilter] = useState<string>('all')
   const [gatewayFilter, setGatewayFilter] = useState<string>('all')
+  const [eventFilter, setEventFilter] = useState<string>('all')
   const [searchQ, setSearchQ] = useState('')
 
   // Map SQLite sales rows to unified Order UI model
@@ -327,6 +328,8 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
     if (gatewayFilter === 'razorpay' && o.gateway !== 'Razorpay') return false
     if (gatewayFilter === 'manual' && o.gateway !== 'Manual') return false
 
+    if (eventFilter !== 'all' && o.event.toLowerCase() !== eventFilter) return false
+
     if (searchQ) {
       const q = searchQ.toLowerCase()
       if (!o.id.toLowerCase().includes(q) &&
@@ -367,7 +370,10 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
     }
   }
 
-  const totalAmount = filtered.reduce((a, o) => a + (o.paymentStatus === 'Paid' ? o.final : 0), 0)
+  const totalAmount = filtered.reduce((a, o) => {
+    if (filter === 'all' && o.paymentStatus !== 'Paid') return a
+    return a + o.final
+  }, 0)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -433,6 +439,25 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
               }}
             >
               {g === 'all' ? 'All Gateways' : g}
+            </button>
+          ))}
+        </div>
+
+        {/* Event Filters */}
+        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
+          {(['all', 'freshers takeover', 'aura genesis'] as const).map(e => (
+            <button
+              key={e}
+              onClick={() => setEventFilter(e)}
+              style={{
+                padding: '5px 12px', borderRadius: '7px', border: 'none',
+                backgroundColor: eventFilter === e ? '#10b981' : 'transparent',
+                color: eventFilter === e ? 'white' : 'var(--muted-foreground)',
+                fontSize: '12px', fontWeight: eventFilter === e ? 600 : 400,
+                cursor: 'pointer', textTransform: 'capitalize',
+              }}
+            >
+              {e === 'all' ? 'All Events' : e}
             </button>
           ))}
         </div>
