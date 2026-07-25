@@ -401,14 +401,18 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Orders</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
-            {filtered.length} orders · <strong>₹{totalAmount.toLocaleString()}</strong> total
-          </p>
-          <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '6px' }}>
-            <span>Razorpay: ₹{totalRazorpay.toLocaleString()}</span>
-            <span>Manual: ₹{totalManual.toLocaleString()}</span>
-            <span>Freshers: ₹{totalFreshers.toLocaleString()}</span>
-            <span>Aura: ₹{totalAura.toLocaleString()}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>{filtered.length} orders</span>
+            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>·</span>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: '#059669', backgroundColor: '#d1fae5', padding: '4px 10px', borderRadius: '8px', border: '1px solid #10b981' }}>
+              ₹{totalAmount.toLocaleString()} Total Revenue
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', fontSize: '12.5px', color: 'var(--muted-foreground)', marginTop: '10px', flexWrap: 'wrap' }}>
+            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Razorpay: <strong style={{ color: 'var(--foreground)' }}>₹{totalRazorpay.toLocaleString()}</strong></span>
+            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Manual: <strong style={{ color: 'var(--foreground)' }}>₹{totalManual.toLocaleString()}</strong></span>
+            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Freshers: <strong style={{ color: 'var(--foreground)' }}>₹{totalFreshers.toLocaleString()}</strong></span>
+            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Aura: <strong style={{ color: 'var(--foreground)' }}>₹{totalAura.toLocaleString()}</strong></span>
           </div>
         </div>
       </div>
