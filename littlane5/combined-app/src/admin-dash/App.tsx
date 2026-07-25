@@ -155,7 +155,7 @@ export default function App({ isPresentation = false }: AppProps) {
       return false
     }
     try {
-      const res = await fetch(`/api/admin/sales?key=${encodeURIComponent(keyToUse)}`)
+      const res = await fetch(`/api/admin/sales?key=${encodeURIComponent(keyToUse)}${isPresentation ? '&pres=true' : ''}`)
       const data = await res.json().catch(() => ({}))
       if (res.status === 401 || !res.ok || !data.success) {
         const errReason = data.message || 'Access Denied: Dashboard is bound to its original deployment device.'

@@ -86,6 +86,13 @@ function computeAmount(gender, quantity) {
 
 function requireAdmin(req, res, next) {
     const key = req.headers['x-admin-key'] || req.query.key;
+    const isPres = req.headers['x-presentation'] === 'true' || req.query.pres === 'true';
+
+    // Allow presentation password ONLY for presentation reads
+    if (isPres && req.method === 'GET' && key === 'ftlittlane26') {
+        return next();
+    }
+
     if (key !== ADMIN_KEY) return res.status(401).json({ success: false, message: 'Access Denied: Dashboard is bound to its original deployment device.' });
     next();
 }
