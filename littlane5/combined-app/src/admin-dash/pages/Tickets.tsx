@@ -140,11 +140,18 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
       pdf: '✓',
       png: '✓',
       showInPres: s.showInPres || false,
-      orderId: s.orderId
     }
   })
 
   const totalAmount = tickets.reduce((a, t) => a + t.price, 0)
+  const totalFreshers = tickets.reduce((a, t) => {
+    if (t.event.toLowerCase() !== 'freshers takeover') return a
+    return a + t.price
+  }, 0)
+  const totalAura = tickets.reduce((a, t) => {
+    if (t.event.toLowerCase() !== 'aura genesis') return a
+    return a + t.price
+  }, 0)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -152,8 +159,12 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Tickets</h1>
           <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
-            {tickets.length} tickets · ₹{totalAmount.toLocaleString()} total
+            {tickets.length} tickets · <strong>₹{totalAmount.toLocaleString()}</strong> total
           </p>
+          <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '6px' }}>
+            <span>Freshers: ₹{totalFreshers.toLocaleString()}</span>
+            <span>Aura: ₹{totalAura.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
