@@ -375,6 +375,26 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
     return a + o.final
   }, 0)
 
+  const totalRazorpay = filtered.reduce((a, o) => {
+    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Razorpay') return a
+    return a + o.final
+  }, 0)
+
+  const totalManual = filtered.reduce((a, o) => {
+    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Manual') return a
+    return a + o.final
+  }, 0)
+
+  const totalFreshers = filtered.reduce((a, o) => {
+    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'freshers takeover') return a
+    return a + o.final
+  }, 0)
+
+  const totalAura = filtered.reduce((a, o) => {
+    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'aura genesis') return a
+    return a + o.final
+  }, 0)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header */}
@@ -382,8 +402,14 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Orders</h1>
           <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
-            {filtered.length} orders · ₹{totalAmount.toLocaleString()} total revenue
+            {filtered.length} orders · <strong>₹{totalAmount.toLocaleString()}</strong> total
           </p>
+          <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '6px' }}>
+            <span>Razorpay: ₹{totalRazorpay.toLocaleString()}</span>
+            <span>Manual: ₹{totalManual.toLocaleString()}</span>
+            <span>Freshers: ₹{totalFreshers.toLocaleString()}</span>
+            <span>Aura: ₹{totalAura.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
