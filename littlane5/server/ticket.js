@@ -51,7 +51,7 @@ function pill(doc, { x, y, w, h, bg, textColor, label, fontSize = 8 }) {
         .text(label, x, y + (h - fontSize) / 2 - 1, { width: w, align: 'center' });
 }
 
-const AURA_BANNER_PATH = path.join(__dirname, 'aura-genesis-banner.jpg');
+
 
 /**
  * Renders the "Littix"-style ticket PDF: banner artwork with NOT SCANNED /
