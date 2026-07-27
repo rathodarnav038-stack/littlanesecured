@@ -46,14 +46,15 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   const [activeMetric, setActiveMetric] = useState<'revenue' | 'orders' | 'tickets'>('revenue')
   const [eventModal, setEventModal] = useState<null | { label: string; tickets: any[] }>(null)
 
-  // Calculate live statistics from sales
+  // Calculate live statistics from sales — exclude exclusive/free invite passes
   const paidSales = sales.filter(s => ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status))
+  const revenueSales = paidSales.filter(s => !s.gender || !String(s.gender).toLowerCase().includes('exclusive'))
   
-  const totalRevenue = paidSales.reduce((acc, s) => acc + (s.amount || 0), 0)
+  const totalRevenue = revenueSales.reduce((acc, s) => acc + (s.amount || 0), 0)
   const totalTickets = paidSales.reduce((acc, s) => acc + (s.quantity || 1), 0)
   
   const todayStr = new Date().toDateString()
-  const todayRevenue = paidSales
+  const todayRevenue = revenueSales
     .filter(s => s.createdAt && new Date(s.createdAt).toDateString() === todayStr)
     .reduce((acc, s) => acc + (s.amount || 0), 0)
 

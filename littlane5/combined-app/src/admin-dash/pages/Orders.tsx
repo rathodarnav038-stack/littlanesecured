@@ -372,26 +372,31 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
 
   const totalAmount = filtered.reduce((a, o) => {
     if (filter === 'all' && o.paymentStatus !== 'Paid') return a
+    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 
   const totalRazorpay = filtered.reduce((a, o) => {
     if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Razorpay') return a
+    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 
   const totalManual = filtered.reduce((a, o) => {
     if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Manual') return a
+    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 
   const totalFreshers = filtered.reduce((a, o) => {
     if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'freshers takeover') return a
+    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 
   const totalAura = filtered.reduce((a, o) => {
     if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'aura genesis') return a
+    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 

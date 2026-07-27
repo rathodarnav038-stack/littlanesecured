@@ -123,8 +123,13 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         y += 20;
 
         // Ticket type / qty / price row
+        const isExclusive = gender && gender.toUpperCase().includes('EXCLUSIVE');
         const colW = (W - 48) / 3;
-        const cols = [
+        const cols = isExclusive ? [
+            { label: 'TICKET TYPE', value: 'Exclusive Pass', align: 'left' },
+            { label: 'QTY', value: String(quantity), align: 'center' },
+            { label: 'ACCESS', value: 'Complimentary', align: 'right' }
+        ] : [
             { label: 'TICKET TYPE', value: GENDER_LABEL[gender] || gender, align: 'left' },
             { label: 'QTY', value: String(quantity), align: 'center' },
             { label: 'PRICE', value: `Rs. ${amount}`, align: 'right' }
