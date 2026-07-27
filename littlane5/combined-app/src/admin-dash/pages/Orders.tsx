@@ -293,7 +293,7 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
       emailStatus = 'Failed'
     }
 
-    const tType = s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : 'General'
+    const tType = s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : (String(s.gender || '').toLowerCase().includes('exclusive') ? 'Exclusive Pass' : 'General')
 
     return {
       id: s.orderId,

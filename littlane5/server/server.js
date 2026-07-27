@@ -528,8 +528,9 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
     
     // Compute price dynamically from single source of truth: PRICING
     let finalAmount = parseFloat(amount) || 0;
-    if (finalAmount === 0) {
-        const lowerType = tType.toLowerCase();
+    const lowerType = tType.toLowerCase();
+    const isExclusive = lowerType.includes('exclusive') || (gender && gender.toLowerCase().includes('exclusive'));
+    if (finalAmount === 0 && !isExclusive) {
         if (lowerType.includes('female')) {
             finalAmount = PRICING.female * qty;
         } else if (lowerType.includes('male')) {

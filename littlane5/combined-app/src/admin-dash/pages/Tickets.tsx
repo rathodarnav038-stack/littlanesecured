@@ -130,7 +130,7 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
       email: s.email,
       phone: s.phone || '—',
       event: s.event || 'FRESHERS TAKEOVER',
-      type: s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : 'General',
+      type: s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : (String(s.gender || '').toLowerCase().includes('exclusive') ? 'Exclusive Pass' : 'General'),
       qty: s.quantity || 1,
       price: s.amount,
       generated: s.generatedAt ? new Date(s.generatedAt).toLocaleString('en-IN') : '—',
