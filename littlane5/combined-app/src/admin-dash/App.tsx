@@ -252,9 +252,11 @@ export default function App({ isPresentation = false }: AppProps) {
       return
     }
     const isAura = manualEvent === 'AURA GENESIS'
-    const finalGender = isAura ? 'aura' : manualGender
-    const finalAmount = manualAmount  // always use what admin typed
-    const finalTicketType = isAura ? 'Aura Genesis' : (manualGender === 'female' ? 'Female Pass' : 'Male Pass')
+    const isInvite = manualEvent === 'FT LINEUP INVITE'
+    const finalEvent = isInvite ? 'FRESHERS TAKEOVER' : manualEvent
+    const finalGender = isInvite ? 'Exclusive' : (isAura ? 'aura' : manualGender)
+    const finalAmount = isInvite ? 0 : manualAmount  // always use what admin typed
+    const finalTicketType = isInvite ? 'Exclusive VIP Pass' : (isAura ? 'Aura Genesis' : (manualGender === 'female' ? 'Female Pass' : 'Male Pass'))
 
     setIsManualSubmitting(true)
     try {
@@ -272,7 +274,7 @@ export default function App({ isPresentation = false }: AppProps) {
           ticketType: finalTicketType,
           quantity: manualQty,
           amount: finalAmount,
-          event: manualEvent
+          event: finalEvent
         })
       })
       const data = await res.json()
@@ -592,6 +594,7 @@ export default function App({ isPresentation = false }: AppProps) {
                 >
                   <option value="FRESHERS TAKEOVER">FRESHERS TAKEOVER</option>
                   <option value="AURA GENESIS">AURA GENESIS</option>
+                  <option value="FT LINEUP INVITE">FT LINEUP INVITE (FREE)</option>
                 </select>
               </div>
               <div>
@@ -616,20 +619,31 @@ export default function App({ isPresentation = false }: AppProps) {
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                 />
               </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE PHONE</label>
-                <input
-                  type="text"
-                  placeholder="+91 99999 88888"
-                  value={manualPhone}
-                  onChange={e => setManualPhone(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {manualEvent !== 'FT LINEUP INVITE' && (
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE PHONE</label>
+                  <input
+                    type="text"
+                    placeholder="+91 99999 88888"
+                    value={manualPhone}
+                    onChange={e => setManualPhone(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                  />
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: manualEvent === 'FT LINEUP INVITE' ? '1fr' : '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PASS TYPE</label>
-                  {manualEvent === 'AURA GENESIS' ? (
+                  {manualEvent === 'FT LINEUP INVITE' ? (
+                    <div style={{
+                      width: '100%', padding: '10px', borderRadius: '8px',
+                      border: '1px solid #9333ea', backgroundColor: 'rgba(147,51,234,0.1)',
+                      color: '#a855f7', fontWeight: 600, fontSize: '13px',
+                      display: 'flex', alignItems: 'center', gap: '6px'
+                    }}>
+                      ✨ Exclusive VIP Invite (Free)
+                    </div>
+                  ) : manualEvent === 'AURA GENESIS' ? (
                     <div style={{
                       width: '100%', padding: '10px', borderRadius: '8px',
                       border: '1px solid #f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',
@@ -649,26 +663,28 @@ export default function App({ isPresentation = false }: AppProps) {
                     </select>
                   )}
                 </div>
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PRICE (₹)</label>
-                  <input
-                    type="number"
-                    value={manualAmount}
-                    onChange={e => {
-                      const val = e.target.value
-                      setManualAmount(val)
-                      const key = manualEvent === 'AURA GENESIS' ? 'ft_price_aura' : (manualGender === 'female' ? 'ft_price_female' : 'ft_price_male')
-                      localStorage.setItem(key, val)
-                    }}
-                    style={{
-                      width: '100%', padding: '10px', borderRadius: '8px',
-                      border: manualEvent === 'AURA GENESIS' ? '1px solid #f59e0b' : '1px solid var(--border)',
-                      backgroundColor: manualEvent === 'AURA GENESIS' ? 'rgba(245,158,11,0.08)' : 'var(--muted)',
-                      color: manualEvent === 'AURA GENESIS' ? '#d97706' : 'var(--foreground)',
-                      fontWeight: manualEvent === 'AURA GENESIS' ? 700 : 400,
-                    }}
-                  />
-                </div>
+                {manualEvent !== 'FT LINEUP INVITE' && (
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PRICE (₹)</label>
+                    <input
+                      type="number"
+                      value={manualAmount}
+                      onChange={e => {
+                        const val = e.target.value
+                        setManualAmount(val)
+                        const key = manualEvent === 'AURA GENESIS' ? 'ft_price_aura' : (manualGender === 'female' ? 'ft_price_female' : 'ft_price_male')
+                        localStorage.setItem(key, val)
+                      }}
+                      style={{
+                        width: '100%', padding: '10px', borderRadius: '8px',
+                        border: manualEvent === 'AURA GENESIS' ? '1px solid #f59e0b' : '1px solid var(--border)',
+                        backgroundColor: manualEvent === 'AURA GENESIS' ? 'rgba(245,158,11,0.08)' : 'var(--muted)',
+                        color: manualEvent === 'AURA GENESIS' ? '#d97706' : 'var(--foreground)',
+                        fontWeight: manualEvent === 'AURA GENESIS' ? 700 : 400,
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
                 <button

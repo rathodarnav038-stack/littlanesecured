@@ -95,35 +95,68 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
             ? AURA_BANNER_PATH : BANNER_PATH;
         if (fs.existsSync(bannerForEmail)) attachments.push({ filename: 'banner.png', path: bannerForEmail, cid: 'ticketbanner' });
 
-        const html = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111111; font-size: 15px; line-height: 1.6;">
-          <p>Hi ${name},</p>
-          <p>Thanks for booking your <strong>${eventTitle}</strong> pass! Your Ticket ID is <strong>${ticketId}</strong>.</p>
-          
-          <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
-            <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">🎟️ Ticket Guidelines</p>
-            <ul style="margin: 0; padding-left: 20px; color: #333333;">
-              <li style="margin-bottom: 8px;">Your QR code is unique and valid for one-time entry only.</li>
-              <li style="margin-bottom: 8px;">Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</li>
-              <li style="margin-bottom: 8px;">Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</li>
-              <li style="margin-bottom: 8px;">Keep your ticket ready on your phone or as a printed copy.</li>
-              <li style="margin-bottom: 8px;">Duplicate, tampered, or already-scanned tickets will not be accepted.</li>
-            </ul>
-            <p style="margin: 15px 0 0; font-size: 13px; font-weight: bold; color: #ff0000; line-height: 1.4;">
-              <strong>NO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.</strong>
-            </p>
-          </div>
+        let html, subject, text;
 
-          <p style="font-size: 16px; font-weight: bold; color: #000000;">Find your ticket in the PDF attached below.</p>
-          
-          <p style="margin-top: 30px; font-size: 13px; color: #666666;">
-            See you on the dancefloor!<br>
-            <strong>— LITTLANE Entertainment</strong>
-          </p>
-        </div>`;
+        if (gender && gender.toUpperCase().includes('EXCLUSIVE')) {
+            html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111111; font-size: 15px; line-height: 1.6;">
+              <p>Hi ${name},</p>
+              <p>Congratulations! 🎉</p>
+              <p>We’re excited to officially welcome you to the Freshers Takeover 2026 Influencer Lineup, presented by LITTLANE ENTERTAINMENT.</p>
+              <p>Thank you for being a part of this journey. We’re looking forward to having you with us and creating an unforgettable experience together.</p>
+              
+              <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
+                <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">Event Details</p>
+                <ul style="margin: 0; padding-left: 20px; color: #333333; list-style: disc;">
+                  <li style="margin-bottom: 8px;"><strong>Event:</strong> Freshers Takeover 2026</li>
+                  <li style="margin-bottom: 8px;"><strong>Date:</strong> 5 August 2026</li>
+                  <li style="margin-bottom: 8px;"><strong>Time:</strong> 5pm onwards</li>
+                  <li style="margin-bottom: 8px;"><strong>Venue:</strong> Flo, Hinjewadi, Pune</li>
+                </ul>
+              </div>
 
-        const subject = `Your ${eventTitle} Pass — ${ticketId}`;
-        const text = `Hi ${name},\n\nThanks for booking your ${eventTitle} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
+              <p>Your official Invitation Pass is attached to this email as a PDF. It contains a unique QR code that will be scanned at the venue for entry. Please keep it safe and avoid sharing it, as each QR code is valid for one time entry only.</p>
+              
+              <p style="margin-top: 30px;">
+                We can’t wait to see you at Freshers Takeover 2026!<br><br>
+                Best Regards,<br>
+                <strong>Team LITTLANE ENTERTAINMENT</strong>
+              </p>
+            </div>`;
+            
+            subject = `Your Invitation: Freshers Takeover 2026 Influencer Lineup`;
+            text = `Hi ${name},\n\nCongratulations! 🎉\n\nWe’re excited to officially welcome you to the Freshers Takeover 2026 Influencer Lineup, presented by LITTLANE ENTERTAINMENT.\n\nThank you for being a part of this journey. We’re looking forward to having you with us and creating an unforgettable experience together.\n\nEvent Details\n• Event: Freshers Takeover 2026\n• Date: 5 August 2026\n• Time: 5pm onwards \n• Venue: Flo, Hinjewadi, Pune\n\nYour official Invitation Pass is attached to this email as a PDF. It contains a unique QR code that will be scanned at the venue for entry. Please keep it safe and avoid sharing it, as each QR code is valid for one time entry only.\n\nWe can’t wait to see you at Freshers Takeover 2026!\n\nBest Regards,\nTeam LITTLANE ENTERTAINMENT`;
+        } else {
+            html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111111; font-size: 15px; line-height: 1.6;">
+              <p>Hi ${name},</p>
+              <p>Thanks for booking your <strong>${eventTitle}</strong> pass! Your Ticket ID is <strong>${ticketId}</strong>.</p>
+              
+              <div style="margin: 25px 0; padding: 20px; border: 2px solid #000000; border-radius: 8px; background-color: #ffffff;">
+                <p style="font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 12px; color: #000000; text-transform: uppercase; letter-spacing: 0.05em;">🎟️ Ticket Guidelines</p>
+                <ul style="margin: 0; padding-left: 20px; color: #333333;">
+                  <li style="margin-bottom: 8px;">Your QR code is unique and valid for one-time entry only.</li>
+                  <li style="margin-bottom: 8px;">Do not share or forward this ticket. If someone else uses it first, your entry will be denied.</li>
+                  <li style="margin-bottom: 8px;">Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.</li>
+                  <li style="margin-bottom: 8px;">Keep your ticket ready on your phone or as a printed copy.</li>
+                  <li style="margin-bottom: 8px;">Duplicate, tampered, or already-scanned tickets will not be accepted.</li>
+                </ul>
+                <p style="margin: 15px 0 0; font-size: 13px; font-weight: bold; color: #ff0000; line-height: 1.4;">
+                  <strong>NO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.</strong>
+                </p>
+              </div>
+
+              <p style="font-size: 16px; font-weight: bold; color: #000000;">Find your ticket in the PDF attached below.</p>
+              
+              <p style="margin-top: 30px; font-size: 13px; color: #666666;">
+                See you on the dancefloor!<br>
+                <strong>— LITTLANE Entertainment</strong>
+              </p>
+            </div>`;
+
+            subject = `Your ${eventTitle} Pass — ${ticketId}`;
+            text = `Hi ${name},\n\nThanks for booking your ${eventTitle} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
+        }
 
         // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)
         if (process.env.BREVO_API_KEY) {

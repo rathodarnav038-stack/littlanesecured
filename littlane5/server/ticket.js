@@ -12,6 +12,8 @@ const TICKETS_DIR = path.join(__dirname, 'tickets');
 if (!fs.existsSync(TICKETS_DIR)) fs.mkdirSync(TICKETS_DIR, { recursive: true });
 
 const BANNER_PATH = path.join(__dirname, 'ticket-banner.png');
+const AURA_BANNER_PATH = path.join(__dirname, 'aura-ticket-banner.jpg');
+const INVITE_BANNER_PATH = path.join(__dirname, 'invite-banner.png');
 
 const EVENT_NAME = 'FRESHERS TAKEOVER';
 
@@ -73,11 +75,16 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         const stream = fs.createWriteStream(filePath);
         doc.pipe(stream);
 
+        let bannerToUse = BANNER_PATH;
+        if (event && event.toUpperCase().includes('AURA') && fs.existsSync(AURA_BANNER_PATH)) {
+            bannerToUse = AURA_BANNER_PATH;
+        } else if (gender && gender.toUpperCase().includes('EXCLUSIVE') && fs.existsSync(INVITE_BANNER_PATH)) {
+            bannerToUse = INVITE_BANNER_PATH;
+        }
+
         // ---- Banner artwork ----
-        if (fs.existsSync(bannerFile)) {
-            doc.image(bannerFile, 0, 0, { width: W, height: BANNER_H });
-        } else if (fs.existsSync(BANNER_PATH)) {
-            doc.image(BANNER_PATH, 0, 0, { width: W, height: BANNER_H });
+        if (fs.existsSync(bannerToUse)) {
+            doc.image(bannerToUse, 0, 0, { width: W, height: BANNER_H });
         } else {
             doc.rect(0, 0, W, BANNER_H).fill('#0d0d0f');
         }
@@ -164,5 +171,6 @@ module.exports = {
     buildTicketPdf,
     TICKETS_DIR,
     BANNER_PATH,
-    AURA_BANNER_PATH
+    AURA_BANNER_PATH,
+    INVITE_BANNER_PATH
 };
