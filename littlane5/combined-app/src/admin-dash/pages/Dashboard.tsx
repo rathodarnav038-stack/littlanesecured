@@ -74,6 +74,9 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   const auraGenesis = paidSales.filter(s =>
     (s.event || '').toUpperCase().includes('AURA')
   )
+  const ftInvite = paidSales.filter(s =>
+    (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive')
+  )
 
   const eventBreakdown = [
     {
@@ -105,6 +108,16 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       sold: auraGenesis.reduce((a, s) => a + (s.quantity || 1), 0),
       revenue: auraGenesis.reduce((a, s) => a + (s.amount || 0), 0),
       price: '₹350',
+    },
+    {
+      label: 'FT Lineup Invite',
+      emoji: '👑',
+      color: '#a855f7',
+      gradient: 'linear-gradient(135deg, #7e22ce, #a855f7)',
+      tickets: ftInvite,
+      sold: ftInvite.reduce((a, s) => a + (s.quantity || 1), 0),
+      revenue: 0,
+      price: 'Free',
     },
   ]
 
@@ -322,7 +335,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Event Sales Breakdown</h2>
           <span style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>Click any event to view sold tickets</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
           {eventBreakdown.map((ev) => (
             <div
               key={ev.label}
