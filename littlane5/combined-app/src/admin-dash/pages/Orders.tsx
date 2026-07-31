@@ -276,6 +276,8 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
   const [gatewayFilter, setGatewayFilter] = useState<string>('all')
   const [eventFilter, setEventFilter] = useState<string>('all')
   const [searchQ, setSearchQ] = useState('')
+  const [showPhoneList, setShowPhoneList] = useState(false)
+  const [phoneCopied, setPhoneCopied] = useState(false)
 
   // Map SQLite sales rows to unified Order UI model
   const orders: Order[] = useMemo(() => sales.map((s: any) => {
@@ -496,7 +498,115 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
             </button>
           ))}
         </div>
+
+        {/* Phone List Button */}
+        <button
+          onClick={() => setShowPhoneList(true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            padding: '6px 14px', borderRadius: '10px', border: '1px solid #9333ea',
+            backgroundColor: 'rgba(147,51,234,0.1)', color: '#9333ea',
+            fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          📞 Phone List
+        </button>
       </div>
+
+      {/* Phone List Modal */}
+      {showPhoneList && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+        }} onClick={() => setShowPhoneList(false)}>
+          <div style={{
+            backgroundColor: 'var(--card)', borderRadius: '20px',
+            border: '1px solid var(--border)', width: '520px', maxHeight: '80vh',
+            display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }} onClick={e => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 24px', borderBottom: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--foreground)' }}>📞 Phone Number List</h3>
+                <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'var(--muted-foreground)' }}>
+                  {filtered.length} contacts (based on current filters)
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => {
+                    const text = filtered.map(o => `${o.buyer} — ${o.phone || 'N/A'}`).join('\n')
+                    navigator.clipboard.writeText(text)
+                    setPhoneCopied(true)
+                    setTimeout(() => setPhoneCopied(false), 2000)
+                  }}
+                  style={{
+                    padding: '7px 14px', borderRadius: '8px', border: 'none',
+                    backgroundColor: phoneCopied ? '#22c55e' : '#9333ea',
+                    color: 'white', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  }}
+                >
+                  {phoneCopied ? '✓ Copied!' : 'Copy All'}
+                </button>
+                <button
+                  onClick={() => {
+                    const csv = 'Name,Phone,Event,Pass Type\n' +
+                      filtered.map(o =>
+                        `"${o.buyer}","${o.phone || ''}","${o.event}","${o.ticketType}"`
+                      ).join('\n')
+                    const blob = new Blob([csv], { type: 'text/csv' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a'); a.href = url; a.download = 'phone_list.csv'; a.click()
+                  }}
+                  style={{
+                    padding: '7px 14px', borderRadius: '8px', border: '1px solid var(--border)',
+                    backgroundColor: 'var(--muted)', color: 'var(--foreground)',
+                    fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  }}
+                >
+                  ↓ CSV
+                </button>
+                <button
+                  onClick={() => setShowPhoneList(false)}
+                  style={{
+                    padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--border)',
+                    backgroundColor: 'transparent', color: 'var(--muted-foreground)',
+                    fontSize: '14px', cursor: 'pointer',
+                  }}
+                >✕</button>
+              </div>
+            </div>
+            {/* List */}
+            <div style={{ overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {filtered.map((o, i) => (
+                <div key={o.id} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '10px 14px', borderRadius: '10px',
+                  backgroundColor: i % 2 === 0 ? 'var(--muted)' : 'transparent',
+                  border: '1px solid var(--border)',
+                }}>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>{o.buyer}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{o.event} · {o.ticketType}</div>
+                  </div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#9333ea', fontFamily: 'monospace' }}>
+                    {o.phone || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic', fontWeight: 400 }}>No phone</span>}
+                  </div>
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted-foreground)', fontSize: '13px' }}>
+                  No orders match current filters
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div style={{
