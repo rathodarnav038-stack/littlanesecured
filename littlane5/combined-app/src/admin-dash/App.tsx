@@ -49,7 +49,7 @@ interface AppProps {
 
 export default function App({ isPresentation = false }: AppProps) {
   const [page, setPage] = useState<Page>('dashboard')
-  const [dark, setDark] = useState(true) // default to dark for premium obsidian glass experience
+  const [dark, setDark] = useState(true) // true = dark mode, false = light mode
   const [search, setSearch] = useState('')
   const [adminKey, setAdminKey] = useState(sessionStorage.getItem('ft_admin_key') || localStorage.getItem('ft_admin_key') || '')
   const [keyInput, setKeyInput] = useState('')
@@ -360,7 +360,7 @@ export default function App({ isPresentation = false }: AppProps) {
   }
 
   return (
-    <div className={`p-4 ${dark ? 'dark' : ''}`}>
+    <div className={`min-h-screen ${dark ? '' : 'theme-light'}`}>
       {/* Aurora Ambient Backgrounds */}
       {dark && (
         <div className="lt-aurora">
