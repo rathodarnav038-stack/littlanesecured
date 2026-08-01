@@ -164,7 +164,7 @@ export default function Analytics({ sales }: Props) {
       </div>
 
       {/* Sales Analytics Chart */}
-      <div style={{ backgroundColor: 'var(--card)', borderRadius: '20px', padding: '24px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+      <div className="glass-card lt-in" style={{ borderRadius: '20px', padding: '24px', ['--lt-i' as any]: 1 }}>
         
         {/* Header matching screenshot */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
@@ -240,7 +240,7 @@ export default function Analytics({ sales }: Props) {
       {/* Ticket type breakdown */}
       {ticketTypes.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-          <div style={{ backgroundColor: 'var(--card)', borderRadius: '20px', padding: '20px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+          <div className="glass-card lt-in" style={{ borderRadius: '20px', padding: '20px', ['--lt-i' as any]: 2 }}>
             <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--foreground)', margin: '0 0 16px', letterSpacing: '-0.2px' }}>Ticket Types</h3>
             <ResponsiveContainer width="100%" height={160}>
               <PieChart>
@@ -263,7 +263,7 @@ export default function Analytics({ sales }: Props) {
             </div>
           </div>
 
-          <div style={{ backgroundColor: 'var(--card)', borderRadius: '20px', padding: '20px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+          <div className="glass-card lt-in" style={{ borderRadius: '20px', padding: '20px', ['--lt-i' as any]: 3 }}>
             <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--foreground)', margin: '0 0 16px', letterSpacing: '-0.2px' }}>Payment Gateway</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

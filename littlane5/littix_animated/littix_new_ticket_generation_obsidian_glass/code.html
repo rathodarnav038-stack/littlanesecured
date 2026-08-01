@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix Enterprise - New Ticket Generation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-bright": "#393939",
+                "surface-container-high": "#2a2a2a",
+                "secondary-fixed-dim": "#d2bbff",
+                "on-primary-container": "#2b0088",
+                "on-primary-fixed-variant": "#4918c8",
+                "inverse-on-surface": "#303030",
+                "on-tertiary-fixed": "#001f25",
+                "primary-fixed": "#e6deff",
+                "on-surface": "#e2e2e2",
+                "error-container": "#93000a",
+                "primary-fixed-dim": "#cabeff",
+                "on-secondary-fixed": "#25005a",
+                "on-primary": "#32009a",
+                "tertiary-fixed": "#a3eeff",
+                "secondary-fixed": "#eaddff",
+                "on-background": "#e2e2e2",
+                "surface-container-highest": "#353535",
+                "surface": "#131313",
+                "surface-container-lowest": "#0e0e0e",
+                "on-secondary-fixed-variant": "#552e9b",
+                "tertiary-fixed-dim": "#54d7ef",
+                "outline": "#938ea1",
+                "tertiary": "#54d7ef",
+                "on-surface-variant": "#c9c4d8",
+                "tertiary-container": "#009fb5",
+                "on-error": "#690005",
+                "surface-variant": "#353535",
+                "on-secondary": "#3d0e84",
+                "primary-container": "#947dff",
+                "surface-dim": "#131313",
+                "surface-container": "#1f1f1f",
+                "background": "#131313",
+                "on-secondary-container": "#c6aaff",
+                "on-error-container": "#ffdad6",
+                "inverse-surface": "#e2e2e2",
+                "outline-variant": "#484555",
+                "on-tertiary-container": "#002f36",
+                "secondary-container": "#57319e",
+                "secondary": "#d2bbff",
+                "on-tertiary-fixed-variant": "#004e5a",
+                "primary": "#cabeff",
+                "error": "#ffb4ab",
+                "surface-tint": "#cabeff",
+                "on-tertiary": "#00363e",
+                "on-primary-fixed": "#1c0062",
+                "surface-container-low": "#1b1b1b",
+                "inverse-primary": "#613de0",
+                "iris": "#7c5cfc",
+                "emerald-stock": "#10b981",
+                "neon-red": "#ff3b30"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "container-margin": "1rem",
+                "sidebar-width": "268px",
+                "gutter": "24px",
+                "island-gap": "1rem",
+                "topbar-height": "64px"
+            },
+            "fontFamily": {
+                "label-caps": ["Inter"],
+                "headline-md": ["Inter"],
+                "data-mono": ["JetBrains Mono"],
+                "headline-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "body-sm": ["Inter"],
+                "display-lg": ["Inter"],
+                "body-lg": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 40px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .heavy-glass {
+            background: rgba(19, 19, 19, 0.72);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .iris-gradient {
+            background: linear-gradient(135deg, #7c5cfc 0%, #613de0 100%);
+        }
+
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+
+        .rim-light {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(124, 92, 252, 0.3);
+            border-radius: 10px;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-5%, 5%) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .bg-drift {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .active-dot {
+            width: 4px;
+            height: 4px;
+            background-color: #7c5cfc;
+            border-radius: 50%;
+            position: absolute;
+            left: 8px;
+        }
+    </style>
+<link href="../_animations/animations.css" rel="stylesheet"/>
+</head>
+<body class="antialiased">
+<!-- Drifting Shader Background -->
+<div class="bg-drift">
+
+</div>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-4 top-4 bottom-4 w-[268px] rounded-xl bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-50 flex flex-col gap-2 p-4">
+<div class="flex items-center gap-3 px-4 py-2 mb-6">
+<div class="w-10 h-10 rounded-lg iris-gradient flex items-center justify-center text-white font-bold text-xl">L</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary leading-tight">LitTix</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Enterprise Admin</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
+<!-- Mapping JSON Nav Items -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative hover:scale-[0.98] transition-all active:scale-95" href="#">
+<div class="absolute left-0 w-1 h-4 bg-primary rounded-full"></div>
+<span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">event</span>
+<span class="font-body-sm text-body-sm">Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+<span class="font-body-sm text-body-sm">Email Delivery</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="font-body-sm text-body-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span class="font-body-sm text-body-sm">QR Scan Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<div class="my-4 border-t border-white/5"></div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 heavy-glass rounded-xl flex items-center gap-3 border border-white/5">
+<div class="w-8 h-8 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a corporate administrator in a modern office, cinematic lighting, obsidian glass theme accents, muted violet tones, highly detailed digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg4PGdl49wcaVYTzLfBpZmQf65OE00HlujgmDNI1PCCySZGlT9KCD46lUssgNv-lmLjaLeQ9RdAUYS6cJ65jSqd8KXdqZNrpTDeNvX8W3J1Ws9kQPc1Rt3XapI1rUuDAUxZjF5XY7k9EnXBnvqjhqiSGyy5_XWQfm11FnOcNt8nXHQH_mqU2a8EhopE_CFCdRVTvbQ2NN0IfgRLFNEx2wroZabja52aarHeQQeKy6xbGhZOXUVQnBd"/>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="font-bold text-xs truncate text-on-surface">Alex Mercer</p>
+<p class="text-[10px] text-on-surface-variant truncate">Global Controller</p>
+</div>
+<span class="material-symbols-outlined text-sm text-on-surface-variant">logout</span>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-4 left-[calc(268px+40px)] right-4 h-[64px] bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-50 flex justify-between items-center px-6">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-iris transition-colors">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-12 pr-4 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-iris/50 transition-all" placeholder="Search events or tickets..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-stock animate-pulse"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Live System</span>
+</div>
+<div class="flex items-center gap-3 border-l border-white/10 pl-6">
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-iris rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<button class="px-6 py-2 iris-gradient iris-glow rounded-full font-bold text-white text-sm hover:scale-[1.02] transition-all active:scale-[0.98]">
+                + New Ticket
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[calc(268px+32px)] mt-[calc(64px+32px)] mr-8 pb-12 flex flex-col items-center justify-center min-h-[calc(100vh-140px)]">
+<!-- Ticket Configuration Modal -->
+<div class="w-full max-w-4xl heavy-glass rounded-[32px] overflow-hidden flex flex-col shadow-2xl relative">
+<div class="absolute inset-0 rim-light pointer-events-none"></div>
+<!-- Modal Header -->
+<div class="px-10 py-8 border-b border-white/10 flex justify-between items-center bg-white/5">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white mb-1">Ticket Configuration</h2>
+<p class="font-body-md text-on-surface-variant">Setup event access, pricing tiers, and delivery rules.</p>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-iris/10 border border-iris/20 rounded-full">
+<span class="material-symbols-outlined text-iris text-sm">auto_awesome</span>
+<span class="text-iris font-bold text-xs uppercase tracking-widest">Enterprise Flow</span>
+</div>
+</div>
+<!-- Modal Body (Stepped Flow) -->
+<div class="p-10 flex gap-10">
+<!-- Left Column: Primary Config -->
+<div class="flex-1 space-y-8">
+<!-- Event Selection -->
+<section class="space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Select Event</label>
+<div class="group relative">
+<div class="w-full h-16 glass-card rounded-2xl flex items-center px-4 gap-4 cursor-pointer hover:border-iris/50 transition-all border border-white/10 group-focus-within:border-iris/50">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A stunning futuristic music festival poster in neon colors with abstract sound waves and crowd silhouettes, high resolution, dark mode aesthetic, purple and teal lighting effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv8MqAutn2h7buA8MrSQ47LoWkQeS8tlQwHh7cda0q_dCw_YyvEsxuNI6HNE7wtTJ6p6EoBv5JHeBF2Zlr_JChFy9mbR3dqU7QMmOD2_SBPoSB7v2HeJ8hNGqfe0K82WI5Pc7WMactP60jqUjSCg1NK_-xbBH6ProXnZLgN3799d2TUoo5XIfgtWwNpeGl_Q-iCYhsyUkVk3c4QShrrbQRT8ZnZhYUuGh5A39k3wpM14KHaeF1Nx-v"/>
+</div>
+<div class="flex-1">
+<p class="font-bold text-on-surface">Stellaris Tech Summit 2024</p>
+<p class="text-xs text-on-surface-variant">San Francisco • Nov 12-14</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">unfold_more</span>
+</div>
+</div>
+</section>
+<!-- Tier Selection -->
+<section class="space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Select Tier</label>
+<div class="grid grid-cols-3 gap-3">
+<!-- VIP Card -->
+<div class="p-4 rounded-2xl border border-iris bg-iris/5 relative group cursor-pointer hover:scale-[1.02] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-iris" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-[10px] bg-emerald-stock/20 text-emerald-stock border border-emerald-stock/30 px-2 py-0.5 rounded-full font-bold">IN STOCK</span>
+</div>
+<p class="font-bold text-on-surface">VIP Elite</p>
+<p class="text-sm text-iris font-bold mt-1">$499.00</p>
+<p class="text-[10px] text-on-surface-variant mt-2">124 left in inventory</p>
+</div>
+<!-- GA Card -->
+<div class="p-4 rounded-2xl border border-white/10 glass-card relative group cursor-pointer hover:border-iris/50 hover:scale-[1.02] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-on-surface-variant">confirmation_number</span>
+<span class="text-[10px] bg-emerald-stock/20 text-emerald-stock border border-emerald-stock/30 px-2 py-0.5 rounded-full font-bold">IN STOCK</span>
+</div>
+<p class="font-bold text-on-surface">Gen Admission</p>
+<p class="text-sm text-on-surface-variant font-bold mt-1">$149.00</p>
+<p class="text-[10px] text-on-surface-variant mt-2">1,540 left in inventory</p>
+</div>
+<!-- Early Bird Card -->
+<div class="p-4 rounded-2xl border border-neon-red/50 bg-neon-red/5 relative group cursor-pointer hover:scale-[1.02] transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-neon-red">alarm</span>
+<span class="text-[10px] bg-neon-red/20 text-neon-red border border-neon-red/30 px-2 py-0.5 rounded-full font-bold">LOW STOCK</span>
+</div>
+<p class="font-bold text-on-surface">Early Bird</p>
+<p class="text-sm text-on-surface-variant font-bold mt-1">$99.00</p>
+<p class="text-[10px] text-neon-red mt-2">Only 4 items remaining</p>
+</div>
+</div>
+</section>
+<!-- Quantity & Recipient -->
+<div class="flex gap-6">
+<section class="w-1/3 space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Quantity</label>
+<div class="flex items-center glass-card rounded-xl border border-white/10 p-1">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="w-full bg-transparent border-none text-center font-bold text-on-surface focus:ring-0" type="text" value="1"/>
+<button class="w-10 h-10 flex items-center justify-center text-iris hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</section>
+<section class="flex-1 space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Recipient Type</label>
+<div class="flex glass-card rounded-xl border border-white/10 p-1">
+<button class="flex-1 py-2 px-4 rounded-lg bg-iris text-white font-bold text-sm shadow-lg transition-all">Single User</button>
+<button class="flex-1 py-2 px-4 rounded-lg text-on-surface-variant font-bold text-sm hover:text-on-surface transition-all">Bulk (CSV)</button>
+</div>
+</section>
+</div>
+</div>
+<!-- Right Column: Settings & Rules -->
+<div class="w-[320px] space-y-8 border-l border-white/10 pl-10">
+<section class="space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Access Rules</label>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 glass-card rounded-xl border border-white/10 hover:border-iris/30 cursor-pointer">
+<div class="w-5 h-5 rounded border-2 border-iris flex items-center justify-center bg-iris/20">
+<span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+</div>
+<span class="text-body-sm text-on-surface">One-time Entry</span>
+</div>
+<div class="flex items-center gap-3 p-3 glass-card rounded-xl border border-white/10 hover:border-iris/30 cursor-pointer">
+<div class="w-5 h-5 rounded border-2 border-white/20"></div>
+<span class="text-body-sm text-on-surface">Backstage Access</span>
+</div>
+<div class="flex items-center gap-3 p-3 glass-card rounded-xl border border-white/10 hover:border-iris/30 cursor-pointer">
+<div class="w-5 h-5 rounded border-2 border-white/20"></div>
+<span class="text-body-sm text-on-surface">Transferable</span>
+</div>
+<div class="flex items-center gap-3 p-3 glass-card rounded-xl border border-white/10 hover:border-iris/30 cursor-pointer">
+<div class="w-5 h-5 rounded border-2 border-iris flex items-center justify-center bg-iris/20">
+<span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+</div>
+<span class="text-body-sm text-on-surface">Digital Wallet Only</span>
+</div>
+</div>
+</section>
+<section class="space-y-4">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest block">Summary</label>
+<div class="glass-card rounded-2xl p-6 border-white/10 bg-white/5 space-y-4">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="text-on-surface font-bold font-data-mono">$499.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Tax (8%)</span>
+<span class="text-on-surface font-bold font-data-mono">$39.92</span>
+</div>
+<div class="pt-4 border-t border-white/10 flex justify-between">
+<span class="text-on-surface font-bold">Total</span>
+<span class="text-iris font-bold text-lg font-data-mono">$538.92</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-10 py-8 bg-white/10 border-t border-white/10 flex justify-between items-center">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-white transition-colors group">
+<span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="font-bold text-sm">Discard Draft</span>
+</button>
+<div class="flex items-center gap-4">
+<button class="px-6 py-3 border border-white/10 rounded-xl text-on-surface-variant font-bold text-sm hover:bg-white/5 hover:text-on-surface transition-all">
+                        Export as PDF
+                    </button>
+<button class="px-8 py-3 iris-gradient iris-glow rounded-xl font-bold text-white text-base hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center gap-3" id="generateBtn">
+<span class="material-symbols-outlined">rocket_launch</span>
+                        Generate Tickets
+                    </button>
+</div>
+</div>
+</div>
+<!-- Notification Context -->
+<div class="fixed bottom-10 right-10 flex items-center gap-4 p-4 glass-card border-iris/50 rounded-2xl opacity-0 translate-y-10 transition-all pointer-events-none duration-500" id="toast">
+<div class="w-10 h-10 rounded-full bg-emerald-stock/20 flex items-center justify-center text-emerald-stock">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="text-on-surface font-bold">Tickets Generated Successfully</p>
+<p class="text-xs text-on-surface-variant">Sent to user@enterprise-client.com</p>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions
+        const generateBtn = document.getElementById('generateBtn');
+        const toast = document.getElementById('toast');
+
+        generateBtn.addEventListener('click', () => {
+            generateBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Processing...';
+            generateBtn.style.opacity = '0.8';
+            
+            setTimeout(() => {
+                generateBtn.innerHTML = '<span class="material-symbols-outlined">check</span> Success';
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-10');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    generateBtn.innerHTML = '<span class="material-symbols-outlined">rocket_launch</span> Generate Tickets';
+                    generateBtn.style.opacity = '1';
+                }, 4000);
+            }, 1800);
+        });
+
+        // Hover effect for tier cards
+        const cards = document.querySelectorAll('.tier-card');
+        cards.forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.97)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1.02)';
+            });
+        });
+    </script>
+
+<script src="../_animations/animations.js"></script>
+</body></html>

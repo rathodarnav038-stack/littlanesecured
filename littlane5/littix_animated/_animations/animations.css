@@ -1,0 +1,316 @@
+/* ============================================================
+   LitTix — Obsidian Glass — "Next Level" Animation Layer
+   Drop-in, framework-agnostic. Works purely off existing markup
+   via JS-added classes (see animations.js). Pure CSS, no libs.
+   ============================================================ */
+
+:root{
+  --anim-fast: 150ms;
+  --anim-base: 380ms;
+  --anim-slow: 700ms;
+  --anim-ease: cubic-bezier(.22,1,.36,1);
+  --anim-ease-in: cubic-bezier(.55,0,1,.45);
+  --anim-spring: cubic-bezier(.34,1.56,.64,1);
+  --glow-iris: #7c5cfc;
+  --glow-cyan: #54d7ef;
+}
+
+/* -------------------- global smoothing -------------------- */
+*{ scroll-behavior:smooth; }
+html.dark body{ position:relative; }
+
+/* -------------------- ambient background aurora -------------------- */
+.lt-aurora{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  overflow:hidden; opacity:.55;
+}
+.lt-aurora span{
+  position:absolute; border-radius:50%;
+  filter:blur(90px); mix-blend-mode:screen;
+  animation:lt-float-blob 18s ease-in-out infinite;
+  will-change:transform;
+}
+.lt-aurora span:nth-child(1){
+  width:520px; height:520px; top:-160px; left:-120px;
+  background:radial-gradient(circle at 30% 30%, #7c5cfc, transparent 70%);
+  animation-duration:22s;
+}
+.lt-aurora span:nth-child(2){
+  width:480px; height:480px; bottom:-180px; right:-100px;
+  background:radial-gradient(circle at 60% 40%, #54d7ef, transparent 70%);
+  animation-duration:26s; animation-delay:-6s;
+}
+.lt-aurora span:nth-child(3){
+  width:360px; height:360px; top:40%; left:55%;
+  background:radial-gradient(circle at 50% 50%, #d2bbff, transparent 70%);
+  animation-duration:20s; animation-delay:-12s;
+}
+@keyframes lt-float-blob{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  33%{ transform:translate(40px,-30px) scale(1.08); }
+  66%{ transform:translate(-30px,25px) scale(.95); }
+}
+
+/* -------------------- entrance choreography -------------------- */
+.lt-in{
+  opacity:0;
+  transform:translateY(14px) scale(.985);
+  animation:lt-enter var(--anim-base) var(--anim-ease) forwards;
+  animation-delay:calc(var(--lt-i, 0) * 45ms);
+}
+@keyframes lt-enter{
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+.lt-in-left{
+  opacity:0; transform:translateX(-18px);
+  animation:lt-enter-left var(--anim-base) var(--anim-ease) forwards;
+  animation-delay:calc(var(--lt-i,0) * 45ms);
+}
+@keyframes lt-enter-left{ to{opacity:1; transform:translateX(0);} }
+
+.lt-in-scale{
+  opacity:0; transform:scale(.9);
+  animation:lt-enter-scale var(--anim-base) var(--anim-spring) forwards;
+  animation-delay:calc(var(--lt-i,0) * 45ms);
+}
+@keyframes lt-enter-scale{ to{opacity:1; transform:scale(1);} }
+
+/* -------------------- hover micro-interactions -------------------- */
+.lt-hover-lift{
+  transition:transform var(--anim-fast) var(--anim-ease),
+             box-shadow var(--anim-fast) var(--anim-ease),
+             border-color var(--anim-fast) var(--anim-ease);
+}
+.lt-hover-lift:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px -12px rgba(124,92,252,.45), 0 0 0 1px rgba(124,92,252,.25) inset;
+}
+
+.lt-hover-glow{ position:relative; transition:box-shadow var(--anim-fast) var(--anim-ease), transform var(--anim-fast) var(--anim-ease); }
+.lt-hover-glow:hover{
+  box-shadow:0 0 0 1px rgba(124,92,252,.5), 0 0 24px rgba(124,92,252,.35);
+  transform:translateY(-1px);
+}
+
+.lt-hover-scale{ transition:transform var(--anim-fast) var(--anim-spring); }
+.lt-hover-scale:hover{ transform:scale(1.035); }
+.lt-hover-scale:active{ transform:scale(.97); }
+
+/* row hover sweep */
+tr.lt-row{ position:relative; transition:background-color var(--anim-fast) ease, transform var(--anim-fast) ease; }
+tr.lt-row:hover{ background-color:rgba(124,92,252,.06); }
+tr.lt-row td{ transition:transform var(--anim-fast) var(--anim-ease); }
+
+/* -------------------- buttons: ripple + shimmer -------------------- */
+.lt-ripple{ position:relative; overflow:hidden; isolation:isolate; }
+.lt-ripple .lt-ripple-dot{
+  position:absolute; border-radius:50%;
+  background:rgba(255,255,255,.55);
+  transform:scale(0); opacity:.6;
+  animation:lt-ripple-anim 650ms var(--anim-ease-in) forwards;
+  pointer-events:none;
+}
+@keyframes lt-ripple-anim{
+  to{ transform:scale(1); opacity:0; }
+}
+
+.lt-shimmer-btn{
+  position:relative; overflow:hidden;
+}
+.lt-shimmer-btn::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 45%, transparent 60%);
+  transform:translateX(-120%);
+  transition:transform var(--anim-slow) var(--anim-ease);
+}
+.lt-shimmer-btn:hover::after{ transform:translateX(120%); }
+
+/* pulse for primary CTAs */
+.lt-pulse-ring{ position:relative; }
+.lt-pulse-ring::before{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  box-shadow:0 0 0 0 rgba(124,92,252,.55);
+  animation:lt-pulse-ring 2.4s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes lt-pulse-ring{
+  0%{ box-shadow:0 0 0 0 rgba(124,92,252,.55); }
+  70%{ box-shadow:0 0 0 14px rgba(124,92,252,0); }
+  100%{ box-shadow:0 0 0 0 rgba(124,92,252,0); }
+}
+
+/* -------------------- icons -------------------- */
+.lt-icon-spin{ animation:lt-spin 1.1s linear infinite; }
+@keyframes lt-spin{ to{ transform:rotate(360deg); } }
+
+.lt-icon-bounce:hover{ animation:lt-bounce .5s var(--anim-spring); }
+@keyframes lt-bounce{
+  0%,100%{ transform:translateY(0); }
+  40%{ transform:translateY(-4px); }
+  60%{ transform:translateY(1px); }
+}
+
+.lt-icon-wiggle:hover{ animation:lt-wiggle .45s ease-in-out; }
+@keyframes lt-wiggle{
+  0%,100%{ transform:rotate(0); }
+  25%{ transform:rotate(-10deg); }
+  75%{ transform:rotate(10deg); }
+}
+
+/* -------------------- status dots / badges -------------------- */
+.lt-live-dot{ position:relative; display:inline-block; }
+.lt-live-dot::after{
+  content:""; position:absolute; inset:-4px; border-radius:50%;
+  border:2px solid currentColor; opacity:.6;
+  animation:lt-live-ping 1.6s cubic-bezier(0,0,.2,1) infinite;
+}
+@keyframes lt-live-ping{
+  0%{ transform:scale(.6); opacity:.7; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
+
+.lt-badge-pop{ animation:lt-badge-pop var(--anim-spring) 380ms both; }
+@keyframes lt-badge-pop{
+  0%{ transform:scale(0); }
+  70%{ transform:scale(1.15); }
+  100%{ transform:scale(1); }
+}
+
+/* -------------------- progress / bars / gauges -------------------- */
+.lt-bar-fill{
+  transform-origin:left center;
+  animation:lt-bar-grow 1.1s var(--anim-ease) forwards;
+}
+@keyframes lt-bar-grow{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+
+.lt-gradient-shift{
+  background-size:200% 200%;
+  animation:lt-gradient-shift 6s ease infinite;
+}
+@keyframes lt-gradient-shift{
+  0%{ background-position:0% 50%; }
+  50%{ background-position:100% 50%; }
+  100%{ background-position:0% 50%; }
+}
+
+/* -------------------- skeleton shimmer (loading) -------------------- */
+.lt-skeleton{
+  position:relative; overflow:hidden;
+  background:rgba(255,255,255,.06);
+}
+.lt-skeleton::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  transform:translateX(-100%);
+  animation:lt-skeleton-sweep 1.4s ease-in-out infinite;
+}
+@keyframes lt-skeleton-sweep{ to{ transform:translateX(100%); } }
+
+/* -------------------- sidebar / nav -------------------- */
+.lt-nav-item{ position:relative; transition:color var(--anim-fast) ease, background-color var(--anim-fast) ease, padding-left var(--anim-fast) ease; }
+.lt-nav-item:hover{ padding-left:4px; }
+.lt-nav-item::before{
+  content:""; position:absolute; left:-12px; top:50%; height:0; width:3px;
+  background:linear-gradient(180deg,var(--glow-iris),var(--glow-cyan));
+  border-radius:4px; transform:translateY(-50%);
+  transition:height var(--anim-fast) var(--anim-ease);
+}
+.lt-nav-item:hover::before, .lt-nav-item.active::before{ height:70%; }
+
+/* -------------------- cards: glass sheen sweep -------------------- */
+.lt-glass-sheen{ position:relative; overflow:hidden; }
+.lt-glass-sheen::before{
+  content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,.08), transparent);
+  transform:skewX(-20deg);
+  transition:left 900ms var(--anim-ease);
+  pointer-events:none;
+}
+.lt-glass-sheen:hover::before{ left:130%; }
+
+/* -------------------- modals / overlays -------------------- */
+.lt-modal-backdrop{ animation:lt-fade-in var(--anim-base) var(--anim-ease) both; }
+@keyframes lt-fade-in{ from{ opacity:0; } to{ opacity:1; } }
+.lt-modal-panel{ animation:lt-modal-in var(--anim-base) var(--anim-spring) both; }
+@keyframes lt-modal-in{
+  from{ opacity:0; transform:translateY(24px) scale(.96); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* -------------------- toast -------------------- */
+.lt-toast{ animation:lt-toast-in var(--anim-base) var(--anim-spring) both; }
+@keyframes lt-toast-in{
+  from{ opacity:0; transform:translateX(40px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+
+/* -------------------- tab underline slide -------------------- */
+.lt-tab-underline{
+  position:absolute; bottom:0; height:2px; border-radius:2px;
+  background:linear-gradient(90deg,var(--glow-iris),var(--glow-cyan));
+  transition:left var(--anim-base) var(--anim-ease), width var(--anim-base) var(--anim-ease);
+}
+
+/* -------------------- number ticker -------------------- */
+.lt-ticker{ font-variant-numeric:tabular-nums; }
+
+/* -------------------- scroll reveal -------------------- */
+.lt-reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s var(--anim-ease), transform .6s var(--anim-ease); }
+.lt-reveal.lt-visible{ opacity:1; transform:translateY(0); }
+
+/* -------------------- focus rings -------------------- */
+input.lt-focus, select.lt-focus, textarea.lt-focus{
+  transition:box-shadow var(--anim-fast) ease, border-color var(--anim-fast) ease, transform var(--anim-fast) ease;
+}
+input.lt-focus:focus, select.lt-focus:focus, textarea.lt-focus:focus{
+  box-shadow:0 0 0 3px rgba(124,92,252,.28);
+  transform:translateY(-1px);
+}
+
+/* -------------------- checkbox / toggle pop -------------------- */
+input[type="checkbox"].lt-focus:checked{ animation:lt-check-pop .3s var(--anim-spring); }
+@keyframes lt-check-pop{ 0%{ transform:scale(.6);} 70%{ transform:scale(1.2);} 100%{ transform:scale(1);} }
+
+/* -------------------- page load curtain -------------------- */
+.lt-curtain{
+  position:fixed; inset:0; z-index:9999;
+  background:#0e0e0e;
+  display:flex; align-items:center; justify-content:center;
+  animation:lt-curtain-out 900ms var(--anim-ease) 250ms forwards;
+}
+.lt-curtain-logo{
+  font-family:'JetBrains Mono',monospace; letter-spacing:.3em; font-weight:700;
+  font-size:14px; color:#cabeff;
+  animation:lt-curtain-logo-pulse 1.1s ease-in-out infinite;
+}
+@keyframes lt-curtain-logo-pulse{ 0%,100%{ opacity:.4;} 50%{ opacity:1;} }
+@keyframes lt-curtain-out{
+  to{ opacity:0; visibility:hidden; pointer-events:none; transform:scale(1.04); }
+}
+
+/* -------------------- scrollbar -------------------- */
+.lt-scroll::-webkit-scrollbar{ width:8px; height:8px; }
+.lt-scroll::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--glow-iris),var(--glow-cyan));
+  border-radius:8px;
+}
+.lt-scroll::-webkit-scrollbar-track{ background:transparent; }
+
+/* -------------------- cursor spotlight (added via JS to body) -------------------- */
+.lt-spotlight{
+  position:fixed; width:340px; height:340px; border-radius:50%;
+  background:radial-gradient(circle, rgba(124,92,252,.10), transparent 70%);
+  pointer-events:none; z-index:1; transform:translate(-50%,-50%);
+  transition:opacity .3s ease; will-change:transform;
+}
+
+/* -------------------- reduced motion respect -------------------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}

@@ -78,8 +78,9 @@ export default function Events({ sales, adminKey, onNavigateToTickets }: Props) 
           return (
             <div key={event.name} 
               onClick={() => onNavigateToTickets && onNavigateToTickets()}
+              className="glass-card lt-hover-lift lt-in"
               style={{
-                backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)',
+                borderRadius: '16px',
                 overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
                 cursor: 'pointer',
                 transition: 'transform 0.15s, box-shadow 0.15s',

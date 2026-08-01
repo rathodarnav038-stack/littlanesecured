@@ -52,7 +52,7 @@ export default function Refunds({ sales, adminKey }: Props) {
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Refunds & Failed Payments</h1>
           <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>No orders yet</p>
         </div>
-        <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
+        <div className="glass-card lt-in" style={{ borderRadius: '16px', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px', ['--lt-i' as any]: 1 }}>
           ↩️ Refund and failed payment records will appear here
         </div>
       </div>
@@ -76,15 +76,15 @@ export default function Refunds({ sales, adminKey }: Props) {
           { label: 'Pending Payments', value: pendingCount, color: '#d97706' },
           { label: 'Total Orders', value: sales.length, color: '#9333ea' },
           { label: 'Successful', value: paidOrders.length, color: '#16a34a' },
-        ].map(s => (
-          <div key={s.label} style={{ backgroundColor: 'var(--card)', borderRadius: '14px', padding: '16px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+        ].map((s, idx) => (
+          <div key={s.label} className="glass-card lt-in" style={{ borderRadius: '14px', padding: '16px', ['--lt-i' as any]: idx }}>
             <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</div>
             <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'auto', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'auto', ['--lt-i' as any]: 5 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>

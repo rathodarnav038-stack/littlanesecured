@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix Enterprise Admin - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Design System Tokens -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#57319e",
+                    "on-secondary": "#3d0e84",
+                    "secondary": "#d2bbff",
+                    "tertiary": "#54d7ef",
+                    "on-primary": "#32009a",
+                    "surface-container-lowest": "#0e0e0e",
+                    "primary": "#cabeff",
+                    "iris": "#7c5cfc",
+                    "on-surface": "#e2e2e2",
+                    "secondary-fixed": "#eaddff",
+                    "on-tertiary-fixed-variant": "#004e5a",
+                    "on-error": "#690005",
+                    "surface-container-high": "#2a2a2a",
+                    "primary-fixed": "#e6deff",
+                    "tertiary-container": "#009fb5",
+                    "on-primary-fixed": "#1c0062",
+                    "surface-container": "#1f1f1f",
+                    "surface-container-highest": "#353535",
+                    "on-tertiary": "#00363e",
+                    "on-tertiary-container": "#002f36",
+                    "on-secondary-container": "#c6aaff",
+                    "on-secondary-fixed": "#25005a",
+                    "tertiary-fixed": "#a3eeff",
+                    "surface-container-low": "#1b1b1b",
+                    "primary-fixed-dim": "#cabeff",
+                    "outline": "#938ea1",
+                    "on-tertiary-fixed": "#001f25",
+                    "tertiary-fixed-dim": "#54d7ef",
+                    "inverse-surface": "#e2e2e2",
+                    "secondary-fixed-dim": "#d2bbff",
+                    "surface-variant": "#353535",
+                    "inverse-primary": "#613de0",
+                    "surface-dim": "#131313",
+                    "surface-bright": "#393939",
+                    "outline-variant": "#484555",
+                    "on-primary-fixed-variant": "#4918c8",
+                    "error-container": "#93000a",
+                    "inverse-on-surface": "#303030",
+                    "on-error-container": "#ffdad6",
+                    "primary-container": "#947dff",
+                    "on-secondary-fixed-variant": "#552e9b",
+                    "error": "#ffb4ab",
+                    "on-surface-variant": "#c9c4d8",
+                    "on-primary-container": "#2b0088",
+                    "surface": "#131313",
+                    "background": "#131313",
+                    "on-background": "#e2e2e2",
+                    "surface-tint": "#cabeff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "topbar-height": "64px",
+                    "sidebar-width": "268px",
+                    "island-gap": "1rem",
+                    "container-margin": "1rem",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "data-mono": ["JetBrains Mono"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 40px 40px -10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .obsidian-glass {
+            background: #000000;
+            backdrop-filter: blur(48px);
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        
+        .obsidian-glass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: scale(0.99);
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.2);
+        }
+
+        .iris-gradient {
+            background: linear-gradient(135deg, #7C5CFC 0%, #9F7AEA 100%);
+        }
+
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+
+        @keyframes sparkline-draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .sparkline path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: sparkline-draw 2s ease-out forwards;
+        }
+
+        .live-feed-item {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+        }
+
+        .failure-pulse {
+            animation: pulse-red 2s infinite;
+        }
+
+        .data-point {
+            filter: drop-shadow(0 0 8px #7c5cfc);
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+<link href="../_animations/animations.css" rel="stylesheet"/>
+</head>
+<body class="p-4">
+<!-- Side Navigation Bar -->
+<aside class="fixed left-4 top-4 bottom-4 w-sidebar-width glass-card rounded-xl z-50 flex flex-col gap-2 p-4">
+<div class="mb-6 flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-lg iris-gradient flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">LitTix</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Enterprise Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full hover:bg-white/5 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-body-sm text-body-sm">Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-body-sm text-body-sm">Email Delivery</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-sm text-body-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">keyboard_return</span>
+<span class="font-body-sm text-body-sm">Refunds</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-body-sm text-body-sm">QR Scan Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<div class="pt-4 mt-4 border-t border-white/10">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto p-2 glass-card rounded-lg flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-white/20" data-alt="A professional portrait of a tech executive" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzvffPhRM9_CJAcsOXx8VF9RuCi1u6-eAwLddA5RCi9-x2Zm3xKRV0QWsKHpKMWtazV8qhytI7lDVCO4ejw0uIgVLwk4uvnusyWRX8TMzrzHlArj7h2INezrxxvPThJGcULsa9XM-HdXoMFUjrssDgIZMANjSBoUg9Vp9f5rDos5ZU3tQVBuEf8muTNuVb2w_mGDhnkh9cSJZ0zOtD4QpcI_KlD7azKlgIAGv0nGCgoOUR6f3FCPOV"/>
+<div class="overflow-hidden">
+<p class="font-body-sm text-body-sm text-on-surface truncate">Alex Rivera</p>
+<p class="text-[10px] text-on-surface-variant truncate">Master Admin</p>
+</div>
+<button class="ml-auto text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">logout</span></button>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-4 left-[calc(268px+2rem)] right-4 h-topbar-height glass-card rounded-full z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="bg-white/5 border-white/10 rounded-full pl-10 pr-4 py-1.5 text-body-sm w-full focus:ring-1 focus:ring-primary focus:bg-white/10 outline-none transition-all" placeholder="Search analytics, tickets, or customers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-full">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+<span class="text-[11px] font-bold tracking-wider">LIVE</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span class="material-symbols-outlined">help</span></button>
+<button class="iris-gradient iris-glow px-6 py-2 rounded-full text-white font-bold text-body-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                New Ticket
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[calc(268px+1rem)] mt-[calc(64px+1rem)] p-4 space-y-6 min-h-screen">
+<!-- Header Section -->
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Dashboard Overview</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Welcome back, Alex. Here's what's happening with LitTix today.</p>
+</div>
+<!-- KPI Section (Preserved) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- 1. Total Revenue -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2 group">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="text-[11px] font-bold text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">+14.2%</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Total Revenue</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">₹2.4 Cr</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,15 L10,12 L20,18 L30,10 L40,14 L50,8 L60,12 L70,5 L80,10 L90,2 L100,6" fill="none" stroke="#cabeff" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- 2. Today's Revenue -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Today's Revenue</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">₹8.4L</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,10 L25,12 L50,5 L75,15 L100,2" fill="none" stroke="#54d7ef" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- 3. Tickets Sold -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Tickets Sold</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">184.2K</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,18 L20,10 L40,14 L60,5 L80,8 L100,2" fill="none" stroke="#d2bbff" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- 4. QR Scanned -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-on-tertiary-fixed-variant/20 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">QR Scanned</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">152.1K</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,15 L25,18 L50,12 L75,10 L100,5" fill="none" stroke="#009fb5" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- 5. Total Orders -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-primary-container/20 text-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined">shopping_basket</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Total Orders</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">14,205</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,5 L20,15 L40,8 L60,18 L80,12 L100,10" fill="none" stroke="#947dff" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- 6. Successful Payments -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2 border-green-500/20">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Successful Payments</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-green-400 drop-shadow-[0_0_10px_rgba(48,209,88,0.3)]">12,501</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,10 L33,2 L66,5 L100,0" fill="none" stroke="#30D158" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- 7. Failed Payments -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2 border-[#FF3B30]/40 bg-[#FF3B30]/5 failure-pulse">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-[#FF3B30]/20 text-[#FF3B30] flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+</div>
+<div>
+<p class="text-[#FF3B30] text-[12px] uppercase tracking-wider font-extrabold">Failed Payments</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-[#FF3B30] drop-shadow-[0_0_15px_rgba(255,59,48,0.6)]">1,704</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,2 L10,18 L20,4 L30,19 L40,5 L50,18 L60,4 L70,19 L80,5 L90,18 L100,2" fill="none" stroke="#FF3B30" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- 8. Emails Delivered -->
+<div class="glass-card p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-on-secondary-fixed-variant/20 text-on-secondary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined">mail_outline</span>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Emails Delivered</p>
+<h3 class="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">142,492</h3>
+</div>
+<div class="h-10 mt-2 w-full">
+<svg class="sparkline w-full h-full" viewbox="0 0 100 20">
+<path d="M0,10 H100" fill="none" stroke="#552e9b" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Event Performance cards (Preserved) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Freshers Male -->
+<div class="relative h-48 rounded-2xl overflow-hidden glass-card group">
+<div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent z-10"></div>
+<div class="absolute inset-0 bg-blue-500/10 group-hover:bg-blue-500/20 transition-all"></div>
+<div class="absolute bottom-4 left-4 z-20">
+<h4 class="font-headline-md text-headline-md text-white font-bold">Freshers Male</h4>
+<p class="text-blue-200 text-body-sm font-data-mono">₹42.5L Revenue</p>
+</div>
+<img class="absolute inset-0 object-cover w-full h-full opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZJvrwzVgKX7TMUX_D8AtXI_3NDXIPiGNYeNOIALCYdEiUV20SIQriTCFrDtxKfy5p4JpA3P_W_lETG1gn3YCW7_G7gFKIKe5BgwsHPEIcqHX_0ImBOYRdY3zwrkhf6wBsJMrPVWKcFxJ9uJiyZzoo8xPlkDMGmrmPbRWg-o050rbADWVUY91v4uW2jKMYt86O7123YoyCM0XNGfF_2W8a-_h3TeSKe0FyazY1wRYSvkJyQeX0iWzD"/>
+</div>
+<!-- Freshers Female -->
+<div class="relative h-48 rounded-2xl overflow-hidden glass-card group">
+<div class="absolute inset-0 bg-gradient-to-t from-pink-900/80 to-transparent z-10"></div>
+<div class="absolute inset-0 bg-pink-500/10 group-hover:bg-pink-500/20 transition-all"></div>
+<div class="absolute bottom-4 left-4 z-20">
+<h4 class="font-headline-md text-headline-md text-white font-bold">Freshers Female</h4>
+<p class="text-pink-200 text-body-sm font-data-mono">₹58.1L Revenue</p>
+</div>
+<img class="absolute inset-0 object-cover w-full h-full opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh-7BtvQvmoaqV8gyoig6WCpmSDVYgOjgu38yBpRJ7UcJs9dix7vIRUvyQzkaei9Ri1y3-nShy93fdsq-BLHhjWMliBCaHDlWkb532W8TCfWY1rc_kCc44b21U-QPbPqLny5EAAo7KVMhzQUhhdVdCbRdFSpV00Ngb9nMz2tkWmXBW_-GVPB_jlZKg5XerUuuN2wiMD59_9-DjqC5FfJbarsirkn62mdVvr5bLG5HbvfC5Jn6Bc9dg"/>
+</div>
+<!-- Aura Genesis -->
+<div class="relative h-48 rounded-2xl overflow-hidden glass-card group">
+<div class="absolute inset-0 bg-gradient-to-t from-orange-900/80 to-transparent z-10"></div>
+<div class="absolute inset-0 bg-orange-500/10 group-hover:bg-orange-500/20 transition-all"></div>
+<div class="absolute bottom-4 left-4 z-20">
+<h4 class="font-headline-md text-headline-md text-white font-bold">Aura Genesis</h4>
+<p class="text-orange-200 text-body-sm font-data-mono">₹1.2 Cr Revenue</p>
+</div>
+<img class="absolute inset-0 object-cover w-full h-full opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4RI5R4IGi1wKgByds3a8y-UuLNgU0euja-z_Miud6xLj4OjqJyet8L6CWSHFu9er15gkpq9khxkgRzU4RgU2n159d9kcPBtGeTM9hBAY9rRcTXXVS7uNu8pc8knfBsOzPIpcNvz0CDvMI48oIKy-qCq7FWXHy2MWSojG2-N_TaxqusTjUCHXJJg1rcqOc6fG3OyG7YZK0VMVWhnUMsfLPZopOMaJYUHY912RxPoTFsbYad81iOoWl"/>
+</div>
+<!-- FT Lineup Invite -->
+<div class="relative h-48 rounded-2xl overflow-hidden glass-card group">
+<div class="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent z-10"></div>
+<div class="absolute inset-0 bg-purple-500/10 group-hover:bg-purple-500/20 transition-all"></div>
+<div class="absolute bottom-4 left-4 z-20">
+<h4 class="font-headline-md text-headline-md text-white font-bold">FT Lineup Invite</h4>
+<p class="text-purple-200 text-body-sm font-data-mono">₹18.4L Revenue</p>
+</div>
+<img class="absolute inset-0 object-cover w-full h-full opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH11-C7JSHj2VKdjBJ8FkU7_8YAVF9VWXoCvAVE00Y-QRHZZAhFDsvTSeK0Vlrp3Vmy8cb7kgWFh_RQFip0SxpXoMKgrLHgkLRx7r8AHmV3HecMvmw6BESeuarwZZ8prGmJTyGwmZka9bfBqAk__3TSww2Lo0sWktfXSHY4Zr1As7dlOohJpzAwiv7Y-peF-P60NLX0os4gqFB-Y8ImrccO-b2iijgmsuRe6jobDd7hFODj2uP8LM_"/>
+</div>
+</div>
+<!-- Main Content Row: REVENUE ANALYTICS & LIVE FEED -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left (2/3): Sophisticated Revenue Chart -->
+<div class="lg:col-span-2 obsidian-glass rounded-3xl p-8 flex flex-col gap-8">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">Revenue Analytics</h4>
+<p class="text-on-surface/60 text-body-sm font-light">Global ticket sales performance across all events</p>
+</div>
+<div class="flex bg-white/5 p-1 rounded-full border border-white/10 shadow-inner">
+<button class="px-5 py-1.5 rounded-full text-[12px] font-bold bg-iris text-white shadow-lg shadow-iris/20">Daily</button>
+<button class="px-5 py-1.5 rounded-full text-[12px] font-bold text-on-surface/40 hover:text-on-surface transition-all">Weekly</button>
+<button class="px-5 py-1.5 rounded-full text-[12px] font-bold text-on-surface/40 hover:text-on-surface transition-all">Monthly</button>
+</div>
+</div>
+<!-- Premium Chart Visualization -->
+<div class="flex-1 relative min-h-[360px] w-full flex flex-col">
+<!-- Grid Lines (Etched Glass Look) -->
+<div class="absolute inset-0 flex flex-col justify-between py-12 pointer-events-none opacity-20">
+<div class="border-b border-white/40 w-full h-px"></div>
+<div class="border-b border-white/40 w-full h-px"></div>
+<div class="border-b border-white/40 w-full h-px"></div>
+<div class="border-b border-white/40 w-full h-px"></div>
+<div class="border-b border-white/40 w-full h-px"></div>
+</div>
+<svg class="absolute inset-0 w-full h-full px-2" preserveaspectratio="none" viewbox="0 0 1000 400">
+<defs>
+<lineargradient id="irisFlow" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color: #7c5cfc; stop-opacity: 0.25"></stop>
+<stop offset="50%" style="stop-color: #7c5cfc; stop-opacity: 0.1"></stop>
+<stop offset="100%" style="stop-color: #7c5cfc; stop-opacity: 0"></stop>
+</lineargradient>
+<filter id="neonGlow">
+<fegaussianblur in="SourceGraphic" result="blur" stddeviation="4"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Breathing Area Fill -->
+<path d="M0,320 C100,310 150,220 200,160 C250,100 300,180 400,200 C500,220 600,100 700,40 C800,-20 850,240 900,280 C950,320 1000,150 1000,120 L1000,400 L0,400 Z" fill="url(#irisFlow)" opacity="0.8">
+<animate attributename="opacity" dur="5s" repeatcount="indefinite" values="0.6;0.9;0.6"></animate>
+</path>
+<!-- Vibrant Path -->
+<path d="M0,320 C100,310 150,220 200,160 C250,100 300,180 400,200 C500,220 600,100 700,40 C800,-20 850,240 900,280 C950,320 1000,150 1000,120" fill="none" filter="url(#neonGlow)" stroke="#7c5cfc" stroke-linecap="round" stroke-width="4"></path>
+<!-- Glow Data Point Markers -->
+<circle class="data-point" cx="200" cy="160" fill="#fff" r="4"></circle>
+<circle class="data-point" cx="400" cy="200" fill="#fff" r="4"></circle>
+<circle class="data-point" cx="700" cy="40" fill="#fff" r="4"></circle>
+<circle class="data-point" cx="900" cy="280" fill="#fff" r="4"></circle>
+</svg>
+<!-- X-Axis Labels -->
+<div class="mt-auto flex justify-between px-2 pt-6 text-[11px] font-data-mono text-on-surface/60 font-light tabular-nums uppercase tracking-widest">
+<span>06:00</span>
+<span>09:00</span>
+<span>12:00</span>
+<span>15:00</span>
+<span>18:00</span>
+<span>21:00</span>
+<span>00:00</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-8 border-t border-white/5 pt-8">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Avg Order Value</span>
+<span class="font-data-mono text-2xl font-semibold text-on-surface tabular-nums">₹2,840.00</span>
+</div>
+<div class="flex flex-col gap-1 border-l border-white/10 pl-8">
+<span class="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Conversion Rate</span>
+<span class="font-data-mono text-2xl font-semibold text-on-surface tabular-nums">82.4%</span>
+</div>
+<div class="flex flex-col gap-1 border-l border-white/10 pl-8">
+<span class="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Refund Rate</span>
+<span class="font-data-mono text-2xl font-semibold text-tertiary tabular-nums">0.45%</span>
+</div>
+</div>
+</div>
+<!-- Right (1/3): Cinematic Command Stream Activity -->
+<div class="obsidian-glass rounded-3xl flex flex-col h-full overflow-hidden">
+<div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02] backdrop-blur-md">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface font-semibold">Live Activity</h4>
+<p class="text-[10px] text-on-surface/40 uppercase tracking-widest mt-1">High Velocity Stream</p>
+</div>
+<div class="flex items-center gap-2 bg-iris/10 border border-iris/20 px-2.5 py-1 rounded">
+<div class="w-1.5 h-1.5 rounded-full bg-iris animate-pulse"></div>
+<span class="text-[10px] text-iris font-bold uppercase tracking-tighter">Live</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-5 space-y-4" id="live-activity-feed">
+<!-- Purchase Item (Iris Glow) -->
+<div class="live-feed-item glass-card p-4 rounded-xl border-l-[3px] border-iris bg-iris/[0.03] group hover:bg-iris/[0.06] shadow-lg shadow-iris/5">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-iris/10 flex items-center justify-center text-iris shadow-[inset_0_0_12px_rgba(124,92,252,0.3)]">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-body-sm font-bold text-on-surface">Aura Genesis Sale</p>
+<span class="text-[10px] text-on-surface/40 font-data-mono tabular-nums">1.2s ago</span>
+</div>
+<p class="text-[11px] text-on-surface/60 font-data-mono tabular-nums leading-relaxed">
+                            ₹12,500.00 • <span class="text-iris">Arjun K.</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Payment Success (Emerald Glow) -->
+<div class="live-feed-item glass-card p-4 rounded-xl border-l-[3px] border-emerald-500 bg-emerald-500/[0.03] group hover:bg-emerald-500/[0.06] shadow-lg shadow-emerald-500/5">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shadow-[inset_0_0_12px_rgba(16,185,129,0.3)]">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-body-sm font-bold text-on-surface">Verified Success</p>
+<span class="text-[10px] text-on-surface/40 font-data-mono tabular-nums">12.4s ago</span>
+</div>
+<p class="text-[11px] text-on-surface/60 font-data-mono tabular-nums">
+                            TXN_9821010 • <span class="text-emerald-400">Settled</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Payment Failed (Electric Red Glow) -->
+<div class="live-feed-item glass-card p-4 rounded-xl border-l-[3px] border-[#FF3B30] bg-[#FF3B30]/[0.05] failure-pulse group hover:bg-[#FF3B30]/[0.08]">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-[#FF3B30]/20 flex items-center justify-center text-[#FF3B30] shadow-[0_0_15px_rgba(255,59,48,0.4)]">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">report</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-body-sm font-bold text-[#FF3B30]">Transaction Failed</p>
+<span class="text-[10px] text-[#FF3B30]/60 font-data-mono tabular-nums">1.4m ago</span>
+</div>
+<p class="text-[11px] text-[#FF3B30]/80 font-data-mono tabular-nums">
+                            Bank Timeout • ₹2,400.00
+                        </p>
+</div>
+</div>
+</div>
+<!-- Regular Sale -->
+<div class="live-feed-item glass-card p-4 rounded-xl border-l-[3px] border-iris bg-iris/[0.03] group hover:bg-iris/[0.06]">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-iris/10 flex items-center justify-center text-iris">
+<span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<p class="text-body-sm font-bold text-on-surface">Freshers Female</p>
+<span class="text-[10px] text-on-surface/40 font-data-mono tabular-nums">3.8m ago</span>
+</div>
+<p class="text-[11px] text-on-surface/60 font-data-mono tabular-nums">
+                            ₹1,200.00 • <span class="text-iris">Sara V.</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+    const feedContainer = document.getElementById('live-activity-feed');
+    const eventTypes = [
+        { 
+            label: 'New Purchase', 
+            icon: 'shopping_cart', 
+            borderColor: 'border-iris', 
+            bgColor: 'bg-iris/[0.03]', 
+            iconBg: 'bg-iris/10',
+            txtColor: 'text-iris',
+            glowColor: 'shadow-iris/5',
+            innerGlow: 'shadow-[inset_0_0_12px_rgba(124,92,252,0.3)]'
+        },
+        { 
+            label: 'Payment Settled', 
+            icon: 'verified', 
+            borderColor: 'border-emerald-500', 
+            bgColor: 'bg-emerald-500/[0.03]', 
+            iconBg: 'bg-emerald-500/10',
+            txtColor: 'text-emerald-400',
+            glowColor: 'shadow-emerald-500/5',
+            innerGlow: 'shadow-[inset_0_0_12px_rgba(16,185,129,0.3)]'
+        },
+        { 
+            label: 'System Alert', 
+            icon: 'report', 
+            borderColor: 'border-[#FF3B30]', 
+            bgColor: 'bg-[#FF3B30]/[0.05]', 
+            iconBg: 'bg-[#FF3B30]/20',
+            txtColor: 'text-[#FF3B30]',
+            pulse: true,
+            glowColor: 'shadow-[#FF3B30]/10',
+            innerGlow: 'shadow-[0_0_15px_rgba(255,59,48,0.4)]'
+        }
+    ];
+
+    function addLiveItem() {
+        const event = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+        const item = document.createElement('div');
+        const timestamp = (Math.random() * 2).toFixed(1) + 's ago';
+        const amount = '₹' + (Math.floor(Math.random() * 5000) + 1000).toLocaleString() + '.00';
+        
+        item.className = `live-feed-item glass-card p-4 rounded-xl border-l-[3px] ${event.borderColor} ${event.bgColor} ${event.pulse ? 'failure-pulse' : ''} group hover:bg-opacity-20 transition-all shadow-lg ${event.glowColor}`;
+        
+        item.innerHTML = `
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-lg ${event.iconBg} flex items-center justify-center ${event.txtColor} ${event.innerGlow || ''}">
+                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">${event.icon}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-body-sm font-bold ${event.pulse ? 'text-[#FF3B30]' : 'text-on-surface'}">${event.label}</p>
+                        <span class="text-[10px] text-on-surface/40 font-data-mono tabular-nums">${timestamp}</span>
+                    </div>
+                    <p class="text-[11px] ${event.pulse ? 'text-[#FF3B30]/80' : 'text-on-surface/60'} font-data-mono tabular-nums">
+                        ${amount} • <span class="${event.pulse ? '' : event.txtColor}">Auto-generated Stream</span>
+                    </p>
+                </div>
+            </div>
+        `;
+
+        feedContainer.prepend(item);
+        if (feedContainer.children.length > 7) {
+            feedContainer.removeChild(feedContainer.lastChild);
+        }
+    }
+
+    setInterval(addLiveItem, 5000);
+</script>
+
+<script src="../_animations/animations.js"></script>
+</body></html>

@@ -193,7 +193,7 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
         </div>
       </div>
 
-      <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 2 }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>

@@ -120,7 +120,7 @@ interface AppProps {
 
 export default function App({ isPresentation = false }: AppProps) {
   const [page, setPage] = useState<Page>('dashboard')
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(true) // default to dark for premium obsidian glass experience
   const [search, setSearch] = useState('')
   const [adminKey, setAdminKey] = useState(sessionStorage.getItem('ft_admin_key') || localStorage.getItem('ft_admin_key') || '')
   const [keyInput, setKeyInput] = useState('')
@@ -138,6 +138,34 @@ export default function App({ isPresentation = false }: AppProps) {
   const [testMode, setTestMode] = useState(true)
   const [showManualModal, setShowManualModal] = useState(false)
   const [isManualSubmitting, setIsManualSubmitting] = useState(false)
+
+  // Obsidian Glass animated features
+  const [spotlightPos, setSpotlightPos] = useState({ x: -1000, y: -1000 })
+  const [showCurtain, setShowCurtain] = useState(() => {
+    // Only show curtain once per session
+    return !sessionStorage.getItem('lt_curtain_shown')
+  })
+
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      setSpotlightPos({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener('pointermove', handlePointerMove, { passive: true })
+    
+    if (showCurtain) {
+      const timer = setTimeout(() => {
+        setShowCurtain(false)
+        sessionStorage.setItem('lt_curtain_shown', '1')
+      }, 1200)
+      return () => {
+        window.removeEventListener('pointermove', handlePointerMove)
+        clearTimeout(timer)
+      }
+    }
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+    }
+  }, [showCurtain])
 
   // Manual generation state
   const [manualName, setManualName] = useState('')
@@ -405,27 +433,63 @@ export default function App({ isPresentation = false }: AppProps) {
   return (
     <div className={dark ? 'dark' : ''} style={{
       minHeight: '100vh',
-      backgroundColor: dark ? '#0d0d0f' : '#f4f4f5',
-      color: dark ? '#f4f4f5' : '#18181b',
+      backgroundColor: dark ? '#000000' : '#f4f4f5',
+      color: dark ? '#e2e2e2' : '#18181b',
       fontFamily: "'Inter', sans-serif",
+      position: 'relative',
+      overflowX: 'hidden',
       // Define our CSS variables so they function reliably in both dark and light modes
-      ['--background' as any]: dark ? '#09090b' : '#f4f4f5',
-      ['--card' as any]: dark ? '#18181b' : '#ffffff',
-      ['--border' as any]: dark ? '#27272a' : '#e4e4e7',
-      ['--foreground' as any]: dark ? '#f4f4f5' : '#18181b',
-      ['--muted' as any]: dark ? '#27272a' : '#f4f4f5',
+      ['--background' as any]: dark ? '#000000' : '#f4f4f5',
+      ['--card' as any]: dark ? 'rgba(255, 255, 255, 0.045)' : '#ffffff',
+      ['--border' as any]: dark ? 'rgba(255, 255, 255, 0.09)' : '#e4e4e7',
+      ['--foreground' as any]: dark ? '#e2e2e2' : '#18181b',
+      ['--muted' as any]: dark ? 'rgba(255, 255, 255, 0.03)' : '#f4f4f5',
       ['--muted-foreground' as any]: dark ? '#a1a1aa' : '#71717a',
     }}>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Curtain intro */}
+      {showCurtain && !isPresentation && (
+        <div className="lt-curtain">
+          <span className="lt-curtain-logo">LITTIX</span>
+        </div>
+      )}
+
+      {/* Aurora Ambient Backgrounds */}
+      {dark && (
+        <div className="lt-aurora">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      )}
+
+      {/* Cursor Spotlight */}
+      {dark && (
+        <div
+          className="lt-spotlight"
+          style={{
+            left: spotlightPos.x,
+            top: spotlightPos.y,
+          }}
+        />
+      )}
+
+      <div style={{ display: 'flex', minHeight: '100vh', position: 'relative', zIndex: 10 }}>
         {/* Sidebar */}
-        <aside style={{
-          width: '264px', minHeight: '100vh', backgroundColor: 'var(--card)', borderRight: '1px solid var(--border)',
-          display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, overflowY: 'auto',
-        }}>
+        <aside 
+          className={dark ? 'glass-card' : ''} 
+          style={{
+            width: '264px', minHeight: '100vh', 
+            backgroundColor: dark ? 'rgba(255, 255, 255, 0.02)' : 'var(--card)', 
+            borderRight: '1px solid var(--border)',
+            display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, overflowY: 'auto',
+            backdropFilter: dark ? 'blur(32px)' : 'none',
+            WebkitBackdropFilter: dark ? 'blur(32px)' : 'none',
+          }}
+        >
           <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '36px', height: '36px', background: 'linear-gradient(135deg, #9333EA, #C084FC)',
+              <div className="iris-gradient" style={{
+                width: '36px', height: '36px',
                 borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -446,25 +510,33 @@ export default function App({ isPresentation = false }: AppProps) {
                 <button
                   key={item.id}
                   onClick={() => setPage(item.id)}
+                  className={`lt-nav-item lt-hover-scale ${active ? 'active' : ''}`}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px',
                     borderRadius: '10px', marginBottom: '2px', cursor: 'pointer', border: 'none',
-                    background: active ? 'linear-gradient(135deg, #9333EA, #A855F7)' : 'transparent',
-                    color: active ? '#ffffff' : 'var(--muted-foreground)', fontSize: '13.5px', fontWeight: active ? 600 : 450,
-                    textAlign: 'left', letterSpacing: '-0.1px', boxShadow: active ? '0 2px 8px rgba(147,51,234,0.35)' : 'none',
+                    background: active ? 'rgba(124, 92, 252, 0.15)' : 'transparent',
+                    color: active ? '#cabeff' : 'var(--muted-foreground)', fontSize: '13.5px', fontWeight: active ? 700 : 450,
+                    textAlign: 'left', letterSpacing: '-0.1px',
+                    position: 'relative',
                   }}
                 >
-                  <span style={{ opacity: active ? 1 : 0.7, flexShrink: 0 }}>
+                  {active && (
+                    <span style={{
+                      position: 'absolute', left: '4px', top: '50%', transform: 'translateY(-50%)',
+                      width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#7C5CFC'
+                    }} />
+                  )}
+                  <span style={{ opacity: active ? 1 : 0.7, flexShrink: 0, paddingLeft: active ? '4px' : '0' }}>
                     <NavIcon id={item.id} />
                   </span>
-                  {item.label}
+                  <span style={{ paddingLeft: active ? '2px' : '0' }}>{item.label}</span>
                 </button>
               )
             })}
           </nav>
 
           <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-            <button onClick={handleLogout} style={{
+            <button onClick={handleLogout} className="lt-hover-scale" style={{
               width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px',
               borderRadius: '10px', border: 'none', background: 'transparent', color: '#ef4444',
               fontSize: '13.5px', fontWeight: 500, cursor: 'pointer', textAlign: 'left',
@@ -478,11 +550,18 @@ export default function App({ isPresentation = false }: AppProps) {
         </aside>
 
         {/* Main Panel */}
-        <div style={{ flex: 1, marginLeft: '264px', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <header style={{
-            height: '60px', backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)',
-            display: 'flex', alignItems: 'center', padding: '0 24px', gap: '16px', position: 'sticky', top: 0, zIndex: 30,
-          }}>
+        <div style={{ flex: 1, marginLeft: '264px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 10 }}>
+          <header 
+            className={dark ? 'glass-card' : ''} 
+            style={{
+              height: '60px', 
+              backgroundColor: dark ? 'rgba(255, 255, 255, 0.02)' : 'var(--card)', 
+              borderBottom: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', padding: '0 24px', gap: '16px', position: 'sticky', top: 0, zIndex: 30,
+              backdropFilter: dark ? 'blur(32px)' : 'none',
+              WebkitBackdropFilter: dark ? 'blur(32px)' : 'none',
+            }}
+          >
             <div style={{ flex: 1, maxWidth: '420px', position: 'relative' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}>

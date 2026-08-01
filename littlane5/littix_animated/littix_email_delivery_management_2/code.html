@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix | Email Delivery Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --iris-gradient: linear-gradient(135deg, #cabeff 0%, #947dff 100%);
+            --glass-fill: rgba(255, 255, 255, 0.045);
+            --glass-border: rgba(255, 255, 255, 0.09);
+        }
+
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow-x: hidden;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: var(--glass-fill);
+            backdrop-filter: blur(32px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: scale(0.98);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+
+        .red-glow {
+            box-shadow: 0 0 25px rgba(255, 59, 48, 0.3);
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            text-transform: capitalize;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Border top-left lighting effect */
+        .rim-light {
+            position: relative;
+        }
+        .rim-light::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#eaddff",
+                      "on-secondary-fixed": "#25005a",
+                      "inverse-on-surface": "#303030",
+                      "tertiary": "#54d7ef",
+                      "on-tertiary-fixed": "#001f25",
+                      "on-secondary-fixed-variant": "#552e9b",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-error": "#690005",
+                      "secondary-container": "#57319e",
+                      "on-primary-fixed": "#1c0062",
+                      "inverse-primary": "#613de0",
+                      "primary": "#cabeff",
+                      "surface-container-low": "#1b1b1b",
+                      "tertiary-fixed-dim": "#54d7ef",
+                      "tertiary-fixed": "#a3eeff",
+                      "error": "#ffb4ab",
+                      "surface-container": "#1f1f1f",
+                      "outline": "#938ea1",
+                      "on-primary-container": "#2b0088",
+                      "background": "#131313",
+                      "on-background": "#e2e2e2",
+                      "on-primary-fixed-variant": "#4918c8",
+                      "inverse-surface": "#e2e2e2",
+                      "surface-bright": "#393939",
+                      "on-tertiary-container": "#002f36",
+                      "on-surface": "#e2e2e2",
+                      "on-primary": "#32009a",
+                      "on-tertiary-fixed-variant": "#004e5a",
+                      "on-secondary": "#3d0e84",
+                      "tertiary-container": "#009fb5",
+                      "surface-container-high": "#2a2a2a",
+                      "error-container": "#93000a",
+                      "secondary": "#d2bbff",
+                      "primary-fixed-dim": "#cabeff",
+                      "surface-container-highest": "#353535",
+                      "surface-tint": "#cabeff",
+                      "surface-dim": "#131313",
+                      "on-secondary-container": "#c6aaff",
+                      "on-surface-variant": "#c9c4d8",
+                      "primary-fixed": "#e6deff",
+                      "outline-variant": "#484555",
+                      "surface-variant": "#353535",
+                      "on-tertiary": "#00363e",
+                      "surface": "#131313",
+                      "primary-container": "#947dff",
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#d2bbff"
+              },
+              "spacing": {
+                      "island-gap": "1rem",
+                      "topbar-height": "64px",
+                      "sidebar-width": "268px",
+                      "gutter": "24px",
+                      "container-margin": "1rem"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "data-mono": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<link href="../_animations/animations.css" rel="stylesheet"/>
+</head>
+<body class="bg-black">
+<!-- Atmospheric Shader Background -->
+
+<!-- Side Navigation Island -->
+<nav class="fixed left-4 top-4 bottom-4 w-[268px] bg-white/5 backdrop-blur-3xl border border-white/10 rounded-xl shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-50 flex flex-col gap-2 p-4">
+<div class="mb-6 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">LitTix</h1>
+<p class="text-[11px] font-label-caps text-on-surface-variant uppercase tracking-widest">Enterprise Admin</p>
+</div>
+<div class="flex flex-col gap-1 overflow-y-auto custom-scrollbar flex-grow">
+<!-- Active State Navigation -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-body-sm text-body-sm">Email Delivery</span>
+</a>
+<!-- Other Tabs -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-sm text-body-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+<div class="mt-auto p-4 glass-card rounded-xl rim-light">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">JD</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">John Doe</p>
+<p class="text-[10px] text-on-surface-variant">System Admin</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Top Navigation Island -->
+<header class="fixed top-4 left-[calc(268px+32px)] right-4 h-16 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant scale-90" data-icon="search">search</span>
+<input class="w-full bg-white/5 border-white/10 rounded-full pl-10 pr-4 py-1.5 font-body-sm text-body-sm text-on-surface focus:ring-1 focus:ring-primary focus:border-primary transition-all" placeholder="Search delivery logs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Live System Status</span>
+</div>
+<div class="flex items-center gap-3 border-l border-white/10 pl-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="help">help</button>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded-full font-body-sm text-body-sm font-bold iris-glow hover:scale-[1.02] active:scale-95 transition-all">+ New Ticket</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[300px] mt-24 px-4 pb-8 relative z-30">
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-island-gap">
+<!-- Total Card -->
+<div class="glass-card rim-light rounded-2xl p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary" data-icon="outbox">outbox</span>
+<span class="text-[10px] font-label-caps text-green-400 bg-green-400/10 px-2 py-0.5 rounded border border-green-400/20">+12%</span>
+</div>
+<h3 class="text-on-surface-variant font-label-caps uppercase tracking-wider text-[11px]">Total Sent</h3>
+<p class="font-display-lg text-display-lg text-on-surface">1.2M</p>
+<div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-primary w-full shadow-[0_0_8px_rgba(202,190,255,0.5)]"></div>
+</div>
+</div>
+<!-- Delivered Card -->
+<div class="glass-card rim-light rounded-2xl p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-green-400" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] font-label-caps text-green-400 bg-green-400/10 px-2 py-0.5 rounded border border-green-400/20">99.8%</span>
+</div>
+<h3 class="text-on-surface-variant font-label-caps uppercase tracking-wider text-[11px]">Delivered</h3>
+<p class="font-display-lg text-display-lg text-on-surface">1.19M</p>
+<div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-green-400 w-[99.8%] shadow-[0_0_8px_rgba(74,222,128,0.5)]"></div>
+</div>
+</div>
+<!-- Failed Card (Critical Glow) -->
+<div class="glass-card rim-light red-glow rounded-2xl p-6 flex flex-col gap-2 relative overflow-hidden">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-error" data-icon="error_outline">error_outline</span>
+<span class="text-[10px] font-label-caps text-error bg-error/10 px-2 py-0.5 rounded border border-error/20">+0.2%</span>
+</div>
+<h3 class="text-on-surface-variant font-label-caps uppercase tracking-wider text-[11px]">Delivery Failed</h3>
+<p class="font-display-lg text-display-lg text-on-surface">2,412</p>
+<div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-error w-[40%] shadow-[0_0_12px_rgba(255,59,48,0.6)]"></div>
+</div>
+</div>
+<!-- Queue Card -->
+<div class="glass-card rim-light rounded-2xl p-6 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-tertiary" data-icon="hourglass_empty">hourglass_empty</span>
+<span class="text-[10px] font-label-caps text-tertiary bg-tertiary/10 px-2 py-0.5 rounded border border-tertiary/20">Active</span>
+</div>
+<h3 class="text-on-surface-variant font-label-caps uppercase tracking-wider text-[11px]">In Queue</h3>
+<p class="font-display-lg text-display-lg text-on-surface">148</p>
+<div class="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-tertiary w-[15%] shadow-[0_0_8px_rgba(84,215,239,0.5)]"></div>
+</div>
+</div>
+</div>
+<!-- High-Density Log Table -->
+<div class="glass-card rim-light rounded-2xl overflow-hidden mt-island-gap">
+<div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+<h2 class="font-headline-md text-[18px] font-bold text-on-surface">Real-Time Trigger Log</h2>
+<div class="flex gap-2">
+<button class="bg-white/5 border border-white/10 px-4 py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-all">Export CSV</button>
+<button class="bg-white/5 border border-white/10 px-4 py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span> Filter
+                    </button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-white/[0.03] text-left">
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider">Trigger Time</th>
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider">Recipient</th>
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider">Event</th>
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider">Subject</th>
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider text-center">Status</th>
+<th class="px-6 py-4 font-label-caps text-[10px] uppercase text-on-surface-variant tracking-wider text-center">Retries</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-[13px] text-on-surface">
+<!-- Table Row 1: Delivered -->
+<tr class="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">2023-10-27 14:22:01</td>
+<td class="px-6 py-4 font-body-sm">m.anderson@example.com</td>
+<td class="px-6 py-4">
+<span class="bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10">TICKET_PURCHASE</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant truncate max-w-[200px]">Your Tickets for Neon Nights Festival</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge bg-green-500/15 text-green-400 border border-green-500/20">Delivered</span>
+</td>
+<td class="px-6 py-4 text-center">0</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<!-- Table Row 2: Bounced -->
+<tr class="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">2023-10-27 14:21:45</td>
+<td class="px-6 py-4 font-body-sm">j.k@invalid-domain.co</td>
+<td class="px-6 py-4">
+<span class="bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10">PWD_RESET</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant truncate max-w-[200px]">Reset Your Password - LitTix Account</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge bg-error/15 text-error border border-error/20">Bounced</span>
+</td>
+<td class="px-6 py-4 text-center text-error">3</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<!-- Table Row 3: Opened -->
+<tr class="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">2023-10-27 14:19:30</td>
+<td class="px-6 py-4 font-body-sm">sarah.web@studio.org</td>
+<td class="px-6 py-4">
+<span class="bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10">EVENT_UPDATE</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant truncate max-w-[200px]">IMPORTANT: Schedule Change for VIP Session</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge bg-primary/15 text-primary border border-primary/20">Opened</span>
+</td>
+<td class="px-6 py-4 text-center">0</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<!-- Table Row 4: Spam -->
+<tr class="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">2023-10-27 14:15:12</td>
+<td class="px-6 py-4 font-body-sm">info@marketing-bot.net</td>
+<td class="px-6 py-4">
+<span class="bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10">NEWSLETTER</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant truncate max-w-[200px]">Weekly Digest: Top Trending Events</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge bg-yellow-400/15 text-yellow-400 border border-yellow-400/20">Spam</span>
+</td>
+<td class="px-6 py-4 text-center">1</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+<!-- Table Row 5: Delivered -->
+<tr class="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">2023-10-27 14:12:55</td>
+<td class="px-6 py-4 font-body-sm">alex_v@provider.com</td>
+<td class="px-6 py-4">
+<span class="bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10">TICKET_PURCHASE</span>
+</td>
+<td class="px-6 py-4 text-on-surface-variant truncate max-w-[200px]">Order Confirmation #88291</td>
+<td class="px-6 py-4 text-center">
+<span class="status-badge bg-green-500/15 text-green-400 border border-green-500/20">Delivered</span>
+</td>
+<td class="px-6 py-4 text-center">0</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="more_vert">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-white/[0.01] flex justify-between items-center border-t border-white/5">
+<p class="font-body-sm text-[12px] text-on-surface-variant">Showing 1-5 of 14,203 results</p>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span></button>
+<button class="w-8 h-8 rounded border border-primary/20 bg-primary/10 flex items-center justify-center text-primary font-bold text-[12px]">1</button>
+<button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all text-[12px]">2</button>
+<button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all text-[12px]">3</button>
+<button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- System Stats / Chart Area -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mt-island-gap">
+<div class="lg:col-span-2 glass-card rim-light rounded-2xl p-6 h-[300px] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-body-md font-bold">Delivery Velocity (24h)</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-[11px] text-on-surface-variant uppercase">Emails/min</span>
+</div>
+</div>
+</div>
+<div class="flex-grow flex items-end gap-2 px-2 pb-2">
+<!-- Simple CSS-based bar chart representing velocity -->
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[40%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[55%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[45%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[70%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[85%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[60%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[95%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[75%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[40%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[50%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[80%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[65%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[45%] transition-all"></div>
+<div class="flex-grow bg-primary/20 hover:bg-primary/40 rounded-t h-[90%] transition-all"></div>
+</div>
+<div class="flex justify-between mt-2 font-data-mono text-[10px] text-on-surface-variant">
+<span>00:00</span>
+<span>06:00</span>
+<span>12:00</span>
+<span>18:00</span>
+<span>NOW</span>
+</div>
+</div>
+<div class="glass-card rim-light rounded-2xl p-6 flex flex-col gap-6">
+<h3 class="font-body-md font-bold">Health Monitor</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">API Latency</span>
+<span class="text-primary font-data-mono">42ms</span>
+</div>
+<div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[30%]"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Queue Depth</span>
+<span class="text-tertiary font-data-mono">Low</span>
+</div>
+<div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[15%]"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Error Rate</span>
+<span class="text-error font-data-mono">0.02%</span>
+</div>
+<div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-error w-[5%] shadow-[0_0_8px_rgba(255,59,48,0.4)]"></div>
+</div>
+</div>
+<div class="mt-auto p-4 bg-white/[0.03] rounded-xl border border-white/10">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-green-400 text-[20px]" data-icon="cloud_done">cloud_done</span>
+<p class="font-body-sm text-on-surface text-[13px]">Provider: AWS SES</p>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">All regions operational. Next routine maintenance scheduled for Nov 1st.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple ripple effect on cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', (e) => {
+                card.style.transform = 'scale(0.97)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Dynamic update simulation for "In Queue"
+        setInterval(() => {
+            const queueValue = document.querySelector('p.text-display-lg:last-of-type');
+            if (queueValue) {
+                let current = parseInt(queueValue.innerText);
+                let change = Math.floor(Math.random() * 5) - 2;
+                queueValue.innerText = Math.max(120, current + change);
+            }
+        }, 3000);
+    </script>
+
+<script src="../_animations/animations.js"></script>
+</body></html>

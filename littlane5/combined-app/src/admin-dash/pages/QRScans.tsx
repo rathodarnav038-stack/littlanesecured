@@ -51,8 +51,8 @@ export default function QRScans({ sales = [] }: QRScansProps) {
           { label: 'Accepted', value: accepted, color: '#22c55e', icon: '✓' },
           { label: 'Rejected / Dup', value: rejected + duplicate, color: '#f59e0b', icon: '⚠' },
           { label: 'Unique Scanners', value: new Set(scans.map(s => s.scanner)).size, color: '#3b82f6', icon: '📡' },
-        ].map(s => (
-          <div key={s.label} style={{ backgroundColor: 'var(--card)', borderRadius: '14px', padding: '16px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+        ].map((s, idx) => (
+          <div key={s.label} className="glass-card lt-in" style={{ borderRadius: '14px', padding: '16px', ['--lt-i' as any]: idx }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</div>
               <div style={{ fontSize: '20px' }}>{s.icon}</div>
@@ -62,7 +62,7 @@ export default function QRScans({ sales = [] }: QRScansProps) {
         ))}
       </div>
 
-      <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 4 }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
             <thead>

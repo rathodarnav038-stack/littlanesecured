@@ -49,8 +49,8 @@ export default function EmailDelivery({ sales = [], onResend }: EmailDeliveryPro
           { label: 'Sent Successfully', value: sent, color: '#22c55e', icon: '✓' },
           { label: 'Failed Deliveries', value: failed, color: '#ef4444', icon: '✗' },
           { label: 'In Queue', value: pending, color: '#f59e0b', icon: '⏳' },
-        ].map(s => (
-          <div key={s.label} style={{ backgroundColor: 'var(--card)', borderRadius: '14px', padding: '16px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+        ].map((s, idx) => (
+          <div key={s.label} className="glass-card lt-in" style={{ borderRadius: '14px', padding: '16px', ['--lt-i' as any]: idx }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</div>
               <div style={{ fontSize: '20px' }}>{s.icon}</div>
@@ -60,7 +60,7 @@ export default function EmailDelivery({ sales = [], onResend }: EmailDeliveryPro
         ))}
       </div>
 
-      <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 5 }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>

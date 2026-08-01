@@ -299,14 +299,12 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         {kpis.map((kpi, i) => (
           <div
             key={i}
+            className="glass-card lt-in"
             style={{
-              backgroundColor: 'var(--card)',
               borderRadius: '16px',
               padding: '16px',
-              border: '1px solid var(--border)',
-              boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
               cursor: 'pointer',
-              transition: 'transform 0.15s, box-shadow 0.15s',
+              ['--lt-i' as any]: i,
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
@@ -336,10 +334,11 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
           <span style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>Click any event to view sold tickets</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
-          {eventBreakdown.map((ev) => (
+          {eventBreakdown.map((ev, i) => (
             <div
               key={ev.label}
               onClick={() => setEventModal({ label: ev.label, tickets: ev.tickets })}
+              className="lt-hover-lift lt-glass-sheen lt-in-scale"
               style={{
                 background: ev.gradient,
                 borderRadius: '16px',
@@ -349,10 +348,8 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                 position: 'relative',
                 overflow: 'hidden',
                 boxShadow: `0 4px 20px ${ev.color}40`,
-                transition: 'transform 0.15s, box-shadow 0.15s',
+                ['--lt-i' as any]: i + 4,
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 28px ${ev.color}50` }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px ${ev.color}40` }}
             >
               <div style={{ position: 'absolute', top: 16, right: 16, fontSize: '28px', opacity: 0.3 }}>{ev.emoji}</div>
               <div style={{ fontSize: '12px', fontWeight: 600, opacity: 0.85, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ev.label}</div>
@@ -371,13 +368,14 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       {/* Chart + Live Feed */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '16px' }}>
         {/* Revenue Chart */}
-        <div style={{
-          backgroundColor: 'var(--card)',
-          borderRadius: '20px',
-          padding: '24px',
-          border: '1px solid var(--border)',
-          boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-        }}>
+        <div 
+          className="glass-card lt-in"
+          style={{
+            borderRadius: '20px',
+            padding: '24px',
+            ['--lt-i' as any]: 8,
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
               <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Sales Analytics</h2>
@@ -474,16 +472,17 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         </div>
 
         {/* Live Activity Feed */}
-        <div style={{
-          backgroundColor: 'var(--card)',
-          borderRadius: '20px',
-          padding: '20px',
-          border: '1px solid var(--border)',
-          boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-          display: 'flex',
-          flexDirection: 'column',
-          maxHeight: '400px',
-        }}>
+        <div 
+          className="glass-card lt-in-left"
+          style={{
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '400px',
+            borderRadius: '20px',
+            ['--lt-i' as any]: 9,
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
               <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Live Activity</h2>
@@ -495,9 +494,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {liveFeed.length === 0 ? (
               <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', textAlign: 'center', margin: '20px 0' }}>No activity logged yet.</p>
             ) : (
-              liveFeed.map((item) => (
+              liveFeed.map((item, i) => (
                 <div
                   key={item.id}
+                  className="live-feed-item"
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
@@ -506,6 +506,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                     backgroundColor: 'var(--muted)',
                     borderRadius: '10px',
                     borderLeft: `3px solid ${item.color}`,
+                    ['--lt-i' as any]: i,
                   }}
                 >
                   <div style={{

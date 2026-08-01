@@ -136,7 +136,7 @@ export default function Customers({ sales, adminKey, globalSearch = '' }: Props)
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Customers</h1>
           <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>No customers yet — ticket purchases will appear here</p>
         </div>
-        <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
+        <div className="glass-card lt-in" style={{ borderRadius: '16px', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px', ['--lt-i' as any]: 1 }}>
           👥 Customer data will appear once orders are placed
         </div>
       </div>
@@ -218,7 +218,7 @@ export default function Customers({ sales, adminKey, globalSearch = '' }: Props)
           ))}
         </div>
       ) : (
-        <div style={{ backgroundColor: 'var(--card)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+        <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 2 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>

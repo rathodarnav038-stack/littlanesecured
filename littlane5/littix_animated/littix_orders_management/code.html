@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix | Orders Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .iris-gradient {
+            background: linear-gradient(135deg, #613de0 0%, #947dff 100%);
+        }
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+        .row-stagger-in {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Custom scrollbar for horizontal table */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-fixed-dim": "#cabeff",
+                        "surface-container-low": "#1b1b1b",
+                        "on-secondary-container": "#c6aaff",
+                        "surface-container-highest": "#353535",
+                        "secondary-container": "#57319e",
+                        "on-tertiary": "#00363e",
+                        "on-secondary": "#3d0e84",
+                        "primary-container": "#947dff",
+                        "outline": "#938ea1",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e6deff",
+                        "inverse-primary": "#613de0",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#131313",
+                        "on-secondary-fixed": "#25005a",
+                        "on-primary-fixed": "#1c0062",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4918c8",
+                        "inverse-on-surface": "#303030",
+                        "secondary-fixed": "#eaddff",
+                        "on-secondary-fixed-variant": "#552e9b",
+                        "on-primary": "#32009a",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#353535",
+                        "on-tertiary-fixed-variant": "#004e5a",
+                        "on-surface-variant": "#c9c4d8",
+                        "secondary": "#d2bbff",
+                        "outline-variant": "#484555",
+                        "tertiary": "#54d7ef",
+                        "tertiary-fixed": "#a3eeff",
+                        "surface-dim": "#131313",
+                        "on-tertiary-container": "#002f36",
+                        "surface-bright": "#393939",
+                        "primary": "#cabeff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#001f25",
+                        "on-background": "#e2e2e2",
+                        "inverse-surface": "#e2e2e2",
+                        "tertiary-container": "#009fb5",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "on-primary-container": "#2b0088",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#54d7ef",
+                        "surface-tint": "#cabeff"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "topbar-height": "64px",
+                        "container-margin": "1rem",
+                        "island-gap": "1rem",
+                        "sidebar-width": "268px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="../_animations/animations.css" rel="stylesheet"/>
+</head>
+<body class="font-body-md text-on-background selection:bg-primary/30">
+<!-- Drifting Iris Glow Background -->
+
+<!-- Side Navigation Bar -->
+<aside class="fixed left-4 top-4 bottom-4 w-sidebar-width glass-panel rounded-xl flex flex-col gap-2 p-4 z-50">
+<div class="flex items-center gap-3 px-2 mb-6">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">LitTix</span>
+<span class="text-[10px] uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded-full border border-white/10">Enterprise</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<!-- Iterated from JSON list -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-body-sm text-body-sm">Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-white/5">
+<div class="flex items-center gap-3 px-4 py-2">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-sm">person</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold">Admin Alpha</span>
+<span class="text-[10px] text-on-surface-variant">System Root</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-4 left-[calc(268px+40px)] right-4 h-topbar-height glass-panel rounded-full flex justify-between items-center px-6 z-40">
+<div class="flex items-center gap-6 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:border-primary/50 transition-colors" placeholder="Search Order ID, Email, or TXN..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-[12px] font-bold text-green-500">LIVE</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">help</button>
+<button class="iris-gradient iris-glow px-5 py-2 rounded-full text-white text-sm font-semibold active:scale-95 transition-all">
+                + New Ticket
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pl-[calc(268px+32px)] pt-[calc(64px+40px)] pr-8 pb-8 min-h-screen z-10 relative">
+<!-- Dashboard Header Section -->
+<div class="flex flex-col gap-6 mb-8">
+<div class="flex items-end justify-between">
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold mb-1">Orders</h1>
+<div class="flex items-center gap-3">
+<span class="font-data-mono text-data-mono text-on-surface-variant">14,205 TOTAL ORDERS</span>
+<div class="w-1 h-1 rounded-full bg-white/20"></div>
+<span class="text-on-surface-variant text-sm">Real-time processing active</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-xl">
+<span class="text-[10px] font-bold text-green-500/70 uppercase tracking-tighter">Revenue</span>
+<span class="font-data-mono text-xl font-bold text-green-400">₹42,85,900</span>
+</div>
+<div class="flex gap-2">
+<span class="text-[11px] font-semibold bg-white/5 border border-white/10 px-2 py-1 rounded text-on-surface-variant">Online: ₹38.2L</span>
+<span class="text-[11px] font-semibold bg-white/5 border border-white/10 px-2 py-1 rounded text-on-surface-variant">Box Office: ₹4.6L</span>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex items-center justify-between glass-panel p-2 rounded-2xl">
+<div class="flex items-center gap-2">
+<div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
+<button class="px-4 py-1.5 rounded-lg bg-primary text-on-primary-container text-xs font-bold transition-all">All Status</button>
+<button class="px-4 py-1.5 rounded-lg text-on-surface-variant text-xs font-medium hover:text-on-surface transition-all">Pending</button>
+<button class="px-4 py-1.5 rounded-lg text-on-surface-variant text-xs font-medium hover:text-on-surface transition-all">Refunded</button>
+</div>
+<div class="h-6 w-px bg-white/10 mx-2"></div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-xs text-on-surface-variant hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-sm">filter_alt</span>
+                        Payment Gateway
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-xs text-on-surface-variant hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-sm">stadium</span>
+                        Event Category
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<div class="flex items-center gap-3 mr-2">
+<span class="text-[12px] text-on-surface-variant/60">Sorting by Newest First</span>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-white/10 rounded-full transition-all">download</button>
+</div>
+</div>
+</div>
+<!-- Orders Table Section -->
+<div class="glass-panel rounded-3xl overflow-hidden border-white/10 shadow-2xl flex flex-col">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead>
+<tr class="border-b border-white/5 bg-white/[0.02]">
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Order ID</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Buyer</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Event</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-center">Qty</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Amount</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-center">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Gateway</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">TXN ID</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Email</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-center">QR</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Time</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1: Paid -->
+<tr class="row-stagger-in group hover:bg-white/[0.03] transition-colors relative" style="animation-delay: 0.1s;">
+<td class="absolute left-0 top-0 bottom-0 w-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></td>
+<td class="px-6 py-4 font-data-mono text-xs text-primary">#LTX-98421</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Rohan Malhotra</span>
+<span class="text-[10px] text-on-surface-variant">rohan.m@gmail.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[12px] font-medium">Techno Night 2024</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-secondary-container/20 border border-secondary-container/40 text-on-secondary-container self-start">VIP Early Access</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-sm">2</td>
+<td class="px-6 py-4 font-data-mono text-sm text-on-surface">₹12,500.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold bg-green-500/10 border border-green-500/20 text-green-400">Paid</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">Razorpay</td>
+<td class="px-6 py-4 font-data-mono text-[10px] text-on-surface-variant/60 truncate max-w-[80px]">TXN_87A122..</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-green-500 text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">qr_code_2</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">14:22:10</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-[11px] font-bold group-hover:underline flex items-center gap-1">View <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</td>
+</tr>
+<!-- Row 2: Failed -->
+<tr class="row-stagger-in group hover:bg-white/[0.03] transition-colors relative" style="animation-delay: 0.15s;">
+<td class="absolute left-0 top-0 bottom-0 w-1 bg-red-500 opacity-0 group-hover:opacity-100 transition-opacity"></td>
+<td class="px-6 py-4 font-data-mono text-xs text-primary">#LTX-98420</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Sara Khan</span>
+<span class="text-[10px] text-on-surface-variant">sara.k@outlook.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[12px] font-medium">Global Jazz Fest</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant self-start">General Admin</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-sm">1</td>
+<td class="px-6 py-4 font-data-mono text-sm text-on-surface">₹2,499.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold bg-red-500/10 border border-red-500/20 text-red-500">Failed</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">Stripe</td>
+<td class="px-6 py-4 font-data-mono text-[10px] text-on-surface-variant/60 truncate max-w-[80px]">TXN_FAILED..</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-on-surface-variant/30 text-sm">cancel</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant/20 text-sm">qr_code_2</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">14:18:45</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-[11px] font-bold group-hover:underline flex items-center gap-1">View <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</td>
+</tr>
+<!-- Row 3: Pending -->
+<tr class="row-stagger-in group hover:bg-white/[0.03] transition-colors relative" style="animation-delay: 0.2s;">
+<td class="absolute left-0 top-0 bottom-0 w-1 bg-orange-400 opacity-0 group-hover:opacity-100 transition-opacity"></td>
+<td class="px-6 py-4 font-data-mono text-xs text-primary">#LTX-98419</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Amit Verma</span>
+<span class="text-[10px] text-on-surface-variant">a.verma@corp.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[12px] font-medium">Techno Night 2024</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-secondary-container/20 border border-secondary-container/40 text-on-secondary-container self-start">VIP Early Access</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-sm">4</td>
+<td class="px-6 py-4 font-data-mono text-sm text-on-surface">₹25,000.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold bg-orange-500/10 border border-orange-500/20 text-orange-400">Pending</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">Razorpay</td>
+<td class="px-6 py-4 font-data-mono text-[10px] text-on-surface-variant/60 truncate max-w-[80px]">TXN_PROC..</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-orange-400 animate-pulse text-sm">history</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant/20 text-sm">qr_code_2</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">14:15:22</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-[11px] font-bold group-hover:underline flex items-center gap-1">View <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</td>
+</tr>
+<!-- Row 4: Refunded -->
+<tr class="row-stagger-in group hover:bg-white/[0.03] transition-colors relative" style="animation-delay: 0.25s;">
+<td class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></td>
+<td class="px-6 py-4 font-data-mono text-xs text-primary">#LTX-98418</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Leila Sun</span>
+<span class="text-[10px] text-on-surface-variant">leila@sun.net</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[12px] font-medium">Startup Summit</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 self-start">Delegate Pass</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center text-sm">1</td>
+<td class="px-6 py-4 font-data-mono text-sm text-on-surface">₹4,999.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">Refunded</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">PayTM</td>
+<td class="px-6 py-4 font-data-mono text-[10px] text-on-surface-variant/60 truncate max-w-[80px]">TXN_RF_90..</td>
+<td class="px-6 py-4">
+<span class="material-symbols-outlined text-indigo-400 text-sm">settings_backup_restore</span>
+</td>
+<td class="px-6 py-4 text-center">
+<span class="material-symbols-outlined text-red-500/50 text-sm">block</span>
+</td>
+<td class="px-6 py-4 text-[10px] text-on-surface-variant">13:55:01</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-[11px] font-bold group-hover:underline flex items-center gap-1">View <span class="material-symbols-outlined text-[14px]">arrow_forward</span></button>
+</td>
+</tr>
+<!-- Filling some dummy rows for visual density -->
+<script>
+                            for(let i=0; i<6; i++) {
+                                document.write(`
+                                <tr class="row-stagger-in group hover:bg-white/[0.03] transition-colors relative" style="animation-delay: ${0.3 + (i*0.05)}s;">
+                                    <td class="absolute left-0 top-0 bottom-0 w-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></td>
+                                    <td class="px-6 py-4 font-data-mono text-xs text-primary">#LTX-98${417-i}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold">User ${i+5}</span>
+                                            <span class="text-[10px] text-on-surface-variant">user.${i+5}@example.com</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4"><span class="text-[12px]">Concert Live</span></td>
+                                    <td class="px-6 py-4 text-center text-sm">2</td>
+                                    <td class="px-6 py-4 font-data-mono text-sm">₹8,000.00</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold bg-green-500/10 border border-green-500/20 text-green-400">Paid</span></td>
+                                    <td class="px-6 py-4 text-[10px] text-on-surface-variant">Razorpay</td>
+                                    <td class="px-6 py-4 text-[10px] text-on-surface-variant/40">TXN_ABC${i}21..</td>
+                                    <td class="px-6 py-4"><span class="material-symbols-outlined text-green-500 text-sm">check_circle</span></td>
+                                    <td class="px-6 py-4 text-center"><span class="material-symbols-outlined text-on-surface-variant text-sm">qr_code_2</span></td>
+                                    <td class="px-6 py-4 text-[10px] text-on-surface-variant">12:30:00</td>
+                                    <td class="px-6 py-4 text-right"><button class="text-primary text-[11px] font-bold">View →</button></td>
+                                </tr>
+                                `);
+                            }
+                        </script>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-white/5 flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Showing 10 of 14,205 entries</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded-lg hover:bg-white/10 transition-all text-on-surface-variant"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+<button class="px-3 py-1 rounded-lg bg-primary text-on-primary-container text-xs font-bold">1</button>
+<button class="px-3 py-1 rounded-lg hover:bg-white/10 text-xs text-on-surface-variant">2</button>
+<button class="px-3 py-1 rounded-lg hover:bg-white/10 text-xs text-on-surface-variant">3</button>
+<button class="p-1 rounded-lg hover:bg-white/10 transition-all text-on-surface-variant"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+<!-- Detail Drawer Mockup (Right Side) -->
+<aside class="fixed right-0 top-0 bottom-0 w-[420px] glass-panel border-l border-white/10 z-[60] p-0 transform transition-transform duration-500 shadow-[-20px_0_40px_rgba(0,0,0,0.8)]" id="detail-drawer">
+<div class="flex flex-col h-full">
+<div class="p-6 border-b border-white/10 flex items-center justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md font-bold">Order Details</h2>
+<span class="font-data-mono text-primary text-sm">#LTX-98421</span>
+</div>
+<button class="p-2 rounded-full hover:bg-white/10 transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+<!-- Customer Section -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-2xl bg-primary-container/10 border border-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">account_circle</span>
+</div>
+<div>
+<p class="font-bold text-lg">Rohan Malhotra</p>
+<p class="text-xs text-on-surface-variant">Member since Jan 2023</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 rounded-xl bg-white/5 border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Email Address</p>
+<p class="text-xs font-medium">rohan.m@gmail.com</p>
+</div>
+<div class="p-3 rounded-xl bg-white/5 border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Phone</p>
+<p class="text-xs font-medium">+91 98765 43210</p>
+</div>
+</div>
+</div>
+<!-- Order Content -->
+<div class="space-y-4">
+<h3 class="text-xs font-bold text-primary tracking-widest uppercase">Order Summary</h3>
+<div class="rounded-2xl border border-white/10 overflow-hidden">
+<div class="p-4 bg-white/5 flex gap-4">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-surface">
+<img class="w-full h-full object-cover" data-alt="A dark, atmospheric concert visual with neon purple lighting, crowd silhouettes, and high-energy stage performance. Minimalist, modern aesthetic for a techno event poster." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO2bBVERrF1gS97hemIpOdktGwqfSqaInRZvEl1tLIqhUcJXhKJIlBLauUkRAPO6k9Bp3sn7932bBlc8A3B1_HG150EF4x4jYX4PHOtZbW1VZ3oCRUqb1uVis6PA4QbGGfIFZg37wWYN90PSjJIcH7XIC4C7JCQ_h45GfvHSasRP1H3o8fNi8Si_G7LXlegMLlt5Pf1SdmN_ZSNenpUsVvoEccaR-3lb3yO19mpZnlal0wPlBPno8p"/>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<p class="text-sm font-bold">Techno Night 2024</p>
+<p class="text-[10px] text-on-surface-variant">VIP Early Access × 2</p>
+<p class="text-xs text-primary font-bold mt-1">₹12,500.00</p>
+</div>
+</div>
+<div class="p-4 bg-white/[0.02] space-y-2 border-t border-white/5">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Subtotal</span>
+<span>₹12,000.00</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Platform Fee</span>
+<span>₹500.00</span>
+</div>
+<div class="flex justify-between font-bold border-t border-white/5 pt-2 mt-2">
+<span>Total Paid</span>
+<span class="text-green-400">₹12,500.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Transaction Details -->
+<div class="space-y-4">
+<h3 class="text-xs font-bold text-primary tracking-widest uppercase">Payment &amp; Logs</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">credit_card</span>
+<span class="text-xs">Payment via Razorpay</span>
+</div>
+<span class="text-[10px] font-data-mono bg-white/10 px-2 py-0.5 rounded">TXN_87A122..</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-green-500">mail_outline</span>
+<span class="text-xs">Email Confirmation</span>
+</div>
+<span class="text-[10px] font-bold text-green-500">SENT</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">qr_code_scanner</span>
+<span class="text-xs">Check-in Status</span>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant">NOT SCANNED</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-white/10 grid grid-cols-2 gap-4">
+<button class="px-4 py-3 rounded-xl border border-white/10 text-xs font-bold hover:bg-white/5 transition-all">Resend Email</button>
+<button class="px-4 py-3 rounded-xl bg-white/5 border border-indigo-500/30 text-indigo-400 text-xs font-bold hover:bg-indigo-500/10 transition-all">Process Refund</button>
+</div>
+</div>
+</aside>
+<script>
+        // Simple micro-interaction for the drawer (it's a mockup, so we show it open by default)
+        // Adding click to close logic
+        const drawer = document.getElementById('detail-drawer');
+        const closeBtn = drawer.querySelector('button');
+        
+        closeBtn.onclick = () => {
+            drawer.style.transform = 'translateX(100%)';
+        };
+
+        // Logic to show/hide based on row clicks
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.onclick = () => {
+                drawer.style.transform = 'translateX(0)';
+            };
+        });
+    </script>
+
+<script src="../_animations/animations.js"></script>
+</body></html>

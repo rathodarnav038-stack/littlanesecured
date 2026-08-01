@@ -92,7 +92,7 @@ export default function Settings({ adminKey }: SettingsProps) {
       <div style={{ display: 'flex', gap: '20px' }}>
         {/* Sidebar tabs */}
         <div style={{ width: '200px', flexShrink: 0 }}>
-          <div style={{ backgroundColor: 'var(--card)', borderRadius: '14px', padding: '8px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div className="glass-card" style={{ borderRadius: '14px', padding: '8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
             {tabs.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
@@ -110,7 +110,7 @@ export default function Settings({ adminKey }: SettingsProps) {
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, backgroundColor: 'var(--card)', borderRadius: '16px', padding: '24px', border: '1px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+        <div className="glass-card lt-in" style={{ flex: 1, borderRadius: '16px', padding: '24px', ['--lt-i' as any]: 1 }}>
           {tab === 'smtp' && (
             <div>
               <Section title="SMTP Configuration">
