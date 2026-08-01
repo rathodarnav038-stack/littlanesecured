@@ -644,13 +644,13 @@ export default function App({ isPresentation = false }: AppProps) {
 
       {/* Manual Ticket Modal */}
       {showManualModal && (
-        <div style={{
+        <div className="lt-modal-backdrop" style={{
           position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', fontFamily: "'Inter', sans-serif"
+          backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', fontFamily: "'Inter', sans-serif"
         }}>
-          <div style={{
-            backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '20px',
-            padding: '28px', width: '480px', position: 'relative', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'
+          <div className="lt-modal-panel glass-card" style={{
+            borderRadius: '24px',
+            padding: '32px', width: '480px', position: 'relative',
           }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>Generate Manual Ticket</h3>
             <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -765,15 +765,16 @@ export default function App({ isPresentation = false }: AppProps) {
                   </div>
                 )}
               </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
                 <button
                   type="submit"
                   disabled={isManualSubmitting}
+                  className="lt-shimmer-btn lt-ripple iris-gradient iris-glow"
                   style={{
-                    flex: 1, padding: '12px', borderRadius: '8px', border: 'none',
-                    backgroundColor: isManualSubmitting ? '#a3e635' : '#22C55E',
-                    color: 'white', fontWeight: 600,
-                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer'
+                    flex: 1, padding: '12px', borderRadius: '12px', border: 'none',
+                    color: 'white', fontWeight: 700, fontSize: '14px',
+                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isManualSubmitting ? 0.6 : 1,
                   }}
                 >
                   {isManualSubmitting ? 'Processing...' : 'Generate & Email'}
@@ -782,11 +783,13 @@ export default function App({ isPresentation = false }: AppProps) {
                   type="button"
                   disabled={isManualSubmitting}
                   onClick={() => setShowManualModal(false)}
+                  className="lt-hover-scale"
                   style={{
-                    flex: 1, padding: '12px', borderRadius: '8px',
-                    border: '1px solid var(--border)', backgroundColor: 'var(--muted)',
-                    color: 'var(--foreground)',
-                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer'
+                    flex: 1, padding: '12px', borderRadius: '12px',
+                    border: '1px solid rgba(255,255,255,0.09)', backgroundColor: 'rgba(255,255,255,0.04)',
+                    color: 'var(--foreground)', fontWeight: 600,
+                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer',
+                    backdropFilter: 'blur(8px)',
                   }}
                 >
                   Cancel
