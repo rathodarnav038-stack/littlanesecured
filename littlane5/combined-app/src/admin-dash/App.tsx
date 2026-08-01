@@ -102,7 +102,7 @@ export default function App({ isPresentation = false }: AppProps) {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('ft_price_male') || '399')
+  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('ft_price_male') || '499')
   const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
 
   const fetchSales = async (keyToUse = adminKey) => {
@@ -245,9 +245,9 @@ export default function App({ isPresentation = false }: AppProps) {
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
         } else if (manualGender === 'female') {
-          setManualAmount(localStorage.getItem('ft_price_female') || '299')
+          setManualAmount(localStorage.getItem('ft_price_female') || '399')
         } else {
-          setManualAmount(localStorage.getItem('ft_price_male') || '399')
+          setManualAmount(localStorage.getItem('ft_price_male') || '499')
         }
         fetchSales()
       } else {
@@ -263,10 +263,10 @@ export default function App({ isPresentation = false }: AppProps) {
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
     if (val === 'male') {
-      const saved = localStorage.getItem('ft_price_male') || '399'
+      const saved = localStorage.getItem('ft_price_male') || '499'
       setManualAmount(saved)
     } else if (val === 'female') {
-      const saved = localStorage.getItem('ft_price_female') || '299'
+      const saved = localStorage.getItem('ft_price_female') || '399'
       setManualAmount(saved)
     }
   }
@@ -490,7 +490,7 @@ export default function App({ isPresentation = false }: AppProps) {
                       setManualAmount(localStorage.getItem('ft_price_aura') || '350')
                     } else if (manualGender === 'aura') {
                       setManualGender('male')
-                      setManualAmount(localStorage.getItem('ft_price_male') || '399')
+                      setManualAmount(localStorage.getItem('ft_price_male') || '499')
                     }
                   }}
                   style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
@@ -561,8 +561,8 @@ export default function App({ isPresentation = false }: AppProps) {
                       onChange={e => handleManualGenderChange(e.target.value)}
                       style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                     >
-                      <option value="male">Freshers Male Pass (₹399)</option>
-                      <option value="female">Freshers Female Pass (₹299)</option>
+                      <option value="male">Freshers Male Pass (₹499)</option>
+                      <option value="female">Freshers Female Pass (₹399)</option>
                     </select>
                   )}
                 </div>
