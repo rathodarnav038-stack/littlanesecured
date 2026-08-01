@@ -442,6 +442,15 @@ export default function App({ isPresentation = false }: AppProps) {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setDark(!dark)}
+            className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all flex items-center justify-center cursor-pointer"
+            title="Toggle Light/Dark Theme"
+          >
+            <span className="material-symbols-outlined">
+              {dark ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
           <div className={`flex items-center gap-1 ${testMode ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'} border px-3 py-1 rounded-full`}>
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${testMode ? 'bg-orange-400' : 'bg-green-400'} opacity-75`}></span>
@@ -462,7 +471,7 @@ export default function App({ isPresentation = false }: AppProps) {
       </header>
 
       {/* Main Content Canvas */}
-      <main className="ml-[calc(268px+1rem)] mt-[calc(64px+1rem)] space-y-6 min-h-screen relative z-10">
+      <main className="ml-[calc(268px+2rem)] mt-[calc(64px+2.5rem)] mr-4 mb-4 pb-12 space-y-6 min-h-screen relative z-10">
         {renderPage(page)}
       </main>
 

@@ -2,6 +2,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import 'tailwindcss';
 
+:root {
+  /* Default Light Mode CSS variables */
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(15, 23, 42, 0.08);
+  --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+  --muted-text: #64748b;
+  --muted-bg: rgba(15, 23, 42, 0.03);
+}
+
+.dark {
+  /* Dark Mode overrides */
+  --bg-color: #09090b;
+  --text-color: #f4f4f5;
+  --card-bg: rgba(20, 20, 25, 0.6);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 40px 40px -10px rgba(0, 0, 0, 0.5);
+  --muted-text: #a1a1aa;
+  --muted-bg: rgba(255, 255, 255, 0.03);
+}
+
 @theme {
   --color-secondary-container: #57319e;
   --color-on-secondary: #3d0e84;
@@ -11,7 +33,7 @@
   --color-surface-container-lowest: #0e0e0e;
   --color-primary: #cabeff;
   --color-iris: #7c5cfc;
-  --color-on-surface: #e2e2e2;
+  --color-on-surface: var(--text-color);
   --color-secondary-fixed: #eaddff;
   --color-on-tertiary-fixed-variant: #004e5a;
   --color-on-error: #690005;
@@ -45,11 +67,11 @@
   --color-primary-container: #947dff;
   --color-on-secondary-fixed-variant: #552e9b;
   --color-error: #ffb4ab;
-  --color-on-surface-variant: #c9c4d8;
+  --color-on-surface-variant: var(--muted-text);
   --color-on-primary-container: #2b0088;
-  --color-surface: #131313;
-  --color-background: #131313;
-  --color-on-background: #e2e2e2;
+  --color-surface: var(--card-bg);
+  --color-background: var(--bg-color);
+  --color-on-background: var(--text-color);
   --color-surface-tint: #cabeff;
 
   --radius-DEFAULT: 0.25rem;
@@ -65,10 +87,11 @@
 }
 
 body {
-    background-color: #000000;
-    color: #e2e2e2;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     overflow-x: hidden;
     font-family: 'Inter', sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .glass-card {
