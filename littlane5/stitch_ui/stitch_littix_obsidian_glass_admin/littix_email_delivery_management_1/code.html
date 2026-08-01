@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix | Email Delivery Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#001f25",
+                        "primary-fixed": "#e6deff",
+                        "on-primary": "#32009a",
+                        "inverse-on-surface": "#303030",
+                        "surface-bright": "#393939",
+                        "inverse-surface": "#e2e2e2",
+                        "tertiary-container": "#009fb5",
+                        "inverse-primary": "#613de0",
+                        "tertiary-fixed-dim": "#54d7ef",
+                        "surface-container-low": "#1b1b1b",
+                        "on-error": "#690005",
+                        "outline-variant": "#484555",
+                        "on-secondary-container": "#c6aaff",
+                        "background": "#000000",
+                        "surface-variant": "#353535",
+                        "outline": "#938ea1",
+                        "on-secondary-fixed": "#25005a",
+                        "on-tertiary": "#00363e",
+                        "tertiary-fixed": "#a3eeff",
+                        "on-primary-container": "#2b0088",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#cabeff",
+                        "on-tertiary-fixed-variant": "#004e5a",
+                        "on-tertiary-container": "#002f36",
+                        "surface": "#131313",
+                        "error-container": "#93000a",
+                        "secondary-container": "#57319e",
+                        "primary-fixed-dim": "#cabeff",
+                        "on-primary-fixed": "#1c0062",
+                        "surface-tint": "#cabeff",
+                        "surface-container-highest": "#353535",
+                        "on-secondary": "#3d0e84",
+                        "on-background": "#e2e2e2",
+                        "on-surface": "#e2e2e2",
+                        "surface-container": "#1f1f1f",
+                        "on-surface-variant": "#c9c4d8",
+                        "surface-dim": "#131313",
+                        "error": "#ffb4ab",
+                        "primary-container": "#947dff",
+                        "on-secondary-fixed-variant": "#552e9b",
+                        "secondary": "#d2bbff",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "tertiary": "#54d7ef",
+                        "secondary-fixed": "#eaddff",
+                        "surface-container-high": "#2a2a2a",
+                        "on-primary-fixed-variant": "#4918c8",
+                        "delivery-green": "#30D158",
+                        "delivery-red": "#FF3B30",
+                        "delivery-amber": "#FF9F0A",
+                        "delivery-blue": "#0A84FF",
+                        "delivery-pink": "#FF375F"
+                    },
+                    "spacing": {
+                        "container-margin": "1rem",
+                        "island-gap": "1rem",
+                        "topbar-height": "64px",
+                        "sidebar-width": "268px",
+                        "gutter": "24px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-island {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .glass-island-heavy {
+            background: rgba(10, 10, 10, 0.72);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+        .green-glow {
+            box-shadow: 0 0 15px rgba(48, 209, 88, 0.3);
+        }
+        .red-glow {
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.3);
+        }
+        .amber-glow {
+            box-shadow: 0 0 15px rgba(255, 159, 10, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            border-width: 1px;
+        }
+        .iris-dot::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            background: #cabeff;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 5%) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        .bg-drift {
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex p-4 gap-4">
+<!-- Atmospheric Glow Background -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#552e9b] rounded-full bg-drift"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#32009a] rounded-full bg-drift" style="animation-delay: -5s;"></div>
+</div>
+<!-- SideNavBar -->
+<nav class="fixed left-4 top-4 bottom-4 w-[268px] glass-island rounded-xl flex flex-col gap-2 p-4 z-50">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-10 h-10 bg-secondary-container/30 rounded-lg flex items-center justify-center iris-glow">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">LitTix</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold">Enterprise Admin</p>
+</div>
+</div>
+<div class="flex-1 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-body-sm text-body-sm">Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative hover:scale-[0.98] transition-all" href="#">
+<div class="absolute left-0 w-1 h-4 bg-primary rounded-full"></div>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mail</span>
+<span class="font-body-sm text-body-sm">Email Delivery</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-sm text-body-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-white/10">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-3 mt-2">
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged tech executive with short hair, wearing a stylish dark blazer against a minimalist gradient background in deep purples and blacks. The lighting is dramatic and focused, matching the high-end glassmorphic UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF7-IO1LwKDDzyjgCIOY_We6ir4uPxRDgOwYbfQXcSioZPCc6t7Nha1u7CMvEVJBhbnRjo1mtvAv1FpeoqVaHv1sahRJrSHeWBw_p1JIPzPspwBwg9B8NuvrEFNeGTZL3xUPJmBFzMSB6McKi9DtnWrSKOJxAEF-d1qkGg4IfbPlPFv8UTvAjpiMaRGbu5EHmKn1H36TSnK1aRf9_nXicAelo7YDo1SY84yWXkwvfEK90N9_QToa7p"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-on-surface text-sm font-bold truncate">Arjun Mehta</p>
+<p class="text-on-surface-variant text-[10px] truncate">Super Admin</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col gap-4 ml-[284px] relative z-10">
+<!-- TopNavBar -->
+<header class="h-topbar-height glass-island rounded-full flex justify-between items-center px-6">
+<div class="flex items-center gap-4 flex-1">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-on-surface-variant w-64" placeholder="Search delivery logs..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-delivery-green/10 border border-delivery-green/20 rounded-full">
+<span class="w-2 h-2 rounded-full bg-delivery-green animate-pulse"></span>
+<span class="text-[12px] font-bold text-delivery-green tracking-wide">LIVE</span>
+</div>
+<button class="bg-primary text-on-primary px-5 py-2 rounded-full font-bold text-sm iris-glow hover:brightness-110 active:scale-95 transition-all">
+                    + New Campaign
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Header & KPIs -->
+<div class="grid grid-cols-4 gap-4 mt-2">
+<!-- KPI Cards -->
+<div class="glass-island p-5 rounded-2xl flex flex-col gap-1 iris-glow border-t-primary/20">
+<span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Total Emails</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-display-lg font-display-lg text-primary" id="kpi-total">0</span>
+<span class="text-delivery-green text-xs font-bold">+12%</span>
+</div>
+</div>
+<div class="glass-island p-5 rounded-2xl flex flex-col gap-1 border-t-delivery-green/20 green-glow">
+<span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Delivered</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-display-lg font-display-lg text-delivery-green" id="kpi-delivered">0</span>
+<span class="text-on-surface-variant text-xs font-bold">98.4%</span>
+</div>
+</div>
+<div class="glass-island p-5 rounded-2xl flex flex-col gap-1 border-t-delivery-red/20 red-glow">
+<span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Failed</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-display-lg font-display-lg text-delivery-red" id="kpi-failed">0</span>
+<span class="text-delivery-red text-xs font-bold">1.2%</span>
+</div>
+</div>
+<div class="glass-island p-5 rounded-2xl flex flex-col gap-1 border-t-delivery-amber/20 amber-glow">
+<span class="text-on-surface-variant font-label-caps text-label-caps uppercase">In Queue</span>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-display-lg font-display-lg text-delivery-amber" id="kpi-queue">0</span>
+<span class="text-on-surface-variant text-xs font-bold">Real-time</span>
+</div>
+</div>
+</div>
+<!-- Main Content Table Container -->
+<div class="flex-1 glass-island rounded-3xl overflow-hidden flex flex-col">
+<div class="px-8 py-6 border-b border-white/5 flex justify-between items-center">
+<div class="flex flex-col">
+<h2 class="text-headline-md font-headline-md text-on-surface">Delivery Stream</h2>
+<p class="text-body-sm text-on-surface-variant">Monitoring all outgoing transactional and marketing communications.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm font-medium">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        Filter Status
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm font-medium">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<div class="flex-1 overflow-auto px-4 pb-4">
+<table class="w-full text-left border-separate border-spacing-y-2">
+<thead class="sticky top-0 bg-background/80 backdrop-blur-md z-20">
+<tr>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Trigger Time</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Recipient</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Event Name</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Subject</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Status</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Retries</th>
+<th class="px-4 py-4 text-label-caps font-label-caps text-on-surface-variant uppercase">Action</th>
+</tr>
+</thead>
+<tbody class="text-body-sm">
+<!-- Row 1: Failed -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono text-delivery-red">14:02:18.442</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Vikram Sharma</span>
+<span class="text-xs text-on-surface-variant">vikram.s@outlook.in</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">Freshers Takeover 2024</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Your Ticket: #LT-55412-A</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-red/10 border-delivery-red/40 text-delivery-red shadow-[0_0_8px_rgba(255,59,48,0.2)]">Bounced</span>
+</td>
+<td class="px-4 py-4 text-delivery-red font-bold">3/3</td>
+<td class="px-4 py-4">
+<button class="px-3 py-1 rounded border border-white/20 text-xs font-bold hover:bg-white/10 active:scale-95 transition-all">RETRY</button>
+</td>
+</tr>
+<!-- Detail Row for Error -->
+<tr class="bg-delivery-red/5">
+<td class="px-8 py-2 text-[11px] font-data-mono text-delivery-red italic" colspan="7">
+                                Last Error: SMTP 550 - Requested action not taken: mailbox unavailable (User not found).
+                            </td>
+</tr>
+<!-- Row 2: Delivered -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono">14:01:55.210</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Priya Kapur</span>
+<span class="text-xs text-on-surface-variant">p.kapur@gmail.com</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">Freshers Takeover 2024</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Entry Guidelines &amp; QR Code</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-green/10 border-delivery-green/40 text-delivery-green shadow-[0_0_8px_rgba(48,209,88,0.2)]">Delivered</span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">0</td>
+<td class="px-4 py-4">—</td>
+</tr>
+<!-- Row 3: Opened -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono">13:58:12.901</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Amitav Ghosh</span>
+<span class="text-xs text-on-surface-variant">amitav_g@rediffmail.com</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">VIP Lounge Access</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Upgrade Successful: VIP Pass #VIP-002</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-blue/10 border-delivery-blue/40 text-delivery-blue shadow-[0_0_8px_rgba(10,132,255,0.2)]">Opened</span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">1</td>
+<td class="px-4 py-4">—</td>
+</tr>
+<!-- Row 4: Failed -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono text-delivery-red">13:55:04.228</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Rohan Deshpande</span>
+<span class="text-xs text-on-surface-variant">rohan.d@corp.in</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">Freshers Takeover 2024</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Early Bird Registration Confirmation</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-pink/10 border-delivery-pink/40 text-delivery-pink shadow-[0_0_8px_rgba(255,55,95,0.2)]">Spam</span>
+</td>
+<td class="px-4 py-4 text-delivery-red font-bold">0/3</td>
+<td class="px-4 py-4">
+<button class="px-3 py-1 rounded border border-white/20 text-xs font-bold hover:bg-white/10 active:scale-95 transition-all">RETRY</button>
+</td>
+</tr>
+<tr class="bg-delivery-red/5">
+<td class="px-8 py-2 text-[11px] font-data-mono text-delivery-red italic" colspan="7">
+                                Last Error: Filtered by destination server due to content reputation.
+                            </td>
+</tr>
+<!-- Row 5: Delivered -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono">13:52:44.112</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Sneha Reddy</span>
+<span class="text-xs text-on-surface-variant">sneha.r99@gmail.com</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">Freshers Takeover 2024</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Payment Invoice: #INV-9902</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-green/10 border-delivery-green/40 text-delivery-green shadow-[0_0_8px_rgba(48,209,88,0.2)]">Delivered</span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">0</td>
+<td class="px-4 py-4">—</td>
+</tr>
+<!-- Row 6: Delivered -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="px-4 py-4 font-data-mono text-data-mono">13:50:01.005</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Isha Malhotra</span>
+<span class="text-xs text-on-surface-variant">isha_malhotra@icloud.com</span>
+</div>
+</td>
+<td class="px-4 py-4 font-medium">Freshers Takeover 2024</td>
+<td class="px-4 py-4 text-on-surface-variant max-w-xs truncate">Your Digital Pass is Ready</td>
+<td class="px-4 py-4">
+<span class="status-badge bg-delivery-green/10 border-delivery-green/40 text-delivery-green shadow-[0_0_8px_rgba(48,209,88,0.2)]">Delivered</span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">0</td>
+<td class="px-4 py-4">—</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer -->
+<div class="px-8 py-4 border-t border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-xl">
+<p class="text-body-sm text-on-surface-variant">Showing 1-50 of 12,492 entries</p>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/20 text-primary font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-on-surface">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-on-surface">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-on-surface">250</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Count-up animation for KPI section
+        function animateCount(id, target, suffix = '') {
+            const el = document.getElementById(id);
+            let current = 0;
+            const duration = 2000;
+            const stepTime = Math.abs(Math.floor(duration / target));
+            
+            const timer = setInterval(() => {
+                current += Math.ceil(target / 100);
+                if (current >= target) {
+                    el.innerText = target.toLocaleString() + suffix;
+                    clearInterval(timer);
+                } else {
+                    el.innerText = current.toLocaleString() + suffix;
+                }
+            }, 20);
+        }
+
+        window.onload = () => {
+            animateCount('kpi-total', 142492);
+            animateCount('kpi-delivered', 140212);
+            animateCount('kpi-failed', 1704);
+            animateCount('kpi-queue', 576);
+        };
+
+        // Subtle parallax effect on cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.glass-island');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = (rect.left + rect.width / 2) / window.innerWidth;
+                const cardY = (rect.top + rect.height / 2) / window.innerHeight;
+                
+                const moveX = (x - cardX) * 10;
+                const moveY = (y - cardY) * 10;
+                
+                card.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
+</body></html>

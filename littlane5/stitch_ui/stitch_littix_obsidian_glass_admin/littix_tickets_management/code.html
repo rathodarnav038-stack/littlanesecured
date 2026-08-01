@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix Enterprise Admin - Tickets</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 2%) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        .iris-glow {
+            filter: blur(120px);
+            background: radial-gradient(circle, rgba(124, 92, 252, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: drift 15s ease-in-out infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .glass-row {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-row:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.005) translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+        .stagger-in {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-glow-green { box-shadow: 0 0 12px rgba(34, 197, 94, 0.3); }
+        .status-glow-red { box-shadow: 0 0 15px rgba(255, 59, 48, 0.4); }
+        .primary-glow { box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4); }
+        
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#000000",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-fixed-dim": "#cabeff",
+                        "surface-container-low": "#1b1b1b",
+                        "on-secondary-container": "#c6aaff",
+                        "surface-container-highest": "#353535",
+                        "secondary-container": "#57319e",
+                        "on-tertiary": "#00363e",
+                        "on-secondary": "#3d0e84",
+                        "primary-container": "#947dff",
+                        "outline": "#938ea1",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e6deff",
+                        "inverse-primary": "#613de0",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#000000",
+                        "on-secondary-fixed": "#25005a",
+                        "on-primary-fixed": "#1c0062",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4918c8",
+                        "inverse-on-surface": "#303030",
+                        "secondary-fixed": "#eaddff",
+                        "on-secondary-fixed-variant": "#552e9b",
+                        "on-primary": "#32009a",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#353535",
+                        "on-tertiary-fixed-variant": "#004e5a",
+                        "on-surface-variant": "#c9c4d8",
+                        "secondary": "#d2bbff",
+                        "outline-variant": "#484555",
+                        "tertiary": "#54d7ef",
+                        "tertiary-fixed": "#a3eeff",
+                        "surface-dim": "#131313",
+                        "on-tertiary-container": "#002f36",
+                        "surface-bright": "#393939",
+                        "primary": "#cabeff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#001f25",
+                        "on-background": "#e2e2e2",
+                        "inverse-surface": "#e2e2e2",
+                        "tertiary-container": "#009fb5",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "on-primary-container": "#2b0088",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#54d7ef",
+                        "surface-tint": "#cabeff"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "topbar-height": "64px",
+                        "container-margin": "1rem",
+                        "island-gap": "1rem",
+                        "sidebar-width": "268px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/30 min-h-screen overflow-x-hidden">
+<!-- Atmospheric Background Elements -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+
+<div class="iris-glow absolute -top-1/4 -right-1/4 w-[600px] h-[600px] rounded-full"></div>
+<div class="iris-glow absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] rounded-full opacity-50" style="animation-delay: -5s;"></div>
+</div>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-4 top-4 bottom-4 w-sidebar-width rounded-xl bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col gap-2 p-4 z-50">
+<div class="mb-8 px-4 py-2">
+<span class="font-headline-md text-headline-md font-bold text-primary block">LitTix</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Enterprise Admin</span>
+</div>
+<nav class="flex-1 overflow-y-auto no-scrollbar space-y-1">
+<!-- Active State Logic: Tickets is the current page -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<!-- ACTIVE TAB -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-body-sm text-body-sm">Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<div class="pt-4 pb-2 px-4 uppercase text-[10px] font-bold tracking-widest text-outline">System</div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-body-sm text-body-sm">Admins</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 flex items-center gap-3 bg-white/5 rounded-xl">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary-container flex items-center justify-center text-on-primary-container font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="font-body-sm text-body-sm text-on-surface truncate">John Doe</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Finance Controller</p>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-4 left-[calc(268px+2.5rem)] right-4 h-topbar-height rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] flex justify-between items-center px-6 z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Search ticket ID, customer name, or event..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary-container font-bold rounded-full primary-glow hover:scale-[1.02] active:scale-95 transition-all text-body-sm">
+<span class="material-symbols-outlined text-lg">tv_displays</span> New Ticket
+            </button>
+<div class="h-8 w-[1px] bg-white/10 mx-2"></div>
+<div class="flex items-center gap-2 px-3 py-1 bg-error-container/20 border border-error/20 rounded-full">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="text-[12px] font-bold text-error">Live</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[calc(268px+2rem)] pt-[calc(64px+3rem)] p-8 relative z-10">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 stagger-in" style="animation-delay: 0.1s;">
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary mb-2">Tickets</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and audit all event admission passes across the platform.</p>
+</div>
+<div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-2">
+<div class="glass-card px-4 py-3 rounded-2xl flex flex-col min-w-[140px]">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total Issued</span>
+<span class="font-headline-md text-headline-md text-primary">12,840</span>
+</div>
+<div class="glass-card px-4 py-3 rounded-2xl flex flex-col min-w-[140px]">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Scanned Today</span>
+<span class="font-headline-md text-headline-md text-tertiary">1,249</span>
+</div>
+<div class="glass-card px-4 py-3 rounded-2xl flex flex-col min-w-[140px]">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Revenue</span>
+<span class="font-headline-md text-headline-md text-on-surface">$2.4M</span>
+</div>
+</div>
+</div>
+<!-- Filters/Actions Bar -->
+<div class="mb-6 flex items-center justify-between gap-4 stagger-in" style="animation-delay: 0.2s;">
+<div class="flex items-center gap-2">
+<button class="glass-card px-4 py-2 rounded-full text-body-sm flex items-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-[20px]">filter_list</span> Filter
+                </button>
+<button class="glass-card px-4 py-2 rounded-full text-body-sm flex items-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span> This Month
+                </button>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2 text-body-sm font-bold">
+<span class="material-symbols-outlined">download</span> Export CSV
+            </button>
+</div>
+<!-- Wide Glass Table Container -->
+<div class="glass-card rounded-3xl overflow-hidden shadow-2xl border border-white/5 stagger-in" style="animation-delay: 0.3s;">
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="border-b border-white/10 bg-white/5">
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Ticket ID</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Attendee</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Event</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Type</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Price</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Generated</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-outline uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Table Row 1 -->
+<tr class="glass-row group stagger-in" style="animation-delay: 0.4s;">
+<td class="px-6 py-5 font-data-mono text-data-mono text-primary">#LTX-9482-A</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young entrepreneur, illuminated by moody purple and blue neon edge lighting on a pure black background. The person has a serious expression, reflecting a high-end, futuristic tech aesthetic consistent with an enterprise admin dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxeM-H4n47NkjCTvLEqyETCcsG_iUEKlqHWZiLffGKgh_bcLhyjFd-Uub7HquU6b_mWB51kMnL0FYNc6fYk1O_7r4SZMSxCCfbWH7jPpYAwEPqyw55HMnLJexChNBiBf_eLe9xRzVR5RAAcrkTnLRUX0116k2VhFL_8GYs-k3_G-UOqNE0p9lflJn4R8yw-028QgDywiRPNpmqzKvyPsimWuNGltFbCORlxkgBLKXIDkXfz91uifiJ"/>
+</div>
+<span class="font-body-sm text-body-sm font-semibold">Sarah Jenkins</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant">CyberNexus 2024</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded text-[11px] font-bold bg-primary/10 border border-primary/20 text-primary">VIP</span>
+</td>
+<td class="px-6 py-5 font-data-mono text-data-mono">$899.00</td>
+<td class="px-6 py-5 text-on-surface-variant">May 12, 14:20</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-400 status-glow-green"></span>
+<span class="text-[11px] font-bold text-green-400">Scanned</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-lg text-on-surface-variant hover:text-on-surface" title="Resend Email">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</button>
+<button class="px-3 py-1 bg-secondary text-on-secondary font-bold text-[12px] rounded-lg hover:brightness-110 active:scale-95 transition-all">Download PDF</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 2 (Cancelled/Neon Red Glow) -->
+<tr class="glass-row group stagger-in" style="animation-delay: 0.5s;">
+<td class="px-6 py-5 font-data-mono text-data-mono text-primary">#LTX-8104-B</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up face portrait of a middle-aged male executive in a dark turtleneck. Cinematic rim lighting with a subtle violet tint, set against an OLED black background. Soft shadows and high-definition details emphasize professional reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuz7IcDBcEOz4ibyNTXuXEqA_Sa08-zHJlDvAKBEhpn_LolLGJxNF2WZ2ZK4C7dTIi7l2emYFSpn-YKW8D_T6QkMYqTFyWB8BvFHdIf4RAKlqNV3MzEgYy1hFBvKo1R8R6eUyfwoGRjjwuL6DSDGAHlRVVcSuqgJ9FIs76yh2MBcfhaiFPDSZm5H2ZJBCecxhcZZDdoMDYerUvSQh9MqjdKK-31sKhU-UIwrsTAsCc6EnO3qYm5_s7"/>
+</div>
+<span class="font-body-sm text-body-sm font-semibold">Marcus Thorne</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant">Neon Nights Gala</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded text-[11px] font-bold bg-white/10 border border-white/20 text-on-surface">General</span>
+</td>
+<td class="px-6 py-5 font-data-mono text-data-mono">$150.00</td>
+<td class="px-6 py-5 text-on-surface-variant">May 11, 09:45</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#FF3B30] status-glow-red"></span>
+<span class="text-[11px] font-bold text-[#FF3B30]">Cancelled</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-error font-bold text-[11px]">System Void</span>
+</div>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="glass-row group stagger-in" style="animation-delay: 0.6s;">
+<td class="px-6 py-5 font-data-mono text-data-mono text-primary">#LTX-7721-C</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Minimalist abstract digital representation of a person profile, using gradients of deep purple and electric blue. Sharp crisp edges on a pure black background, reflecting a sleek, high-tech aesthetic for a modern administrative dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlVz9Ob203Fp1wcsN4wba9XpXxYG5-aPDbOCXrySXQt77WfSxt_ceRalzSvIdGn9-4AK0WupIgSudQXjK0tP6sPipNUMiFZPHCwzzbO5zXZB8FR7ZXT1b85GeFPTn07A_2OsTBn1mwnAjqZbCAmB4GKJeNDh7SleZkAtEocjNvVuzv9aMwMcY3YsD84vmxci9gfzuxjJo0aAF4mM1j7Qsn7keD-2BtBDTUvVVD4PNkfaWRtZZ8sGEl"/>
+</div>
+<span class="font-body-sm text-body-sm font-semibold">Elena Rodriguez</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant">Global FinTech Summit</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded text-[11px] font-bold bg-tertiary/10 border border-tertiary/20 text-tertiary">All-Access</span>
+</td>
+<td class="px-6 py-5 font-data-mono text-data-mono">$1,450.00</td>
+<td class="px-6 py-5 text-on-surface-variant">May 10, 18:30</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[11px] font-bold text-primary">Active</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-lg text-on-surface-variant hover:text-on-surface" title="Resend Email">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</button>
+<button class="px-3 py-1 bg-[#FF3B30] text-white font-bold text-[12px] rounded-lg hover:brightness-110 status-glow-red active:scale-95 transition-all">Cancel</button>
+</div>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="glass-row group stagger-in" style="animation-delay: 0.7s;">
+<td class="px-6 py-5 font-data-mono text-data-mono text-primary">#LTX-1290-X</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sharp, cinematic photo of a professional woman with glasses, lit by a single high-contrast light source that creates a dramatic chiaroscuro effect against an obsidian background. The mood is sophisticated, authoritative, and perfectly suited for an enterprise software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTAoaldqHAry3Otzcj1gUVe6dxe_sJ6ONCB0mi-oW3pFnnJaDvLHsApF_PVOcwWskqfXYKLqGsSGcSHLAJR76kOWTyOacdwxNKBH9YtrGif7Bb9_43hwux6SsFX4fxYFvWADKN4k_Dczx0_l22p3YZrkVj-phHlZJ7cpgiOlOFmrUSOz7TmrDcwna9Jwz32xgedz4cV7CVc_edlgJ7NLCMB-up8TUBuKy82i1Dyh_eRN61TcKamnuX"/>
+</div>
+<span class="font-body-sm text-body-sm font-semibold">David Chen</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant">CyberNexus 2024</td>
+<td class="px-6 py-5">
+<span class="px-2 py-1 rounded text-[11px] font-bold bg-primary/10 border border-primary/20 text-primary">VIP</span>
+</td>
+<td class="px-6 py-5 font-data-mono text-data-mono">$899.00</td>
+<td class="px-6 py-5 text-on-surface-variant">May 09, 12:12</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-400 status-glow-green"></span>
+<span class="text-[11px] font-bold text-green-400">Scanned</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-white/10 rounded-lg text-on-surface-variant hover:text-on-surface" title="Resend Email">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</button>
+<button class="px-3 py-1 bg-secondary text-on-secondary font-bold text-[12px] rounded-lg hover:brightness-110 transition-all">Download PDF</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Section -->
+<div class="px-6 py-4 flex items-center justify-between border-t border-white/10 bg-white/5">
+<span class="text-body-sm text-on-surface-variant">Showing 1 to 50 of 12,840 tickets</span>
+<div class="flex items-center gap-1">
+<button class="p-2 glass-card rounded-lg hover:bg-white/10 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary-container font-bold shadow-lg">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg glass-card hover:bg-white/10">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg glass-card hover:bg-white/10">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg glass-card hover:bg-white/10">257</button>
+<button class="p-2 glass-card rounded-lg hover:bg-white/10">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Toast Notification (Interaction Example) -->
+<div class="fixed bottom-8 right-8 glass-card px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl translate-y-24 transition-transform duration-500 z-[100] border-l-4 border-primary" id="toast">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Ticket Resent</p>
+<p class="text-body-sm text-on-surface-variant">Confirmation email was sent to Sarah Jenkins.</p>
+</div>
+</div>
+<script>
+        // Micro-interactions and Toast trigger
+        document.querySelectorAll('button[title="Resend Email"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-24');
+                toast.classList.add('translate-y-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-y-24');
+                    toast.classList.remove('translate-y-0');
+                }, 4000);
+            });
+        });
+
+        // Simulating staggered entry for rows if they were dynamically added
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = `${(index + 4) * 0.1}s`;
+            });
+        });
+    </script>
+</body></html>

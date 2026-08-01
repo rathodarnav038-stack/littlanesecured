@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix Enterprise | Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --iris-gradient: linear-gradient(135deg, #cabeff 0%, #947dff 100%);
+            --glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+        }
+        .iris-bg {
+            background: var(--iris-gradient);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            transition: all 0.2s ease;
+        }
+        .input-glass:focus {
+            border-color: #cabeff;
+            background: rgba(255, 255, 255, 0.06);
+            outline: none;
+        }
+        /* Material Symbols weight logic */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "secondary-fixed": "#eaddff",
+                "on-secondary-fixed": "#25005a",
+                "inverse-on-surface": "#303030",
+                "tertiary": "#54d7ef",
+                "on-tertiary-fixed": "#001f25",
+                "on-secondary-fixed-variant": "#552e9b",
+                "surface-container-lowest": "#0e0e0e",
+                "on-error": "#690005",
+                "secondary-container": "#57319e",
+                "on-primary-fixed": "#1c0062",
+                "inverse-primary": "#613de0",
+                "primary": "#cabeff",
+                "surface-container-low": "#1b1b1b",
+                "tertiary-fixed-dim": "#54d7ef",
+                "tertiary-fixed": "#a3eeff",
+                "error": "#ffb4ab",
+                "surface-container": "#1f1f1f",
+                "outline": "#938ea1",
+                "on-primary-container": "#2b0088",
+                "background": "#131313",
+                "on-background": "#e2e2e2",
+                "on-primary-fixed-variant": "#4918c8",
+                "inverse-surface": "#e2e2e2",
+                "surface-bright": "#393939",
+                "on-tertiary-container": "#002f36",
+                "on-surface": "#e2e2e2",
+                "on-primary": "#32009a",
+                "on-tertiary-fixed-variant": "#004e5a",
+                "on-secondary": "#3d0e84",
+                "tertiary-container": "#009fb5",
+                "surface-container-high": "#2a2a2a",
+                "error-container": "#93000a",
+                "secondary": "#d2bbff",
+                "primary-fixed-dim": "#cabeff",
+                "surface-container-highest": "#353535",
+                "surface-tint": "#cabeff",
+                "surface-dim": "#131313",
+                "on-secondary-container": "#c6aaff",
+                "on-surface-variant": "#c9c4d8",
+                "primary-fixed": "#e6deff",
+                "outline-variant": "#484555",
+                "surface-variant": "#353535",
+                "on-tertiary": "#00363e",
+                "surface": "#131313",
+                "primary-container": "#947dff",
+                "on-error-container": "#ffdad6",
+                "secondary-fixed-dim": "#d2bbff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "island-gap": "1rem",
+                "topbar-height": "64px",
+                "sidebar-width": "268px",
+                "gutter": "24px",
+                "container-margin": "1rem"
+            },
+            "fontFamily": {
+                "body-sm": ["Inter"],
+                "body-md": ["Inter"],
+                "display-lg": ["Inter"],
+                "data-mono": ["JetBrains Mono"],
+                "body-lg": ["Inter"],
+                "headline-lg": ["Inter"],
+                "label-caps": ["Inter"],
+                "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-black min-h-screen selection:bg-primary/30">
+<!-- SIDEBAR ISLAND -->
+<aside class="fixed left-4 top-4 bottom-4 w-sidebar-width rounded-xl bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-50 flex flex-col overflow-hidden">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg iris-bg flex items-center justify-center text-white iris-glow">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">LitTix</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Enterprise Admin</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">shopping_cart</span>
+<span class="font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">confirmation_number</span>
+<span class="font-body-sm text-body-sm">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">group</span>
+<span class="font-body-sm text-body-sm">Customers</span>
+</a>
+<div class="my-2 border-t border-white/5 mx-4"></div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">payments</span>
+<span class="font-body-sm text-body-sm">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:scale-[0.98] transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<div class="flex-1"></div>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/10 mt-auto">
+<div class="flex items-center gap-3 p-2 rounded-xl bg-white/5">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-fashion portrait of a tech executive in a dark, atmospheric office setting. The lighting is low-key with subtle iris purple rim lights reflecting off glass surfaces. The composition is sleek and professional, mirroring a high-end enterprise environment with deep blacks and sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRBYL4YntqHNA5jrCoG4Xr5DcnRAyAfaEOxlEKFNCOYbrMdY8LYzRQdjOxLxWkVnntnn-Vw3grErvwEjfyoRsdbNl6-bFvMPtrKEZ8qOZXLP3syaENmuTRxEsiiC3eZHbNNR-ZtsNLlMZ1zR46C-54aISqOHzalIou1MVyUJ2hHdwDN4oFeCSwnSDAYiJM9K8XhprdXe1IJW4NAOCrIAerhaQJsA0CtuUZHFdbx1Yvs7s7wDSqMPxd"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">Alex Thorne</p>
+<p class="text-[10px] text-on-surface-variant truncate">Principal Admin</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">unfold_more</span>
+</div>
+</div>
+</aside>
+<!-- TOPBAR ISLAND -->
+<header class="fixed top-4 left-[calc(268px+2.5rem)] right-4 h-topbar-height rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-4 flex-1">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm w-full max-w-xs text-on-surface" placeholder="Search enterprise settings..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-error-container/20 border border-error/20">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+<span class="text-[10px] font-bold text-error uppercase tracking-wider">Live</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="px-5 py-2 iris-bg rounded-full text-on-primary font-bold text-body-sm iris-glow hover:scale-[0.98] active:scale-95 transition-all">
+                    + New Ticket
+                </button>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT AREA -->
+<main class="pt-[calc(64px+3rem)] pl-[calc(268px+2.5rem)] pr-4 pb-8 min-h-screen">
+<div class="max-w-5xl mx-auto space-y-8">
+<!-- HEADER SECTION -->
+<section class="flex flex-col gap-1">
+<h2 class="font-headline-lg text-headline-lg text-white font-bold tracking-tight">Enterprise Settings</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Manage your global organization preferences, security protocols, and financial configurations.</p>
+</section>
+<!-- SETTINGS GRID -->
+<div class="grid grid-cols-12 gap-island-gap">
+<!-- GENERAL SETTINGS: BENTO LARGE -->
+<div class="col-span-12 glass-panel rounded-3xl p-8 relative overflow-hidden">
+<div class="flex flex-col md:flex-row gap-12">
+<div class="flex-1 space-y-8">
+<div>
+<h3 class="text-xl font-bold text-white mb-2">General Configuration</h3>
+<p class="text-sm text-on-surface-variant">Control the core identity and public-facing profile of your enterprise portal.</p>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-[11px] font-bold text-white/60 uppercase tracking-widest px-1">Brand Name</label>
+<input class="w-full px-4 py-3 rounded-xl input-glass text-on-surface font-body-md" type="text" value="LitTix Entertainment Group"/>
+</div>
+<div class="space-y-2">
+<label class="text-[11px] font-bold text-white/60 uppercase tracking-widest px-1">Organization URL</label>
+<div class="flex items-center">
+<span class="px-4 py-3 bg-white/5 border border-white/10 border-r-0 rounded-l-xl text-on-surface-variant text-sm">littix.com/</span>
+<input class="flex-1 px-4 py-3 rounded-r-xl input-glass text-on-surface font-body-md border-l-0" type="text" value="enterprise-hq"/>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full md:w-80 space-y-6">
+<label class="text-[11px] font-bold text-white/60 uppercase tracking-widest px-1 block">Brand Assets</label>
+<div class="group relative aspect-square rounded-3xl overflow-hidden border-2 border-dashed border-white/10 hover:border-primary/50 transition-colors flex flex-col items-center justify-center bg-white/5">
+<div class="absolute inset-0 bg-cover bg-center opacity-20 transition-transform duration-700 group-hover:scale-110" data-alt="A futuristic and minimalist abstract logo for a tech company, featuring glowing geometric paths and a central core of iris purple light. The aesthetic is clean, professional, and high-contrast against a pure black void, symbolizing innovation and enterprise security." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAXkE4r9UcQgeHASM3Jr9b0ptmoPRvelzAgPQJ_XUhwYtc7IkBZTTt3E9UJS6U5yjIKMN1meMJ9RLFe9KPchrrKTGeB6GNRqmbVCVSeBvhqW6-lbZ9uEk35_8UOSRc7VsXUCrE5-oh40Ysuupk6_MjHdQ43KGgBXevwc5gIQs_vKMDjbN-Wd5eizVbiQHX_gTP5zcSRJYboi48VPCaqOAOVx2T5m8Jsb31EPi7N60EzVfKGF4d8b1O9')"></div>
+<span class="material-symbols-outlined text-4xl text-primary/50 group-hover:text-primary transition-colors z-10">upload_file</span>
+<p class="text-[10px] font-bold mt-2 text-on-surface-variant uppercase tracking-wider z-10">Upload New Logo</p>
+<p class="text-[9px] text-white/30 z-10">SVG, PNG or WEBP (Max 5MB)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- SECURITY: BENTO TALL -->
+<div class="col-span-12 lg:col-span-7 glass-panel rounded-3xl p-8 flex flex-col justify-between h-full">
+<div class="space-y-6">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-xl font-bold text-white mb-2">Security &amp; Access</h3>
+<p class="text-sm text-on-surface-variant">Protect your workspace with enterprise-grade encryption and access controls.</p>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+</div>
+<div class="space-y-4 pt-4">
+<!-- 2FA Toggle -->
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">phonelink_lock</span>
+<div>
+<p class="text-sm font-bold text-white">Two-Factor Authentication</p>
+<p class="text-xs text-on-surface-variant">Mandatory for all admin level accounts</p>
+</div>
+</div>
+<button class="w-12 h-6 rounded-full bg-primary/20 relative transition-all" onclick="this.classList.toggle('bg-primary'); this.querySelector('span').classList.toggle('translate-x-6')">
+<span class="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all shadow-lg translate-x-6"></span>
+</button>
+</div>
+<!-- Session Timeout -->
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">timer</span>
+<div>
+<p class="text-sm font-bold text-white">Idle Session Timeout</p>
+<p class="text-xs text-on-surface-variant">Auto logout after 30 minutes of inactivity</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-white/30">chevron_right</span>
+</div>
+<!-- API Key Display -->
+<div class="space-y-2 mt-6">
+<label class="text-[11px] font-bold text-white/60 uppercase tracking-widest px-1">Master API Key</label>
+<div class="flex gap-2">
+<div class="flex-1 font-data-mono text-data-mono bg-black/40 border border-white/10 px-4 py-3 rounded-xl text-primary/80 overflow-hidden text-ellipsis whitespace-nowrap">
+                                        lt_live_9f2a0134b8c771e8d012...
+                                    </div>
+<button class="px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+<p class="text-[10px] text-error px-1">Last rotated 12 days ago. Security policy recommends rotation every 90 days.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- BILLING & PLAN: BENTO SQUARE -->
+<div class="col-span-12 lg:col-span-5 glass-panel rounded-3xl p-8 space-y-6">
+<div>
+<h3 class="text-xl font-bold text-white mb-2">Billing &amp; Plan</h3>
+<p class="text-sm text-on-surface-variant">Review your current enterprise subscription and usage stats.</p>
+</div>
+<div class="iris-bg rounded-2xl p-6 iris-glow relative overflow-hidden group">
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+<div class="relative z-10">
+<p class="text-[11px] font-bold text-on-primary/70 uppercase tracking-widest">Current Plan</p>
+<h4 class="text-2xl font-bold text-on-primary mt-1">Enterprise Plus</h4>
+<div class="mt-6 space-y-2">
+<div class="flex justify-between text-xs text-on-primary/80">
+<span>Tickets sold this month</span>
+<span>84,200 / 100,000</span>
+</div>
+<div class="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
+<div class="h-full bg-white w-[84%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between py-2 border-b border-white/5">
+<span class="text-sm text-white/80">Next billing date</span>
+<span class="text-sm font-data-mono">Nov 14, 2023</span>
+</div>
+<div class="flex items-center justify-between py-2 border-b border-white/5">
+<span class="text-sm text-white/80">Active payment method</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">credit_card</span>
+<span class="text-sm font-data-mono">•••• 8219</span>
+</div>
+</div>
+<button class="w-full py-3 rounded-xl border border-white/10 text-white font-bold text-sm hover:bg-white/5 transition-all">
+                            View Billing History
+                        </button>
+</div>
+</div>
+<!-- TEAM MANAGEMENT: BENTO FULL WIDTH -->
+<div class="col-span-12 glass-panel rounded-3xl p-8 space-y-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h3 class="text-xl font-bold text-white mb-2">Team Management</h3>
+<p class="text-sm text-on-surface-variant">Provision and manage administrative access for your organization.</p>
+</div>
+<button class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-sm hover:bg-white/10 flex items-center gap-2 group transition-all">
+<span class="material-symbols-outlined text-primary group-hover:rotate-90 transition-transform">add</span>
+                            Invite New Admin
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="text-left border-b border-white/10">
+<th class="pb-4 text-[11px] font-bold text-white/60 uppercase tracking-widest">Admin User</th>
+<th class="pb-4 text-[11px] font-bold text-white/60 uppercase tracking-widest">Role</th>
+<th class="pb-4 text-[11px] font-bold text-white/60 uppercase tracking-widest">Access</th>
+<th class="pb-4 text-[11px] font-bold text-white/60 uppercase tracking-widest">Last Active</th>
+<th class="pb-4 text-[11px] font-bold text-white/60 uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 flex items-center justify-center text-tertiary text-xs font-bold border border-tertiary/20">AT</div>
+<div>
+<p class="text-sm font-bold text-white">Alex Thorne</p>
+<p class="text-xs text-on-surface-variant">alex@littix.com</p>
+</div>
+</div>
+</td>
+<td class="py-4">
+<span class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary uppercase">Owner</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">Global Read/Write</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">Just now</span>
+</td>
+<td class="py-4 text-right">
+<button class="p-2 hover:text-white transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary text-xs font-bold border border-secondary/20">SM</div>
+<div>
+<p class="text-sm font-bold text-white">Sarah Miller</p>
+<p class="text-xs text-on-surface-variant">s.miller@littix.com</p>
+</div>
+</div>
+</td>
+<td class="py-4">
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/60 uppercase">Controller</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">Financials Only</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">2h ago</span>
+</td>
+<td class="py-4 text-right">
+<button class="p-2 hover:text-white transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-white/5 transition-colors">
+<td class="py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center text-error text-xs font-bold border border-error/20">JB</div>
+<div>
+<p class="text-sm font-bold text-white">Jordan Blake</p>
+<p class="text-xs text-on-surface-variant">j.blake@littix.com</p>
+</div>
+</div>
+</td>
+<td class="py-4">
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/60 uppercase">Event Ops</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">Venue Mgmt</span>
+</td>
+<td class="py-4">
+<span class="text-xs text-on-surface-variant">Yesterday</span>
+</td>
+<td class="py-4 text-right">
+<button class="p-2 hover:text-white transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- SAVE BAR -->
+<div class="glass-panel rounded-2xl p-4 flex items-center justify-between border-primary/20 sticky bottom-4 z-30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary animate-pulse">info</span>
+<p class="text-xs text-white/80">You have unsaved changes in <span class="font-bold text-white">General Configuration</span></p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2 rounded-xl text-white/60 text-sm font-bold hover:text-white transition-colors">Discard</button>
+<button class="px-8 py-2 iris-bg rounded-xl text-on-primary font-bold text-sm iris-glow hover:scale-[0.98] active:scale-95 transition-all">Save Changes</button>
+</div>
+</div>
+</div>
+</main>
+<!-- ATMOSPHERIC BACKGROUND ELEMENTS -->
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-secondary-container/5 blur-[120px]"></div>
+</div>
+<script>
+        // Micro-interaction for input highlighting
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('border-primary/30');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('border-primary/30');
+            });
+        });
+
+        // Hover scale effect for cards
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.style.transform = 'translateY(-2px)';
+                panel.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

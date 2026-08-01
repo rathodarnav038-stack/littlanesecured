@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Legend,
 } from 'recharts'
 
 interface DashboardProps {
@@ -9,30 +8,6 @@ interface DashboardProps {
   summary: any
   testMode: boolean
   onManualGenerate: () => void
-}
-
-function Sparkline({ data, color }: { data: number[]; color: string }) {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
-  const h = 28, w = 80
-  const pts = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * w
-    const y = h - ((v - min) / (max - min || 1)) * h
-    return `${x},${y}`
-  }).join(' ')
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible' }}>
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.8"
-      />
-    </svg>
-  )
 }
 
 const formatRevenue = (v: number) => {
@@ -44,9 +19,7 @@ const formatRevenue = (v: number) => {
 export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d' | '30d' | '90d' | 'year'>('7d')
   const [activeMetric, setActiveMetric] = useState<'revenue' | 'orders' | 'tickets'>('revenue')
-  const [eventModal, setEventModal] = useState<null | { label: string; tickets: any[] }>(null)
 
-  // Calculate live statistics from sales — exclude exclusive/free invite passes
   const paidSales = sales.filter(s => ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status))
   const revenueSales = paidSales.filter(s => !s.gender || !String(s.gender).toLowerCase().includes('exclusive'))
   
@@ -78,61 +51,12 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
     (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive')
   )
 
-  const eventBreakdown = [
-    {
-      label: 'Freshers Male Pass',
-      emoji: '🧑',
-      color: '#6366f1',
-      gradient: 'linear-gradient(135deg, #4f46e5, #818cf8)',
-      tickets: freshersMale,
-      sold: freshersMale.reduce((a, s) => a + (s.quantity || 1), 0),
-      revenue: freshersMale.reduce((a, s) => a + (s.amount || 0), 0),
-      price: '₹399',
-    },
-    {
-      label: 'Freshers Female Pass',
-      emoji: '👩',
-      color: '#ec4899',
-      gradient: 'linear-gradient(135deg, #db2777, #f472b6)',
-      tickets: freshersFemale,
-      sold: freshersFemale.reduce((a, s) => a + (s.quantity || 1), 0),
-      revenue: freshersFemale.reduce((a, s) => a + (s.amount || 0), 0),
-      price: '₹299',
-    },
-    {
-      label: 'Aura Genesis',
-      emoji: '✨',
-      color: '#f59e0b',
-      gradient: 'linear-gradient(135deg, #d97706, #fbbf24)',
-      tickets: auraGenesis,
-      sold: auraGenesis.reduce((a, s) => a + (s.quantity || 1), 0),
-      revenue: auraGenesis.reduce((a, s) => a + (s.amount || 0), 0),
-      price: '₹350',
-    },
-    {
-      label: 'FT Lineup Invite',
-      emoji: '👑',
-      color: '#a855f7',
-      gradient: 'linear-gradient(135deg, #7e22ce, #a855f7)',
-      tickets: ftInvite,
-      sold: ftInvite.reduce((a, s) => a + (s.quantity || 1), 0),
-      revenue: 0,
-      price: 'Free',
-    },
-  ]
+  const metricColors = {
+    revenue: '#7c5cfc',
+    orders: '#54d7ef',
+    tickets: '#d2bbff'
+  }
 
-  const kpis = [
-    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: '₹', color: '#9333ea', spark: [30, 45, 40, 60, 55, 75, 90] },
-    { label: "Today's Revenue", value: `₹${todayRevenue.toLocaleString()}`, icon: '📈', color: '#7c3aed', spark: [10, 20, 15, 30, 25, 40, 50] },
-    { label: 'Tickets Sold', value: String(totalTickets), icon: '🎫', color: '#6d28d9', spark: [5, 10, 15, 20, 25, 30, 35] },
-    { label: 'QR Scanned', value: String(qrScannedCount), icon: '📲', color: '#8b5cf6', spark: [2, 4, 8, 12, 16, 20, 24] },
-    { label: 'Total Orders', value: String(sales.length), icon: '📋', color: '#a855f7', spark: [10, 20, 18, 32, 28, 45, 52] },
-    { label: 'Successful Payments', value: String(paidSales.length), icon: '✓', color: '#22c55e', spark: [8, 16, 14, 28, 24, 40, 48] },
-    { label: 'Failed Payments', value: String(sales.filter(s => s.status === 'failed').length), icon: '✗', color: '#ef4444', spark: [1, 2, 0, 1, 3, 2, 1] },
-    { label: 'Emails Delivered', value: String(sales.filter(s => s.emailStatus === 'sent').length), icon: '📧', color: '#3b82f6', spark: [8, 15, 14, 25, 22, 38, 44] },
-  ]
-
-  // Map database sales to time periods for the chart
   const getChartData = () => {
     const chartData = []
     const now = new Date()
@@ -157,7 +81,6 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       })
       chartData.push(...Array.from(dayMap.entries()).map(([time, v]) => ({ time, ...v })))
     } else {
-      // Today (3-hour blocks)
       const todayStr = now.toDateString()
       const blocks = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm']
       const blockMap = new Map<string, { revenue: number; orders: number; tickets: number }>()
@@ -183,454 +106,412 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   }
 
   const chartData = getChartData()
-
-  // Generate live feed items from actual database logs
-  const getLiveActivity = () => {
+  
+  const liveFeed = useMemo(() => {
     const list: any[] = []
     sales.slice(0, 15).forEach(sale => {
       const timeLabel = sale.createdAt ? new Date(sale.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'just now'
       
-      // Order created event
       list.push({
         id: `created-${sale.orderId}`,
         type: 'purchase',
-        msg: `${sale.name} initiated booking`,
-        sub: `${sale.event} · ₹${sale.amount}`,
+        msg: `${sale.name || 'Unknown'} initiated booking`,
+        sub: `${sale.event || 'Event'} · ₹${sale.amount || 0}`,
         time: timeLabel,
-        color: '#9333ea',
-        dot: '💳'
+        color: '#7c5cfc', // iris
+        dot: 'shopping_cart'
       })
 
-      // Paid / ticket generated event
       if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(sale.status)) {
         list.push({
           id: `paid-${sale.orderId}`,
           type: 'payment',
           msg: `Payment Verified`,
-          sub: `Order #${sale.orderId.substring(0, 10)} · ID: ${sale.paymentId || 'manual'}`,
+          sub: `Order #${(sale.orderId || '').substring(0, 10)}`,
           time: sale.paidAt ? new Date(sale.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : timeLabel,
-          color: '#22c55e',
-          dot: '✓'
+          color: '#10b981', // emerald
+          dot: 'verified'
         })
       }
-
-      // Email event
-      if (sale.emailStatus === 'sent') {
-        list.push({
-          id: `email-${sale.orderId}`,
-          type: 'email',
-          msg: `Ticket Emailed`,
-          sub: `${sale.email}`,
-          time: timeLabel,
-          color: '#3b82f6',
-          dot: '📧'
-        })
-      } else if (sale.emailStatus === 'failed') {
+      
+      if (sale.emailStatus === 'failed') {
         list.push({
           id: `email-fail-${sale.orderId}`,
           type: 'email-fail',
-          msg: `Email Delivery Failed`,
-          sub: sale.emailError || 'SMTP Error',
+          msg: `Transaction Failed`,
+          sub: sale.emailError || 'Delivery Timeout',
           time: timeLabel,
-          color: '#ef4444',
-          dot: '⚠️'
+          color: '#FF3B30', // red
+          dot: 'report'
         })
       }
 
-      // Scan event
       if (sale.status === 'scanned' || sale.scannedAt) {
         list.push({
           id: `scan-${sale.orderId}`,
           type: 'scan',
-          msg: `Ticket Scanned at Gate`,
-          sub: `Ticket: ${sale.ticketId} · Staff: ${sale.scannedBy || 'Gate A'}`,
+          msg: `Ticket Scanned`,
+          sub: `Gate Entry: ${sale.ticketId || ''}`,
           time: sale.scannedAt || timeLabel,
-          color: '#f59e0b',
-          dot: '📲'
+          color: '#009fb5', // cyan/teal
+          dot: 'qr_code_scanner'
         })
       }
     })
-    return list.slice(0, 10)
-  }
-
-  const liveFeed = getLiveActivity()
-
-  const metricColors: Record<string, string> = {
-    revenue: '#9333ea',
-    orders: '#3b82f6',
-    tickets: '#22c55e',
-  }
+    
+    list.sort((a, b) => {
+        // basic sort to keep recent things vaguely grouped, usually backend provides ordered list
+        return 0 
+    })
+    return list.slice(0, 20)
+  }, [sales])
 
   return (
-    <>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Dashboard</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>Welcome back. Here is the real-time activity for your events.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            onClick={onManualGenerate}
-            style={{
-              padding: '8px 16px',
-              background: 'linear-gradient(135deg, #10B981, #059669)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(16,185,129,0.3)',
-            }}
-          >
-            Generate Ticket Manually
-          </button>
-        </div>
+    <div className="flex flex-col gap-6 p-4">
+      {/* Header Section */}
+      <div className="flex flex-col gap-1">
+        <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Dashboard Overview</h2>
+        <p className="text-on-surface-variant font-body-md text-body-md">Welcome back, Atharva. Here's what's happening with LitTix today.</p>
       </div>
 
-      {/* KPI Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-        gap: '14px',
-      }}>
-        {kpis.map((kpi, i) => (
-          <div
-            key={i}
-            className="glass-card lt-in"
-            style={{
-              borderRadius: '16px',
-              padding: '16px',
-              cursor: 'pointer',
-              ['--lt-i' as any]: i,
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-              <div style={{
-                width: '32px', height: '32px',
-                borderRadius: '8px',
-                backgroundColor: `${kpi.color}15`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '14px',
-              }}>
-                {kpi.icon}
-              </div>
+      {/* KPI Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Total Revenue */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2 group">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <span className="material-symbols-outlined">payments</span>
             </div>
-            <div style={{ fontSize: '21px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', marginBottom: '2px' }}>
-              {kpi.value}
-            </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--muted-foreground)', marginBottom: '8px' }}>{kpi.label}</div>
-            <Sparkline data={kpi.spark} color={kpi.color} />
+            <div className="text-[11px] font-bold text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Live</div>
           </div>
-        ))}
-      </div>
-
-      {/* Event Sales Breakdown */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Event Sales Breakdown</h2>
-          <span style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>Click any event to view sold tickets</span>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Total Revenue</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">₹{totalRevenue.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,15 L10,12 L20,18 L30,10 L40,14 L50,8 L60,12 L70,5 L80,10 L90,2 L100,6" fill="none" stroke="#cabeff" strokeWidth="1.5"></path>
+            </svg>
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
-          {eventBreakdown.map((ev, i) => (
-            <div
-              key={ev.label}
-              onClick={() => setEventModal({ label: ev.label, tickets: ev.tickets })}
-              className="lt-hover-lift lt-glass-sheen lt-in-scale"
-              style={{
-                background: ev.gradient,
-                borderRadius: '16px',
-                padding: '20px',
-                cursor: 'pointer',
-                color: 'white',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: `0 4px 20px ${ev.color}40`,
-                ['--lt-i' as any]: i + 4,
-              }}
-            >
-              <div style={{ position: 'absolute', top: 16, right: 16, fontSize: '28px', opacity: 0.3 }}>{ev.emoji}</div>
-              <div style={{ fontSize: '12px', fontWeight: 600, opacity: 0.85, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ev.label}</div>
-              <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '4px' }}>{ev.sold}</div>
-              <div style={{ fontSize: '11.5px', opacity: 0.8, marginBottom: '12px' }}>tickets sold · {ev.price} each</div>
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px', fontWeight: 700 }}>₹{ev.revenue.toLocaleString()}</span>
-                <span style={{ fontSize: '11px', opacity: 0.75 }}>total revenue</span>
-              </div>
-              <div style={{ marginTop: '8px', fontSize: '11px', opacity: 0.6, textAlign: 'right' }}>→ View sold tickets</div>
+
+        {/* 2. Today's Revenue */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center">
+              <span className="material-symbols-outlined">calendar_today</span>
             </div>
-          ))}
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Today's Revenue</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">₹{todayRevenue.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,10 L25,12 L50,5 L75,15 L100,2" fill="none" stroke="#54d7ef" strokeWidth="1.5"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 3. Tickets Sold */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
+              <span className="material-symbols-outlined">confirmation_number</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Tickets Sold</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">{totalTickets.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,18 L20,10 L40,14 L60,5 L80,8 L100,2" fill="none" stroke="#d2bbff" strokeWidth="1.5"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 4. QR Scanned */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-on-tertiary-fixed-variant/20 text-tertiary flex items-center justify-center">
+              <span className="material-symbols-outlined">qr_code_scanner</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">QR Scanned</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">{qrScannedCount.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,15 L25,18 L50,12 L75,10 L100,5" fill="none" stroke="#009fb5" strokeWidth="1.5"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 5. Total Orders */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-primary-container/20 text-primary-container flex items-center justify-center">
+              <span className="material-symbols-outlined">shopping_basket</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Total Orders</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">{sales.length.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,5 L20,15 L40,8 L60,18 L80,12 L100,10" fill="none" stroke="#947dff" strokeWidth="1.5"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 6. Successful Payments */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2 border-green-500/20">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center">
+              <span className="material-symbols-outlined">check_circle</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Successful Payments</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-green-400 drop-shadow-[0_0_10px_rgba(48,209,88,0.3)]">{paidSales.length.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,10 L33,2 L66,5 L100,0" fill="none" stroke="#30D158" strokeWidth="2"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 7. Failed Payments */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2 border-[#FF3B30]/40 bg-[#FF3B30]/5 failure-pulse">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-[#FF3B30]/20 text-[#FF3B30] flex items-center justify-center">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>error</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-[#FF3B30] text-[12px] uppercase tracking-wider font-extrabold">Failed Payments</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-[#FF3B30] drop-shadow-[0_0_15px_rgba(255,59,48,0.6)]">{(sales.length - paidSales.length).toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,2 L10,18 L20,4 L30,19 L40,5 L50,18 L60,4 L70,19 L80,5 L90,18 L100,2" fill="none" stroke="#FF3B30" strokeWidth="2"></path>
+            </svg>
+          </div>
+        </div>
+
+        {/* 8. Emails Delivered */}
+        <div className="glass-card p-5 rounded-2xl flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div className="w-10 h-10 rounded-xl bg-on-secondary-fixed-variant/20 text-on-secondary-fixed-variant flex items-center justify-center">
+              <span className="material-symbols-outlined">mail_outline</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-on-surface-variant text-[12px] uppercase tracking-wider font-bold">Emails Delivered</p>
+            <h3 className="text-headline-md font-bold font-data-mono mt-1 text-on-surface tracking-tight">{sales.filter(s => s.emailStatus === 'sent').length.toLocaleString()}</h3>
+          </div>
+          <div className="h-10 mt-2 w-full">
+            <svg className="sparkline w-full h-full" viewBox="0 0 100 20">
+              <path d="M0,10 H100" fill="none" stroke="#552e9b" strokeWidth="1.5"></path>
+            </svg>
+          </div>
         </div>
       </div>
 
-      {/* Chart + Live Feed */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '16px' }}>
-        {/* Revenue Chart */}
-        <div 
-          className="glass-card lt-in"
-          style={{
-            borderRadius: '20px',
-            padding: '24px',
-            ['--lt-i' as any]: 8,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+      {/* Event Performance cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Freshers Male */}
+        <div className="relative h-48 rounded-2xl overflow-hidden glass-card group">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-blue-500/10 group-hover:bg-blue-500/20 transition-all"></div>
+          <div className="absolute bottom-4 left-4 z-20">
+            <h4 className="font-headline-md text-headline-md text-white font-bold">Freshers Male</h4>
+            <p className="text-blue-200 text-body-sm font-data-mono">₹{freshersMale.reduce((a, s) => a + (s.amount || 0), 0).toLocaleString()} Revenue</p>
+          </div>
+        </div>
+        {/* Freshers Female */}
+        <div className="relative h-48 rounded-2xl overflow-hidden glass-card group">
+          <div className="absolute inset-0 bg-gradient-to-t from-pink-900/80 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-pink-500/10 group-hover:bg-pink-500/20 transition-all"></div>
+          <div className="absolute bottom-4 left-4 z-20">
+            <h4 className="font-headline-md text-headline-md text-white font-bold">Freshers Female</h4>
+            <p className="text-pink-200 text-body-sm font-data-mono">₹{freshersFemale.reduce((a, s) => a + (s.amount || 0), 0).toLocaleString()} Revenue</p>
+          </div>
+        </div>
+        {/* Aura Genesis */}
+        <div className="relative h-48 rounded-2xl overflow-hidden glass-card group">
+          <div className="absolute inset-0 bg-gradient-to-t from-orange-900/80 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-orange-500/10 group-hover:bg-orange-500/20 transition-all"></div>
+          <div className="absolute bottom-4 left-4 z-20">
+            <h4 className="font-headline-md text-headline-md text-white font-bold">Aura Genesis</h4>
+            <p className="text-orange-200 text-body-sm font-data-mono">₹{auraGenesis.reduce((a, s) => a + (s.amount || 0), 0).toLocaleString()} Revenue</p>
+          </div>
+        </div>
+        {/* FT Lineup Invite */}
+        <div className="relative h-48 rounded-2xl overflow-hidden glass-card group">
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-purple-500/10 group-hover:bg-purple-500/20 transition-all"></div>
+          <div className="absolute bottom-4 left-4 z-20">
+            <h4 className="font-headline-md text-headline-md text-white font-bold">FT Lineup Invite</h4>
+            <p className="text-purple-200 text-body-sm font-data-mono">{ftInvite.length} Invites</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Row: REVENUE ANALYTICS & LIVE FEED */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left (2/3): Sophisticated Revenue Chart */}
+        <div className="lg:col-span-2 obsidian-glass rounded-3xl p-8 flex flex-col gap-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Sales Analytics</h2>
-              <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', margin: '3px 0 0' }}>
-                Period Sales: {period === 'today' ? todayRevenue.toLocaleString() : totalRevenue.toLocaleString()} INR
-              </p>
+              <h4 className="font-headline-md text-headline-md text-on-surface font-semibold">Revenue Analytics</h4>
+              <p className="text-on-surface/60 text-body-sm font-light">Global ticket sales performance across all events</p>
             </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {/* Metric toggle */}
-              <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '8px' }}>
-                {(['revenue', 'orders', 'tickets'] as const).map(m => (
-                  <button
-                    key={m}
-                    onClick={() => setActiveMetric(m)}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      backgroundColor: activeMetric === m ? 'var(--card)' : 'transparent',
-                      color: activeMetric === m ? 'var(--foreground)' : 'var(--muted-foreground)',
-                      fontSize: '11.5px',
-                      fontWeight: activeMetric === m ? 600 : 400,
-                      cursor: 'pointer',
-                      boxShadow: activeMetric === m ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {m}
-                  </button>
-                ))}
-              </div>
-
-              {/* Period filter */}
-              <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '8px' }}>
-                {(['today', '7d'] as const).map(p => (
-                  <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      backgroundColor: period === p ? '#9333ea' : 'transparent',
-                      color: period === p ? 'white' : 'var(--muted-foreground)',
-                      fontSize: '11.5px',
-                      fontWeight: period === p ? 600 : 400,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {p === '7d' ? '7D' : 'Today'}
-                  </button>
-                ))}
-              </div>
+            <div className="flex bg-white/5 p-1 rounded-full border border-white/10 shadow-inner">
+              <button 
+                onClick={() => setPeriod('today')}
+                className={`px-5 py-1.5 rounded-full text-[12px] font-bold transition-all ${period === 'today' ? 'bg-iris text-white shadow-lg shadow-iris/20' : 'text-on-surface/40 hover:text-on-surface'}`}
+              >Today</button>
+              <button 
+                onClick={() => setPeriod('7d')}
+                className={`px-5 py-1.5 rounded-full text-[12px] font-bold transition-all ${period === '7d' ? 'bg-iris text-white shadow-lg shadow-iris/20' : 'text-on-surface/40 hover:text-on-surface'}`}
+              >7 Days</button>
             </div>
           </div>
-
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={metricColors[activeMetric]} stopOpacity={0.15} />
-                  <stop offset="95%" stopColor={metricColors[activeMetric]} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-              <XAxis dataKey="time" tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
-              <YAxis
-                tickFormatter={activeMetric === 'revenue' ? formatRevenue : (v: number) => v.toLocaleString()}
-                tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
-                axisLine={false}
-                tickLine={false}
-                width={52}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'var(--card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '10px',
-                  fontSize: '12px',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey={activeMetric}
-                stroke={metricColors[activeMetric]}
-                strokeWidth={2}
-                fill="url(#grad)"
-                dot={false}
-                activeDot={{ r: 4, fill: metricColors[activeMetric], stroke: 'white', strokeWidth: 2 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Live Activity Feed */}
-        <div 
-          className="glass-card lt-in-left"
-          style={{
-            padding: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '400px',
-            borderRadius: '20px',
-            ['--lt-i' as any]: 9,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <div>
-              <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)', margin: 0, letterSpacing: '-0.3px' }}>Live Activity</h2>
-              <p style={{ fontSize: '11px', color: 'var(--muted-foreground)', margin: '2px 0 0' }}>Real-time event stream</p>
-            </div>
-          </div>
-
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {liveFeed.length === 0 ? (
-              <p style={{ fontSize: '12px', color: 'var(--muted-foreground)', textAlign: 'center', margin: '20px 0' }}>No activity logged yet.</p>
-            ) : (
-              liveFeed.map((item, i) => (
-                <div
-                  key={item.id}
-                  className="live-feed-item"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '10px',
-                    padding: '10px',
-                    backgroundColor: 'var(--muted)',
-                    borderRadius: '10px',
-                    borderLeft: `3px solid ${item.color}`,
-                    ['--lt-i' as any]: i,
+          
+          {/* Premium Chart Visualization (Using Recharts but styled) */}
+          <div className="flex-1 relative min-h-[360px] w-full flex flex-col">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="irisFlow" x1="0%" x2="0%" y1="0%" y2="100%">
+                    <stop offset="0%" stopColor="#7c5cfc" stopOpacity={0.25} />
+                    <stop offset="50%" stopColor="#7c5cfc" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="#7c5cfc" stopOpacity={0} />
+                  </linearGradient>
+                  <filter id="neonGlow">
+                    <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="4" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis dataKey="time" stroke="rgba(255,255,255,0.2)" tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.4)', fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                <YAxis
+                  tickFormatter={formatRevenue}
+                  stroke="rgba(255,255,255,0.2)"
+                  tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.4)', fontFamily: 'JetBrains Mono' }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={52}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(20,20,22,0.8)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontFamily: 'JetBrains Mono',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
                   }}
-                >
-                  <div style={{
-                    width: '28px', height: '28px', borderRadius: '8px',
-                    backgroundColor: `${item.color}20`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '12px', flexShrink: 0,
+                  itemStyle={{ color: '#fff', fontWeight: 700 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#7c5cfc"
+                  strokeWidth={3}
+                  fill="url(#irisFlow)"
+                  dot={false}
+                  activeDot={{ r: 6, fill: '#fff', stroke: '#7c5cfc', strokeWidth: 2, filter: 'url(#neonGlow)' }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="grid grid-cols-3 gap-8 border-t border-white/5 pt-8">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Avg Order Value</span>
+              <span className="font-data-mono text-2xl font-semibold text-on-surface tabular-nums">
+                ₹{sales.length > 0 ? (totalRevenue / sales.length).toFixed(0) : 0}
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Conversion Rate</span>
+              <span className="font-data-mono text-2xl font-semibold text-on-surface tabular-nums">
+                {sales.length > 0 ? ((paidSales.length / sales.length) * 100).toFixed(1) : 0}%
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">Refund Rate</span>
+              <span className="font-data-mono text-2xl font-semibold text-tertiary tabular-nums">
+                {sales.length > 0 ? ((sales.filter(s => s.status === 'refunded').length / sales.length) * 100).toFixed(2) : 0}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right (1/3): Cinematic Command Stream Activity */}
+        <div className="obsidian-glass rounded-3xl flex flex-col h-[650px] overflow-hidden">
+          <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02] backdrop-blur-md">
+            <div>
+              <h4 className="font-headline-md text-headline-md text-on-surface font-semibold">Live Activity</h4>
+              <p className="text-[10px] text-on-surface/40 uppercase tracking-widest mt-1">High Velocity Stream</p>
+            </div>
+            <div className="flex items-center gap-2 bg-iris/10 border border-iris/20 px-2.5 py-1 rounded">
+              <div className="w-1.5 h-1.5 rounded-full bg-iris animate-pulse"></div>
+              <span className="text-[10px] text-iris font-bold uppercase tracking-tighter">Live</span>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {liveFeed.length === 0 ? (
+              <p className="text-[12px] text-on-surface/40 text-center mt-10">No activity logged yet.</p>
+            ) : (
+              liveFeed.map((item, i) => {
+                let glowColor = 'iris';
+                let rawColor = '#7c5cfc';
+                if (item.type === 'payment') { glowColor = 'emerald-500'; rawColor = '#10b981'; }
+                if (item.type === 'email-fail') { glowColor = '[#FF3B30]'; rawColor = '#FF3B30'; }
+                if (item.type === 'scan') { glowColor = 'tertiary'; rawColor = '#009fb5'; }
+
+                return (
+                  <div key={item.id} className={`live-feed-item glass-card p-4 rounded-xl border-l-[3px] group shadow-lg`} style={{
+                    borderColor: rawColor,
+                    backgroundColor: `${rawColor}08`,
                   }}>
-                    {item.dot}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {item.msg}
+                    <div className="flex items-start gap-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center`} style={{
+                        backgroundColor: `${rawColor}15`,
+                        color: rawColor,
+                        boxShadow: `inset 0 0 12px ${rawColor}40`
+                      }}>
+                        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          {item.dot}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="text-body-sm font-bold" style={{ color: item.type === 'email-fail' ? rawColor : 'var(--foreground)' }}>
+                            {item.msg}
+                          </p>
+                          <span className="text-[10px] text-on-surface/40 font-data-mono tabular-nums">{item.time}</span>
+                        </div>
+                        <p className="text-[11px] text-on-surface/60 font-data-mono tabular-nums leading-relaxed">
+                          {item.sub}
+                        </p>
+                      </div>
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {item.sub}
-                    </div>
                   </div>
-                  <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', flexShrink: 0, marginTop: '2px' }}>
-                    {item.time}
-                  </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
       </div>
     </div>
-
-    {/* Event Modal: Sold Tickets List */}
-    {eventModal && (
-      <div
-        onClick={() => setEventModal(null)}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 200,
-          backgroundColor: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        <div
-          onClick={e => e.stopPropagation()}
-          style={{
-            backgroundColor: 'var(--card)', border: '1px solid var(--border)',
-            borderRadius: '20px', padding: '28px', width: '580px', maxWidth: '95vw',
-            maxHeight: '80vh', display: 'flex', flexDirection: 'column',
-            boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>
-                {eventModal.label}
-              </h3>
-              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--muted-foreground)' }}>
-                {eventModal.tickets.length} orders · {eventModal.tickets.reduce((a, s) => a + (s.quantity || 1), 0)} tickets sold
-              </p>
-            </div>
-            <button
-              onClick={() => setEventModal(null)}
-              style={{
-                width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border)',
-                backgroundColor: 'var(--muted)', cursor: 'pointer', color: 'var(--foreground)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
-              }}
-            >✕</button>
-          </div>
-
-          {eventModal.tickets.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--muted-foreground)', fontSize: '13px' }}>
-              No tickets sold yet for this event.
-            </div>
-          ) : (
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {/* Header row */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr 120px 60px',
-                gap: '8px', padding: '8px 12px',
-                fontSize: '10px', fontWeight: 700, color: 'var(--muted-foreground)',
-                textTransform: 'uppercase', letterSpacing: '0.5px',
-              }}>
-                <span>Attendee</span>
-                <span>Email</span>
-                <span>Ticket ID</span>
-                <span style={{ textAlign: 'right' }}>Amount</span>
-              </div>
-              {eventModal.tickets.map((sale, i) => (
-                <div
-                  key={sale.orderId || i}
-                  style={{
-                    display: 'grid', gridTemplateColumns: '1fr 1fr 120px 60px',
-                    gap: '8px', padding: '10px 12px',
-                    backgroundColor: 'var(--muted)', borderRadius: '10px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {sale.name || 'Unknown'}
-                    </div>
-                    <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '2px' }}>
-                      {sale.status === 'scanned' ? (
-                        <span style={{ color: '#f59e0b', fontWeight: 600 }}>● Scanned</span>
-                      ) : (
-                        <span style={{ color: '#22c55e', fontWeight: 600 }}>● Active</span>
-                      )}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {sale.email}
-                  </div>
-                  <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--foreground)', fontWeight: 500 }}>
-                    #{sale.ticketId || '—'}
-                  </div>
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#9333ea', textAlign: 'right' }}>
-                    ₹{(sale.amount || 0).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    )}
-  </>
   )
 }

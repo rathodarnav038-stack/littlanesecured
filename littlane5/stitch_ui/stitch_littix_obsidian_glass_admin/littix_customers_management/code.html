@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LitTix Enterprise Admin - Customers</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-stagger-fade > * {
+            opacity: 0;
+            animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .animate-stagger-fade > *:nth-child(1) { animation-delay: 0.1s; }
+        .animate-stagger-fade > *:nth-child(2) { animation-delay: 0.15s; }
+        .animate-stagger-fade > *:nth-child(3) { animation-delay: 0.2s; }
+        .animate-stagger-fade > *:nth-child(4) { animation-delay: 0.25s; }
+        .animate-stagger-fade > *:nth-child(5) { animation-delay: 0.3s; }
+        .animate-stagger-fade > *:nth-child(6) { animation-delay: 0.35s; }
+        .animate-stagger-fade > *:nth-child(7) { animation-delay: 0.4s; }
+        .animate-stagger-fade > *:nth-child(8) { animation-delay: 0.45s; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.045);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .iris-gradient {
+            background: linear-gradient(135deg, #cabeff 0%, #613de0 100%);
+        }
+        .iris-glow {
+            box-shadow: 0 4px 20px rgba(124, 92, 252, 0.3);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            border-color: rgba(202, 190, 255, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(124, 92, 252, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#cabeff",
+                        "on-secondary": "#3d0e84",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e2e2e2",
+                        "surface": "#131313",
+                        "on-primary-container": "#2b0088",
+                        "on-secondary-fixed": "#25005a",
+                        "on-tertiary-container": "#002f36",
+                        "on-primary-fixed": "#1c0062",
+                        "inverse-on-surface": "#303030",
+                        "primary-container": "#947dff",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "tertiary": "#54d7ef",
+                        "surface-variant": "#353535",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary": "#00363e",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "surface-bright": "#393939",
+                        "tertiary-fixed-dim": "#54d7ef",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "on-primary-fixed-variant": "#4918c8",
+                        "secondary": "#d2bbff",
+                        "primary-fixed": "#e6deff",
+                        "outline-variant": "#484555",
+                        "on-surface-variant": "#c9c4d8",
+                        "surface-dim": "#131313",
+                        "tertiary-container": "#009fb5",
+                        "background": "#131313",
+                        "tertiary-fixed": "#a3eeff",
+                        "on-tertiary-fixed": "#001f25",
+                        "inverse-primary": "#613de0",
+                        "primary-fixed-dim": "#cabeff",
+                        "on-secondary-fixed-variant": "#552e9b",
+                        "surface-container-low": "#1b1b1b",
+                        "surface-container-highest": "#353535",
+                        "inverse-surface": "#e2e2e2",
+                        "surface-container": "#1f1f1f",
+                        "secondary-container": "#57319e",
+                        "on-secondary-container": "#c6aaff",
+                        "on-background": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#004e5a",
+                        "secondary-fixed": "#eaddff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "topbar-height": "64px",
+                        "gutter": "24px",
+                        "sidebar-width": "268px",
+                        "island-gap": "1rem",
+                        "container-margin": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-black text-on-surface selection:bg-primary/30 min-h-screen overflow-x-hidden">
+<!-- Atmospheric Shader Background -->
+
+<!-- SideNavBar Integration -->
+<aside class="fixed left-4 top-4 bottom-4 w-[268px] rounded-xl bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-50 flex flex-col gap-2 p-4">
+<div class="flex flex-col mb-8 px-2">
+<span class="font-headline-md text-headline-md font-bold text-primary">LitTix</span>
+<span class="text-on-surface-variant font-body-sm text-xs opacity-60">Enterprise Admin</span>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto pr-2 custom-scrollbar">
+<!-- Navigation Items Mapping -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">shopping_cart</span> Orders
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">confirmation_number</span> Tickets
+            </a>
+<!-- ACTIVE: Customers -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-primary font-bold rounded-lg relative before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full transition-all" href="#">
+<span class="material-symbols-outlined">group</span> Customers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">event</span> Events
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">mail</span> Email Delivery
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">payments</span> Payments
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">keyboard_return</span> Refunds
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span> QR Scan Logs
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span> Analytics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined">description</span> Reports
+            </a>
+<div class="mt-auto pt-4 border-t border-white/5">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span> Admins
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+</div>
+</nav>
+</aside>
+<!-- TopNavBar Integration -->
+<header class="fixed top-4 left-[calc(268px+40px)] right-4 h-topbar-height rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.5)] z-40 flex justify-between items-center px-6">
+<div class="flex items-center gap-6 flex-1">
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-12 pr-4 text-body-sm focus:outline-none focus:border-primary/50 transition-colors" placeholder="Search customers, emails, or phone..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-tertiary/10 rounded-full border border-tertiary/20">
+<span class="w-2 h-2 bg-tertiary rounded-full animate-pulse"></span>
+<span class="text-[11px] font-bold text-tertiary uppercase tracking-wider">Live</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">help</button>
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a tech executive with glasses, wearing a dark turtleneck, soft rim lighting against a deep charcoal background, hyper-realistic, 8k resolution, minimalist corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1DHEmFtrMM7nPswNUzv4CKgUE7VHb5mAIELoZSpoNcwe0Rfcr-4-wQnPScn1dlE_sGtSWKsjUvHdS_UdpiDM5V-BuR4lpha7nDKOmyRVtbeeUQy_iuFB241C7CBWVPZGfisV617Ascj9HUaGQhlYeZdE-7ErcmfD78dB9En8YbUOKoKoLnIAADz98IFnLemO-XLvyc7VE4Q03ee0YzQPUapI5oVZE5d11xc3LJEKfBGkPUpbyoyaG"/>
+</div>
+<button class="iris-gradient iris-glow px-6 py-2 rounded-full text-white text-sm font-semibold hover:scale-[1.02] active:scale-[0.98] transition-all">
+                + New Ticket
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[calc(topbar-height+2rem)] ml-[calc(268px+2.5rem)] mr-4 pb-8">
+<!-- Dashboard Header & KPI -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 animate-stagger-fade">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-white mb-2">Customers</h1>
+<p class="text-on-surface-variant font-body-md">Manage your event community and transaction history.</p>
+</div>
+<div class="glass-card px-8 py-5 rounded-2xl flex items-center gap-6 min-w-[280px]">
+<div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">groups</span>
+</div>
+<div>
+<div class="text-on-surface-variant text-[12px] font-label-caps uppercase tracking-widest mb-1">Total Customers</div>
+<div class="text-display-lg text-3xl font-bold text-white tabular-nums">8,420</div>
+<div class="flex items-center gap-1 text-tertiary text-xs mt-1">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12.4% vs last month</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter & View Toggle Bar -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8 p-1 animate-stagger-fade">
+<div class="flex gap-2">
+<button class="glass-pill px-5 py-2.5 rounded-full flex items-center gap-2 text-on-surface text-sm font-semibold hover:bg-white/10 transition-all border-primary/20">
+<span class="material-symbols-outlined text-sm">filter_alt</span> Filters
+                </button>
+<div class="h-10 w-[1px] bg-white/10"></div>
+<div class="flex items-center gap-3">
+<span class="text-on-surface-variant text-sm px-2">Sorted by:</span>
+<select class="bg-transparent text-white font-bold text-sm focus:outline-none border-none">
+<option>Most Recent</option>
+<option>Spend: High to Low</option>
+<option>Engagement</option>
+</select>
+</div>
+</div>
+<div class="glass-pill p-1 rounded-full flex">
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-bold text-sm flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-sm">grid_view</span> Grid
+                </button>
+<button class="px-6 py-2 rounded-full text-on-surface-variant hover:text-on-surface font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">table_rows</span> Table
+                </button>
+</div>
+</div>
+<!-- Customer Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter animate-stagger-fade">
+<!-- Card 1: Arjun Mehta -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer relative overflow-hidden">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full iris-gradient opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">AM</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Arjun Mehta</h3>
+<p class="text-tertiary text-sm font-body-sm">arjun.mehta@nexus.in</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">24</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹12,450</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">12 Oct 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 98212...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-tertiary/15 border border-tertiary/20 text-tertiary text-[10px] font-bold rounded-full uppercase tracking-tighter">Gold Tier</span>
+</div>
+</div>
+<!-- Card 2: Priya Sharma -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">PS</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Priya Sharma</h3>
+<p class="text-tertiary text-sm font-body-sm">priya.s@cloud.com</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">8</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹4,200</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">05 Nov 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 77312...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-error/15 border border-error/20 text-error text-[10px] font-bold rounded-full uppercase tracking-tighter">Inactive</span>
+</div>
+</div>
+<!-- Card 3: Vikram Singh -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">VS</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Vikram Singh</h3>
+<p class="text-tertiary text-sm font-body-sm">vikram.singh@royal.in</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">42</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹28,900</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">Today</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 91100...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-primary/15 border border-primary/20 text-primary text-[10px] font-bold rounded-full uppercase tracking-tighter">VIP Member</span>
+</div>
+</div>
+<!-- Card 4: Neha Kapoor -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-orange-500 to-red-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">NK</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Neha Kapoor</h3>
+<p class="text-tertiary text-sm font-body-sm">neha.k@vogue.com</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">5</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹1,850</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">28 Aug 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 88921...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-yellow-500/15 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold rounded-full uppercase tracking-tighter">At Risk</span>
+</div>
+</div>
+<!-- Card 5: Rajesh Iyer -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">RI</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Rajesh Iyer</h3>
+<p class="text-tertiary text-sm font-body-sm">rajesh.iyer@fintech.in</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">15</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹9,340</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">15 Sep 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 95420...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-white/5 border border-white/10 text-on-surface-variant text-[10px] font-bold rounded-full uppercase tracking-tighter">Standard</span>
+</div>
+</div>
+<!-- Card 6: Ananya Deshmukh -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">AD</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Ananya Deshmukh</h3>
+<p class="text-tertiary text-sm font-body-sm">ananya.d@studio.in</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">12</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹7,600</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">22 Oct 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 97721...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-tertiary/15 border border-tertiary/20 text-tertiary text-[10px] font-bold rounded-full uppercase tracking-tighter">Gold Tier</span>
+</div>
+</div>
+<!-- Card 7: Kavita Reddy -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">KR</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Kavita Reddy</h3>
+<p class="text-tertiary text-sm font-body-sm">kavita.reddy@tech.com</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">3</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹950</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">10 Sep 23</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 91223...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-yellow-500/15 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold rounded-full uppercase tracking-tighter">At Risk</span>
+</div>
+</div>
+<!-- Card 8: Rahul Verma -->
+<div class="glass-card rounded-[20px] p-6 card-hover transition-all duration-300 group cursor-pointer">
+<div class="flex flex-col items-center text-center mb-6">
+<div class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white mb-4 relative">
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-lime-500 to-green-600 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative z-10">RV</span>
+</div>
+<h3 class="text-white font-bold text-lg mb-1">Rahul Verma</h3>
+<p class="text-tertiary text-sm font-body-sm">rahul.v@nexus.in</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Orders</span>
+<span class="text-white font-bold">19</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Total Spend</span>
+<span class="text-white font-bold">₹11,200</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Last Purchase</span>
+<span class="text-white font-bold text-xs">Yesterday</span>
+</div>
+<div class="glass-pill p-3 rounded-xl flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-on-surface-variant/60">Phone</span>
+<span class="text-white font-data-mono text-xs">+91 74421...</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<span class="px-3 py-1 bg-primary/15 border border-primary/20 text-primary text-[10px] font-bold rounded-full uppercase tracking-tighter">Premium</span>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex items-center justify-center gap-2 animate-stagger-fade">
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill text-on-surface-variant hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full iris-gradient text-white font-bold shadow-lg">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill text-on-surface-variant hover:text-white transition-all">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill text-on-surface-variant hover:text-white transition-all">3</button>
+<span class="text-on-surface-variant px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill text-on-surface-variant hover:text-white transition-all">42</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill text-on-surface-variant hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</main>
+<script>
+        // Micro-interaction for sidebar items
+        document.querySelectorAll('nav a').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Mock behavior for UI demonstration
+                // In a real app, this would handle routing
+            });
+        });
+
+        // Hover effect enhancement for glass cards
+        const cards = document.querySelectorAll('.card-hover');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

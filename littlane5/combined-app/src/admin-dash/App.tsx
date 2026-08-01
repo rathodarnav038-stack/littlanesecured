@@ -26,92 +26,21 @@ type Page =
   | 'settings'
 
 const navItems: { id: Page; label: string; icon: string }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: '⬛' },
-  { id: 'orders', label: 'Orders', icon: '📋' },
-  { id: 'tickets', label: 'Tickets', icon: '🎫' },
-  { id: 'customers', label: 'Customers', icon: '👥' },
-  { id: 'events', label: 'Events', icon: '🎪' },
-  { id: 'email', label: 'Email Delivery', icon: '📧' },
-  { id: 'payments', label: 'Payments', icon: '💳' },
-  { id: 'refunds', label: 'Refunds', icon: '↩️' },
-  { id: 'qr', label: 'QR Scan Logs', icon: '📲' },
-  { id: 'analytics', label: 'Analytics', icon: '📊' },
-  { id: 'reports', label: 'Reports', icon: '📄' },
-  { id: 'admins', label: 'Admins', icon: '🛡️' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { id: 'orders', label: 'Orders', icon: 'shopping_cart' },
+  { id: 'tickets', label: 'Tickets', icon: 'confirmation_number' },
+  { id: 'customers', label: 'Customers', icon: 'group' },
+  { id: 'events', label: 'Events', icon: 'event' },
+  { id: 'email', label: 'Email Delivery', icon: 'mail' },
+  { id: 'payments', label: 'Payments', icon: 'payments' },
+  { id: 'refunds', label: 'Refunds', icon: 'keyboard_return' },
+  { id: 'qr', label: 'QR Scan Logs', icon: 'qr_code_scanner' },
+  { id: 'analytics', label: 'Analytics', icon: 'analytics' },
+  { id: 'settings', label: 'Settings', icon: 'settings' },
 ]
 
-const NavIcon = ({ id }: { id: Page }) => {
-  const icons: Record<Page, JSX.Element> = {
-    dashboard: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
-      </svg>
-    ),
-    orders: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-      </svg>
-    ),
-    tickets: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-      </svg>
-    ),
-    customers: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-      </svg>
-    ),
-    events: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
-    email: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
-      </svg>
-    ),
-    payments: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" />
-      </svg>
-    ),
-    refunds: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
-      </svg>
-    ),
-    qr: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="5" height="5" /><rect x="16" y="3" width="5" height="5" /><rect x="3" y="16" width="5" height="5" />
-        <path d="M21 16h-3v3M18 21h3M13 3v5M13 11v2M13 16v5M8 13h3M16 13h2" />
-      </svg>
-    ),
-    analytics: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-      </svg>
-    ),
-    reports: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
-      </svg>
-    ),
-    admins: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-    settings: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-      </svg>
-    ),
-  }
-  return icons[id]
+const NavIcon = ({ icon }: { icon: string }) => {
+  return <span className="material-symbols-outlined">{icon}</span>
 }
 
 interface AppProps {
@@ -431,28 +360,7 @@ export default function App({ isPresentation = false }: AppProps) {
   }
 
   return (
-    <div className={dark ? 'dark' : ''} style={{
-      minHeight: '100vh',
-      backgroundColor: dark ? '#000000' : '#f4f4f5',
-      color: dark ? '#e2e2e2' : '#18181b',
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-      overflowX: 'hidden',
-      // Define our CSS variables so they function reliably in both dark and light modes
-      ['--background' as any]: dark ? '#000000' : '#f4f4f5',
-      ['--card' as any]: dark ? 'rgba(255, 255, 255, 0.045)' : '#ffffff',
-      ['--border' as any]: dark ? 'rgba(255, 255, 255, 0.09)' : '#e4e4e7',
-      ['--foreground' as any]: dark ? '#e2e2e2' : '#18181b',
-      ['--muted' as any]: dark ? 'rgba(255, 255, 255, 0.03)' : '#f4f4f5',
-      ['--muted-foreground' as any]: dark ? '#a1a1aa' : '#71717a',
-    }}>
-      {/* Curtain intro */}
-      {showCurtain && !isPresentation && (
-        <div className="lt-curtain">
-          <span className="lt-curtain-logo">LITTIX</span>
-        </div>
-      )}
-
+    <div className={`p-4 ${dark ? 'dark' : ''}`}>
       {/* Aurora Ambient Backgrounds */}
       {dark && (
         <div className="lt-aurora">
@@ -473,174 +381,90 @@ export default function App({ isPresentation = false }: AppProps) {
         />
       )}
 
-      <div style={{ display: 'flex', minHeight: '100vh', position: 'relative', zIndex: 10 }}>
-        {/* Sidebar */}
-        <aside 
-          className={dark ? 'glass-card' : ''} 
-          style={{
-            width: '264px', minHeight: '100vh', 
-            backgroundColor: dark ? 'rgba(255, 255, 255, 0.02)' : 'var(--card)', 
-            borderRight: '1px solid var(--border)',
-            display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, overflowY: 'auto',
-            backdropFilter: dark ? 'blur(32px)' : 'none',
-            WebkitBackdropFilter: dark ? 'blur(32px)' : 'none',
-          }}
-        >
-          <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div className="iris-gradient" style={{
-                width: '36px', height: '36px',
-                borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.3px' }}>LitTix</div>
-                <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontWeight: 500 }}>Enterprise Admin</div>
-              </div>
-            </div>
+      {/* Side Navigation Bar */}
+      <aside className="fixed left-4 top-4 bottom-4 w-sidebar-width glass-card rounded-xl z-50 flex flex-col gap-2 p-4">
+        <div className="mb-6 flex items-center gap-3 px-2">
+          <div className="w-8 h-8 rounded-lg iris-gradient flex items-center justify-center text-white">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
           </div>
-
-          <nav style={{ flex: 1, padding: '12px 12px' }}>
-            {navItems.map(item => {
-              const active = page === item.id
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setPage(item.id)}
-                  className={`lt-nav-item lt-hover-scale ${active ? 'active' : ''}`}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px',
-                    borderRadius: '10px', marginBottom: '2px', cursor: 'pointer', border: 'none',
-                    background: active ? 'rgba(124, 92, 252, 0.15)' : 'transparent',
-                    color: active ? '#cabeff' : 'var(--muted-foreground)', fontSize: '13.5px', fontWeight: active ? 700 : 450,
-                    textAlign: 'left', letterSpacing: '-0.1px',
-                    position: 'relative',
-                  }}
-                >
-                  {active && (
-                    <span style={{
-                      position: 'absolute', left: '4px', top: '50%', transform: 'translateY(-50%)',
-                      width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#7C5CFC'
-                    }} />
-                  )}
-                  <span style={{ opacity: active ? 1 : 0.7, flexShrink: 0, paddingLeft: active ? '4px' : '0' }}>
-                    <NavIcon id={item.id} />
-                  </span>
-                  <span style={{ paddingLeft: active ? '2px' : '0' }}>{item.label}</span>
-                </button>
-              )
-            })}
-          </nav>
-
-          <div style={{ padding: '12px', borderTop: '1px solid var(--border)' }}>
-            <button onClick={handleLogout} className="lt-hover-scale" style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px',
-              borderRadius: '10px', border: 'none', background: 'transparent', color: '#ef4444',
-              fontSize: '13.5px', fontWeight: 500, cursor: 'pointer', textAlign: 'left',
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-              </svg>
-              Logout
-            </button>
+          <div>
+            <h1 className="font-headline-md text-headline-md font-bold text-primary tracking-tight">LitTix</h1>
+            <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Enterprise Admin</p>
           </div>
-        </aside>
-
-        {/* Main Panel */}
-        <div style={{ flex: 1, marginLeft: '264px', display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', zIndex: 10 }}>
-          <header 
-            className={dark ? 'glass-card' : ''} 
-            style={{
-              height: '60px', 
-              backgroundColor: dark ? 'rgba(255, 255, 255, 0.02)' : 'var(--card)', 
-              borderBottom: '1px solid var(--border)',
-              display: 'flex', alignItems: 'center', padding: '0 24px', gap: '16px', position: 'sticky', top: 0, zIndex: 30,
-              backdropFilter: dark ? 'blur(32px)' : 'none',
-              WebkitBackdropFilter: dark ? 'blur(32px)' : 'none',
-            }}
-          >
-            <div style={{ flex: 1, maxWidth: '420px', position: 'relative' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search orders, tickets, buyers..."
-                style={{
-                  width: '100%', paddingLeft: '36px', paddingRight: '12px', paddingTop: '8px', paddingBottom: '8px',
-                  backgroundColor: 'var(--muted)', border: '1px solid var(--border)', borderRadius: '10px',
-                  fontSize: '13px', color: 'var(--foreground)', outline: 'none',
-                }}
-              />
-            </div>
-
-            <div style={{ flex: 1 }} />
-
-            {/* Manual Ticket Generator Trigger */}
-            <button
-              onClick={() => setShowManualModal(true)}
-              style={{
-                background: 'linear-gradient(135deg, #22C55E, #16A34A)', color: 'white', border: 'none',
-                padding: '6px 14px', borderRadius: '10px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(34,197,94,0.3)'
-              }}
-            >
-              + Manual Ticket
-            </button>
-
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px',
-              backgroundColor: testMode ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)',
-              borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: testMode ? '#d97706' : '#16a34a',
-            }}>
-              <div style={{
-                width: '6px', height: '6px', borderRadius: '50%',
-                backgroundColor: testMode ? '#f59e0b' : '#22c55e',
-                animation: 'pulse 2s infinite',
-              }} />
-              {testMode ? 'Test Mode' : 'Live'}
-            </div>
-
-            <button
-              onClick={() => setDark(!dark)}
-              style={{
-                width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border)',
-                backgroundColor: 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--muted-foreground)',
-              }}>
-              {dark ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-                </svg>
-              )}
-            </button>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #9333EA, #C084FC)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, color: 'white',
-              }}>A</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--foreground)' }}>Atharva</span>
-                <span style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>Super Admin</span>
-              </div>
-            </div>
-          </header>
-
-          <main style={{ flex: 1, padding: '24px', backgroundColor: 'var(--background)' }}>
-            {renderPage(page)}
-          </main>
         </div>
-      </div>
+        
+        <nav className="flex-1 space-y-1 overflow-y-auto">
+          {navItems.map(item => {
+            const active = page === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setPage(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg relative transition-all active:scale-95 text-left ${
+                  active 
+                  ? "bg-secondary-container/20 text-primary font-bold before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full hover:bg-white/5" 
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98]"
+                }`}
+              >
+                <NavIcon icon={item.icon} />
+                <span className="font-body-sm text-body-sm">{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="mt-auto p-2 glass-card rounded-lg flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full border border-white/20 bg-primary/20 flex items-center justify-center text-primary font-bold">
+            A
+          </div>
+          <div className="overflow-hidden text-left">
+            <p className="font-body-sm text-body-sm text-on-surface truncate">Atharva</p>
+            <p className="text-[10px] text-on-surface-variant truncate">Super Admin</p>
+          </div>
+          <button onClick={handleLogout} className="ml-auto text-on-surface-variant hover:text-on-surface">
+            <span className="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Top Navigation Bar */}
+      <header className="fixed top-4 left-[calc(268px+2rem)] right-4 h-topbar-height glass-card rounded-full z-40 flex items-center justify-between px-6">
+        <div className="flex items-center gap-4 flex-1">
+          <div className="relative w-full max-w-md">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+            <input 
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-1.5 text-body-sm w-full focus:ring-1 focus:ring-primary focus:bg-white/10 outline-none transition-all text-on-surface placeholder-on-surface-variant/60" 
+              placeholder="Search analytics, tickets, or customers..." 
+              type="text"
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className={`flex items-center gap-1 ${testMode ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'} border px-3 py-1 rounded-full`}>
+            <span className="relative flex h-2 w-2">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${testMode ? 'bg-orange-400' : 'bg-green-400'} opacity-75`}></span>
+              <span className={`relative inline-flex rounded-full h-2 w-2 ${testMode ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+            </span>
+            <span className="text-[11px] font-bold tracking-wider uppercase">{testMode ? 'TEST' : 'LIVE'}</span>
+          </div>
+          <button className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span className="material-symbols-outlined">notifications</span></button>
+          <button className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span className="material-symbols-outlined">help</span></button>
+          <button 
+            onClick={() => setShowManualModal(true)}
+            className="iris-gradient iris-glow px-6 py-2 rounded-full text-white font-bold text-body-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border-none cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[20px]">add</span>
+            New Ticket
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content Canvas */}
+      <main className="ml-[calc(268px+1rem)] mt-[calc(64px+1rem)] space-y-6 min-h-screen relative z-10">
+        {renderPage(page)}
+      </main>
 
       {/* Manual Ticket Modal */}
       {showManualModal && (
