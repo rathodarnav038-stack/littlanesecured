@@ -35,6 +35,7 @@ interface Props {
 export default function Customers({ sales = [], globalSearch = '' }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [search, setSearch] = useState('')
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerRecord | null>(null)
 
   // Deduplicate by orderId, paymentId, and ticketId
   const seenOrderIds = new Set<string>()
@@ -202,7 +203,7 @@ export default function Customers({ sales = [], globalSearch = '' }: Props) {
       ) : view === 'grid' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--gutter)' }}>
           {filtered.map((c, i) => (
-            <div className="card" key={i} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="card" key={i} onClick={() => setSelectedCustomer(c)} style={{ display: 'flex', flexDirection: 'column', gap: '12px', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div
                   className="cell-thumb"
@@ -279,7 +280,7 @@ export default function Customers({ sales = [], globalSearch = '' }: Props) {
               </thead>
               <tbody>
                 {filtered.map((c, i) => (
-                  <tr key={i}>
+                  <tr key={i} onClick={() => setSelectedCustomer(c)} style={{ cursor: 'pointer' }}>
                     <td>
                       <div className="cell-main">
                         <div
@@ -313,6 +314,158 @@ export default function Customers({ sales = [], globalSearch = '' }: Props) {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+      {selectedCustomer && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 200,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+          onClick={() => setSelectedCustomer(null)}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(6px)',
+            }}
+          />
+          <div
+            className="scroll"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '420px',
+              maxWidth: '90vw',
+              height: '100vh',
+              background: 'var(--panel)',
+              borderLeft: '1px solid var(--line)',
+              boxShadow: '-8px 0 40px rgba(0,0,0,0.5)',
+              overflowY: 'auto',
+              zIndex: 201,
+              padding: '28px',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: 'var(--ink)' }}>Customer Profile</h3>
+              <button
+                onClick={() => setSelectedCustomer(null)}
+                style={{
+                  background: 'var(--panel-2)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--ink)',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Avatar + Name */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+              <div
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  background: 'var(--grad-violet)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontSize: '20px',
+                  fontWeight: 800,
+                }}
+              >
+                {selectedCustomer.avatar}
+              </div>
+              <div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--ink)' }}>{selectedCustomer.name}</div>
+                <span className="badge badge-blue" style={{ marginTop: '4px' }}>
+                  <span className="badge-dot" />
+                  Verified Customer
+                </span>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--ink-faint)', marginBottom: '12px' }}>
+                CONTACT INFORMATION
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  { label: 'Email Address', value: selectedCustomer.email, icon: '✉️' },
+                  { label: 'Phone Number', value: selectedCustomer.phone || '—', icon: '📱' },
+                ].map(item => (
+                  <div key={item.label} style={{ background: 'var(--panel-2)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '16px' }}>{item.icon}</span>
+                    <div>
+                      <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>{item.label}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginTop: '2px' }}>{item.value}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Purchase Stats */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--ink-faint)', marginBottom: '12px' }}>
+                PURCHASE STATISTICS
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {[
+                  { label: 'TOTAL ORDERS', value: `${selectedCustomer.orders} pass(es)` },
+                  { label: 'TOTAL SPEND', value: `₹${selectedCustomer.spend.toLocaleString()}` },
+                  { label: 'LAST PURCHASE', value: selectedCustomer.lastPurchase ? new Date(selectedCustomer.lastPurchase).toLocaleDateString('en-IN') : '—' },
+                  { label: 'REFUNDS', value: `${selectedCustomer.refunds}` },
+                ].map(item => (
+                  <div key={item.label} style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>{item.label}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)', marginTop: '4px' }}>{item.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Purchase History */}
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--ink-faint)', marginBottom: '12px' }}>
+                ORDER HISTORY
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {sales.filter(s => s.email === selectedCustomer.email && ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)).map((s: any, idx: number) => (
+                  <div key={s.orderId || idx} style={{ background: 'var(--panel-2)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)' }}>{s.event || 'FRESHERS TAKEOVER'}</div>
+                      <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—'}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--violet)' }}>₹{(s.amount || 0).toLocaleString()}</div>
+                      <span className={`badge badge-${s.status === 'scanned' ? 'green' : 'blue'}`} style={{ fontSize: '9px' }}>
+                        <span className="badge-dot" />
+                        {s.status === 'scanned' ? 'Scanned' : 'Paid'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

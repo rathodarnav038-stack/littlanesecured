@@ -461,10 +461,6 @@ export default function App({ isPresentation = false }: AppProps) {
             summary={summary}
             testMode={testMode}
             onManualGenerate={() => setShowManualModal(true)}
-            onViewTickets={(val) => {
-              setTicketEventFilter(val)
-              setPage('tickets')
-            }}
           />
         )
       case 'orders':

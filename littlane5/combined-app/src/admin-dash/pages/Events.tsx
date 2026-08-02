@@ -172,27 +172,88 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
 
         {/* Split Content */}
         <div className="main-row">
-          {/* Lineup Card */}
+          {/* Left Column: Ticket Buyers */}
           <div className="left-col" style={{ flex: 1.2 }}>
             <div className="card">
               <div className="card-head">
-                <h3>Event Lineup & Artist Status</h3>
-                <div className="muted-sm">Live stage schedule</div>
+                <h3>👥 Ticket Buyers ({(() => {
+                  const buyersList = sales.filter(s => {
+                    const isVip =
+                      (s.gender || '').toLowerCase().includes('exclusive') ||
+                      (s.ticketType || '').toLowerCase().includes('exclusive') ||
+                      (s.ticketType || '').toLowerCase().includes('vip')
+                    const isAura = (s.event || '').toUpperCase().includes('AURA')
+                    const category = isVip ? 'FT LINEUP INVITE' : isAura ? 'AURA GENESIS' : 'FRESHERS TAKEOVER'
+                    const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
+                    return isPaid && category === selectedEvent
+                  })
+                  return buyersList.length
+                })()})</h3>
+                <div className="muted-sm">Attendees registered for this event</div>
               </div>
-              <div>
-                {lineup.map((item, idx) => (
-                  <div key={idx} className="lineup-item">
-                    <div className="day">{item.time}</div>
-                    <div className="who">
-                      <b>{item.name}</b>
-                      <span>{item.stage}</span>
+              <div className="scroll" style={{ maxHeight: '420px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {(() => {
+                  const buyersList = sales.filter(s => {
+                    const isVip =
+                      (s.gender || '').toLowerCase().includes('exclusive') ||
+                      (s.ticketType || '').toLowerCase().includes('exclusive') ||
+                      (s.ticketType || '').toLowerCase().includes('vip')
+                    const isAura = (s.event || '').toUpperCase().includes('AURA')
+                    const category = isVip ? 'FT LINEUP INVITE' : isAura ? 'AURA GENESIS' : 'FRESHERS TAKEOVER'
+                    const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
+                    return isPaid && category === selectedEvent
+                  })
+
+                  if (buyersList.length === 0) {
+                    return (
+                      <div style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)', fontSize: '13px' }}>
+                        No buyers registered yet.
+                      </div>
+                    )
+                  }
+
+                  return buyersList.map((s, idx) => (
+                    <div
+                      key={s.orderId || idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 14px',
+                        background: 'var(--panel-2)',
+                        border: '1px solid var(--line)',
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '10px',
+                          background: selectedEvent === 'FRESHERS TAKEOVER' ? 'var(--grad-violet)' : selectedEvent === 'AURA GENESIS' ? 'var(--grad-teal)' : 'var(--grad-gold)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                        }}>
+                          {(s.name || '?').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)' }}>{s.name || 'Unknown'}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--ink-faint)' }}>{s.email || '—'}</div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)' }}>
+                          {meta.isVip ? 'FREE' : `₹${(s.amount || 0).toLocaleString()}`}
+                        </div>
+                        <div style={{ fontSize: '10px', color: 'var(--ink-faint)' }}>{s.gender || 'pass'}</div>
+                      </div>
                     </div>
-                    <span className={`badge badge-${item.badge}`}>
-                      <span className="badge-dot" />
-                      {item.status}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                })()}
               </div>
             </div>
           </div>

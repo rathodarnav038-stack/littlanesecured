@@ -53,7 +53,7 @@ function OrderDrawer({
         inset: 0,
         zIndex: 100,
         display: 'flex',
-        justify: 'flex-end',
+        justifyContent: 'flex-end',
       }}
       onClick={onClose}
     >
@@ -87,7 +87,7 @@ function OrderDrawer({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             marginBottom: '20px',
             paddingBottom: '16px',
             borderBottom: '1px solid var(--line)',
@@ -589,7 +589,7 @@ export default function Orders({
             zIndex: 100,
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
+            justifyContent: 'center',
             backgroundColor: 'rgba(0,0,0,0.75)',
             backdropFilter: 'blur(12px)',
           }}

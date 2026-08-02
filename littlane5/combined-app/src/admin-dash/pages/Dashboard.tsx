@@ -8,12 +8,12 @@ interface DashboardProps {
   summary: any
   testMode: boolean
   onManualGenerate: () => void
-  onViewTickets: (eventFilterVal: string) => void
 }
 
-export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate, onViewTickets }: DashboardProps) {
+export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d'>('7d')
   const [chartMode, setChartMode] = useState<'actual' | 'forecast'>('actual')
+  const [popupEvent, setPopupEvent] = useState<string | null>(null)
 
   const paidSales = sales.filter(s =>
     ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
@@ -428,7 +428,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 1: Freshers Takeover */}
             <div
               className="card lt-hover-lift"
-              onClick={() => onViewTickets('freshers takeover')}
+              onClick={() => setPopupEvent('freshers takeover')}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(108, 76, 224, 0.12) 0%, rgba(59, 99, 232, 0.03) 100%)',
@@ -456,7 +456,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 2: Aura Genesis */}
             <div
               className="card lt-hover-lift"
-              onClick={() => onViewTickets('aura genesis')}
+              onClick={() => setPopupEvent('aura genesis')}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(56, 217, 196, 0.12) 0%, rgba(59, 130, 246, 0.03) 100%)',
@@ -484,7 +484,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 3: FT Lineup Invite */}
             <div
               className="card lt-hover-lift"
-              onClick={() => onViewTickets('ft lineup invite')}
+              onClick={() => setPopupEvent('ft lineup invite')}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(245, 197, 66, 0.12) 0%, rgba(245, 133, 77, 0.03) 100%)',
@@ -550,6 +550,138 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
           </div>
         </div>
       </div>
+
+      {popupEvent && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(16px)',
+          }}
+          onClick={() => setPopupEvent(null)}
+        >
+          <div
+            className="scroll"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '520px',
+              maxWidth: '92vw',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              background: 'rgba(30, 32, 44, 0.92)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '20px',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
+              padding: '28px',
+              backdropFilter: 'blur(40px)',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#fff' }}>
+                  {popupEvent === 'freshers takeover' ? '🎉 Freshers Takeover' : popupEvent === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
+                </h3>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
+                  {(() => {
+                    const list = popupEvent === 'freshers takeover'
+                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA'))
+                      : popupEvent === 'aura genesis'
+                      ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
+                      : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
+                    return `${list.length} ticket buyers`
+                  })()}
+                </div>
+              </div>
+              <button
+                onClick={() => setPopupEvent(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#fff',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Buyer List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {(() => {
+                const list = popupEvent === 'freshers takeover'
+                  ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA'))
+                  : popupEvent === 'aura genesis'
+                  ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
+                  : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
+
+                if (list.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', padding: '32px', color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>
+                      No buyers for this event yet.
+                    </div>
+                  )
+                }
+
+                return list.map((s: any, idx: number) => (
+                  <div
+                    key={s.orderId || idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '12px 14px',
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '12px',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        background: popupEvent === 'freshers takeover' ? 'var(--grad-violet)' : popupEvent === 'aura genesis' ? 'var(--grad-teal)' : 'var(--grad-gold)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                      }}>
+                        {(s.name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{s.name || 'Unknown'}</div>
+                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>{s.email || '—'}</div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>₹{(s.amount || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{s.gender || 'pass'}</div>
+                    </div>
+                  </div>
+                ))
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
