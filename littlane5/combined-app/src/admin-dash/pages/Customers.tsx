@@ -332,8 +332,8 @@ export default function Customers({ sales = [], globalSearch = '' }: Props) {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
             }}
           />
           <div

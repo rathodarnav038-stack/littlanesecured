@@ -590,6 +590,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             justifyContent: 'center',
             backgroundColor: 'rgba(0,0,0,0.6)',
             backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
           onClick={() => setPopupEvent(null)}
         >
@@ -607,6 +608,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
               padding: '28px',
               backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
             }}
           >
             {/* Header */}

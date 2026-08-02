@@ -60,9 +60,8 @@ function OrderDrawer({
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
         }}
       />
 
@@ -592,6 +591,7 @@ export default function Orders({
             justifyContent: 'center',
             backgroundColor: 'rgba(0,0,0,0.75)',
             backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
           }}
         >
           <div className="card" style={{ width: '480px', maxWidth: '92vw', padding: '24px' }}>
