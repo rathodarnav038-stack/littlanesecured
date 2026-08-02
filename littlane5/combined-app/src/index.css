@@ -297,13 +297,19 @@ html, body {
   padding: 0 var(--pad);
   border-bottom: 1px solid var(--line);
   z-index: 15;
-  background: rgba(10, 11, 16, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .theme-light .topbar {
-  background: rgba(241, 245, 249, 0.85);
+  background: rgba(248, 250, 252, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .tb-profile {
