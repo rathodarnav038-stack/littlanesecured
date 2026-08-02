@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LitTix Admin — Aursa Genesis</title>
+<link rel="stylesheet" href="assets/design.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  .main-row{ display:flex; gap:20px; flex:1 1 0; min-height:0; }
+  .left-col{ flex:1.6 1 0; min-width:0; display:flex; flex-direction:column; gap:20px; }
+  .right-col{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:20px; }
+
+  .top-row{ display:flex; gap:20px; flex:0 0 auto; height:210px; }
+  .profile-card{ flex:0 0 250px; display:flex; flex-direction:column; }
+  .profile-card .avatar{ width:64px; height:64px; border-radius:16px; background:var(--grad-violet);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; margin:6px 0 10px; }
+  .profile-card h2{ font-size:16px; margin:0; font-weight:800; }
+  .profile-card .sub{ font-size:11px; color:var(--ink-faint); margin-top:2px; }
+  .stat-chips{ display:flex; gap:8px; margin-top:14px; }
+  .stat-chip{ background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:6px 10px;
+    font-size:11px; font-weight:700; display:flex; align-items:center; gap:6px; }
+
+  .kpi-mini{ display:flex; flex-direction:column; gap:20px; flex:1 1 0; }
+  .kpi-mini .tile{ flex:1 1 0; }
+
+  .chart-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; }
+
+  .lineup-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; }
+  .lineup-scroll{ flex:1 1 0; min-height:0; overflow-y:auto; }
+  .lineup-item{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line-soft); }
+  .lineup-item:last-child{ border-bottom:none; }
+  .lineup-item .day{ font-size:10px; color:var(--ink-faint); font-weight:700; text-transform:uppercase; width:64px; flex:0 0 auto; }
+  .lineup-item .who{ flex:1 1 0; min-width:0; }
+  .lineup-item .who b{ font-size:12.5px; font-weight:700; display:block; }
+  .lineup-item .who span{ font-size:10.5px; color:var(--ink-faint); }
+
+  .tier-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:16px; }
+  .tier-row .h{ display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:6px; }
+  .tier-row .bar{ height:7px; border-radius:99px; background:var(--panel-3); }
+  .tier-row .bar > div{ height:100%; border-radius:99px; }
+</style>
+</head>
+<body>
+<div class="app-canvas">
+  <div id="rail"></div>
+  <div id="topbar"></div>
+
+  <div class="content">
+    <div class="main-row">
+      <div class="left-col">
+
+        <div class="top-row">
+          <div class="card profile-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div class="avatar">AG</div>
+              <button class="icon-btn">↻</button>
+            </div>
+            <h2>Aursa Genesis</h2>
+            <div class="sub">Debut electronic showcase · Nov 8</div>
+            <div class="stat-chips">
+              <div class="stat-chip">👥 6,140</div>
+              <div class="stat-chip">✅ 5,802</div>
+              <div class="stat-chip">🏆 4.9</div>
+            </div>
+          </div>
+
+          <div class="kpi-mini">
+            <div class="tile tile-orange" style="flex-direction:row;align-items:center;justify-content:space-between;padding:16px 20px;">
+              <div><div class="tile-label">Revenue</div><div class="tile-value" style="font-size:22px;">$284,600</div></div>
+              <div class="tile-delta" style="margin:0;">↑ 22%</div>
+            </div>
+            <div class="tile tile-teal" style="flex-direction:row;align-items:center;justify-content:space-between;padding:16px 20px;">
+              <div><div class="tile-label">Tickets sold</div><div class="tile-value" style="font-size:22px;">5,802 / 6,140</div></div>
+              <div class="tile-delta" style="margin:0;">94.5%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head">
+            <div><h3>Revenue over time</h3><div class="muted-sm">Since on-sale, Aursa Genesis</div></div>
+            <span class="pill-toggle"><button class="active">Revenue</button><button>Tickets</button></span>
+          </div>
+          <div class="chart-wrap">
+            <svg viewBox="0 0 1000 240" width="100%" height="100%" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="glow2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#38D9C4" stop-opacity=".4"/>
+                  <stop offset="100%" stop-color="#38D9C4" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+                <line x1="0" y1="20" x2="1000" y2="20"/><line x1="0" y1="80" x2="1000" y2="80"/>
+                <line x1="0" y1="140" x2="1000" y2="140"/><line x1="0" y1="200" x2="1000" y2="200"/>
+              </g>
+              <path d="M0,220 C 60,215 100,200 150,190 C 220,175 260,195 320,175 C 400,150 440,180 500,150
+                       C 570,115 610,150 670,110 C 740,65 780,105 840,60 C 900,25 940,55 1000,10 L1000,240 L0,240 Z"
+                    fill="url(#glow2)"/>
+              <path d="M0,220 C 60,215 100,200 150,190 C 220,175 260,195 320,175 C 400,150 440,180 500,150
+                       C 570,115 610,150 670,110 C 740,65 780,105 840,60 C 900,25 940,55 1000,10"
+                    fill="none" stroke="#4CE0C8" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="right-col">
+
+        <div class="card lineup-card">
+          <div class="card-head"><h3>Lineup & invites</h3><button class="icon-btn">🗓</button></div>
+          <div class="lineup-scroll scroll">
+            <div class="lineup-item">
+              <span class="day">8:00 PM</span>
+              <div class="who"><b>Nova Bexley</b><span>Headliner · Main stage</span></div>
+              <span class="badge badge-green">Confirmed</span>
+            </div>
+            <div class="lineup-item">
+              <span class="day">9:30 PM</span>
+              <div class="who"><b>Kite & Ember</b><span>Support act · Main stage</span></div>
+              <span class="badge badge-green">Confirmed</span>
+            </div>
+            <div class="lineup-item">
+              <span class="day">7:00 PM</span>
+              <div class="who"><b>DJ Solace</b><span>Opener · Side stage</span></div>
+              <span class="badge badge-amber">Invite sent</span>
+            </div>
+            <div class="lineup-item">
+              <span class="day">10:45 PM</span>
+              <div class="who"><b>Marlow Reyes</b><span>Closer · Main stage</span></div>
+              <span class="badge badge-amber">Invite sent</span>
+            </div>
+            <div class="lineup-item">
+              <span class="day">6:15 PM</span>
+              <div class="who"><b>Talia Fenn</b><span>Opener · Side stage</span></div>
+              <span class="badge badge-red">Declined</span>
+            </div>
+            <div style="text-align:center;padding-top:10px;">
+              <a href="#" style="font-size:11.5px; color:var(--ink-soft); text-decoration:none;">See full lineup →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tier-card">
+          <div class="card-head"><h3>Sales by tier</h3><div class="muted-sm">6,140 capacity</div></div>
+          <div class="tier-row">
+            <div class="h"><span>General admission</span><span class="muted">71%</span></div>
+            <div class="bar"><div style="width:71%;background:var(--grad-teal);"></div></div>
+          </div>
+          <div class="tier-row">
+            <div class="h"><span>VIP access</span><span class="muted">96%</span></div>
+            <div class="bar"><div style="width:96%;background:var(--grad-violet);"></div></div>
+          </div>
+          <div class="tier-row">
+            <div class="h"><span>Early bird</span><span class="muted">100%</span></div>
+            <div class="bar"><div style="width:100%;background:var(--grad-gold);"></div></div>
+          </div>
+          <div class="tier-row">
+            <div class="h"><span>Backstage pass</span><span class="muted">42%</span></div>
+            <div class="bar"><div style="width:42%;background:var(--grad-orange);"></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="assets/chrome.js"></script>
+<script>renderChrome("events","Aursa Genesis","Event detail"); fitCanvas(".app-canvas");</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

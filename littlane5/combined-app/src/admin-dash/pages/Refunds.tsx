@@ -1,5 +1,4 @@
-// Refunds page — shows real cancelled/failed orders that could be refunded
-// Since there's no separate refunds table, we show failed/cancelled payment records
+import { useState } from 'react'
 
 interface Sale {
   orderId: string
@@ -14,107 +13,189 @@ interface Sale {
 
 interface Props {
   sales: Sale[]
-  adminKey: string
+  adminKey?: string
   onResend?: (ticketId: string) => void
 }
 
-const statusColors: Record<string, { bg: string; color: string }> = {
-  pending: { bg: '#fef3c7', color: '#d97706' },
-  failed: { bg: '#fee2e2', color: '#dc2626' },
-  cancelled: { bg: '#f3f4f6', color: '#6b7280' },
-  paid: { bg: '#dcfce7', color: '#16a34a' },
-  generated: { bg: '#ede9fe', color: '#7c3aed' },
-  scanned: { bg: '#dbeafe', color: '#2563eb' },
-}
+export default function Refunds({ sales = [] }: Props) {
+  const [filter, setFilter] = useState<'all' | 'paid' | 'failed' | 'pending'>('all')
+  const [search, setSearch] = useState('')
 
-function Badge({ label }: { label: string }) {
-  const st = statusColors[label] || { bg: '#f3f4f6', color: '#6b7280' }
-  return <span style={{ backgroundColor: st.bg, color: st.color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap', textTransform: 'capitalize' }}>{label}</span>
-}
-
-export default function Refunds({ sales, adminKey }: Props) {
-  // Show all non-paid orders (these are potential refund/failed payment records)
-  const problemOrders = sales.filter(s =>
-    s.status === 'failed' || s.status === 'cancelled' || s.status === 'pending'
+  const problemOrders = sales.filter(
+    (s) => s.status === 'failed' || s.status === 'cancelled' || s.status === 'pending'
+  )
+  const paidOrders = sales.filter((s) =>
+    ['paid', 'ticket_generated', 'emailed', 'scanned'].includes(s.status)
   )
 
-  // Also show paid orders that might need manual refund attention
-  const paidOrders = sales.filter(s => s.status === 'paid' || s.status === 'generated' || s.status === 'scanned')
+  const totalProblemAmount = problemOrders.reduce((a, r) => a + (r.amount || 0), 0)
+  const totalPaidAmount = paidOrders.reduce((a, r) => a + (r.amount || 0), 0)
+  const failedCount = sales.filter((r) => r.status === 'failed').length
+  const pendingCount = sales.filter((r) => r.status === 'pending').length
 
-  const total = problemOrders.reduce((a, r) => a + r.amount, 0)
-  const failedCount = sales.filter(r => r.status === 'failed').length
-  const pendingCount = sales.filter(r => r.status === 'pending').length
+  const filteredSales = sales.filter((s) => {
+    if (filter === 'paid' && !['paid', 'ticket_generated', 'emailed', 'scanned'].includes(s.status))
+      return false
+    if (filter === 'failed' && s.status !== 'failed') return false
+    if (filter === 'pending' && s.status !== 'pending') return false
 
-  if (sales.length === 0) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Refunds & Failed Payments</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>No orders yet</p>
-        </div>
-        <div className="glass-card lt-in" style={{ borderRadius: '16px', padding: '60px 20px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px', ['--lt-i' as any]: 1 }}>
-          ↩️ Refund and failed payment records will appear here
-        </div>
-      </div>
-    )
-  }
+    if (search) {
+      const q = search.toLowerCase()
+      return (
+        s.orderId.toLowerCase().includes(q) ||
+        (s.name || '').toLowerCase().includes(q) ||
+        (s.email || '').toLowerCase().includes(q)
+      )
+    }
+    return true
+  })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Refunds & Failed Payments</h1>
-          <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
-            {failedCount} failed · {pendingCount} pending · ₹{total.toLocaleString()} at-risk amount
-          </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+      {/* Reference KPI Stat Tiles */}
+      <div className="kpi-row">
+        <div className="tile tile-gold">
+          <div className="tile-label">PROCESSED VOLUME</div>
+          <div className="tile-value">₹{totalPaidAmount.toLocaleString()}</div>
+          <div className="tile-sub">{paidOrders.length} successful payouts</div>
+          <div className="tile-delta">
+            <span>↑</span> Verified sales
+          </div>
+        </div>
+
+        <div className="tile tile-teal">
+          <div className="tile-label">SUCCESSFUL RATE</div>
+          <div className="tile-value">
+            {sales.length > 0
+              ? `${Math.round((paidOrders.length / sales.length) * 100)}%`
+              : '100%'}
+          </div>
+          <div className="tile-sub">Razorpay & Manual gateway</div>
+          <div className="tile-delta">
+            <span>✓</span> Healthy
+          </div>
+        </div>
+
+        <div className="tile tile-orange">
+          <div className="tile-label">AT-RISK / FAILED</div>
+          <div className="tile-value">₹{totalProblemAmount.toLocaleString()}</div>
+          <div className="tile-sub">{failedCount} failed · {pendingCount} pending</div>
+          <div className={`tile-delta ${failedCount > 0 ? 'down' : 'up'}`}>
+            <span>{failedCount > 0 ? '⚠' : '✓'}</span>{' '}
+            {failedCount > 0 ? 'Requires attention' : 'All clear'}
+          </div>
+        </div>
+
+        <div className="tile tile-dark">
+          <div className="tile-label">TOTAL TRANSACTIONS</div>
+          <div className="tile-value">{sales.length}</div>
+          <div className="tile-sub">Across all payment logs</div>
+          <div className="tile-delta up">
+            <span>💳</span> Gateway active
+          </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-        {[
-          { label: 'Failed Payments', value: failedCount, color: '#dc2626' },
-          { label: 'Pending Payments', value: pendingCount, color: '#d97706' },
-          { label: 'Total Orders', value: sales.length, color: '#9333ea' },
-          { label: 'Successful', value: paidOrders.length, color: '#16a34a' },
-        ].map((s, idx) => (
-          <div key={s.label} className="glass-card lt-in" style={{ borderRadius: '14px', padding: '16px', ['--lt-i' as any]: idx }}>
-            <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{s.label}</div>
-          </div>
-        ))}
+      {/* Reference Filter Bar */}
+      <div className="filter-bar">
+        <div className="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search payments by order ID, buyer name..."
+          />
+        </div>
+
+        <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+          <option value="all">All transactions</option>
+          <option value="paid">Paid (Settled)</option>
+          <option value="failed">Failed</option>
+          <option value="pending">Pending</option>
+        </select>
       </div>
 
-      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'auto', ['--lt-i' as any]: 5 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-              {['Order ID', 'Buyer', 'Event', 'Amount', 'Status', 'Date'].map(h => (
-                <th key={h} style={{ padding: '11px 14px', fontSize: '11px', fontWeight: 700, color: 'var(--muted-foreground)', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((r, i) => (
-              <tr key={r.orderId}
-                style={{ borderBottom: i < sales.length - 1 ? '1px solid var(--border)' : 'none' }}
-                onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'var(--muted)'}
-                onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'transparent'}
-              >
-                <td style={{ padding: '13px 14px', fontSize: '12px', fontWeight: 700, color: '#9333ea', fontFamily: 'monospace' }}>#{r.orderId.slice(-8)}</td>
-                <td style={{ padding: '13px 14px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>{r.name}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>{r.email}</div>
-                </td>
-                <td style={{ padding: '13px 14px', fontSize: '12.5px', color: 'var(--foreground)', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.event}</td>
-                <td style={{ padding: '13px 14px', fontSize: '13px', fontWeight: 700, color: r.status === 'failed' ? '#ef4444' : 'var(--foreground)' }}>₹{r.amount.toLocaleString()}</td>
-                <td style={{ padding: '13px 14px' }}><Badge label={r.status} /></td>
-                <td style={{ padding: '13px 14px', fontSize: '11.5px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>
-                  {r.createdAt ? new Date(r.createdAt).toLocaleString() : '—'}
-                </td>
+      {/* Payments & Refunds Table Card */}
+      <div className="card table-card">
+        <div className="table-scroll scroll">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Buyer</th>
+                <th>Event</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredSales.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)' }}>
+                    No payment transactions matching criteria.
+                  </td>
+                </tr>
+              ) : (
+                filteredSales.map((r) => {
+                  const isPaid = ['paid', 'ticket_generated', 'emailed', 'scanned'].includes(r.status)
+                  return (
+                    <tr key={r.orderId}>
+                      <td>
+                        <div className="cell-main">
+                          <div
+                            className="cell-thumb"
+                            style={{
+                              background: isPaid ? 'var(--grad-violet)' : 'var(--grad-orange)',
+                            }}
+                          >
+                            💳
+                          </div>
+                          <div className="cell-title">#{r.orderId.substring(0, 10)}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{r.name}</div>
+                        <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{r.email}</div>
+                      </td>
+                      <td>{r.event || 'FRESHERS TAKEOVER'}</td>
+                      <td
+                        style={{
+                          fontWeight: 700,
+                          color: r.status === 'failed' ? 'var(--red)' : 'var(--ink)',
+                        }}
+                      >
+                        ₹{(r.amount || 0).toLocaleString()}
+                      </td>
+                      <td>
+                        {isPaid ? (
+                          <span className="badge badge-green">
+                            <span className="badge-dot" />
+                            Settled
+                          </span>
+                        ) : r.status === 'failed' ? (
+                          <span className="badge badge-red">
+                            <span className="badge-dot" />
+                            Failed
+                          </span>
+                        ) : (
+                          <span className="badge badge-amber">
+                            <span className="badge-dot" />
+                            Pending
+                          </span>
+                        )}
+                      </td>
+                      <td>{r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '—'}</td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LitTix Admin — Orders</title>
+<link rel="stylesheet" href="assets/design.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  .kpi-row{ display:flex; gap:20px; height:138px; flex:0 0 auto; }
+  .kpi-row .tile{ flex:1 1 0; min-width:0; }
+  .table-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; }
+  .table-scroll{ flex:1 1 0; min-height:0; overflow-y:auto; }
+</style>
+</head>
+<body>
+<div class="app-canvas">
+  <div id="rail"></div>
+  <div id="topbar"></div>
+  <div class="content">
+
+    <div class="kpi-row">
+      <div class="tile tile-orange">
+        <div class="tile-label">Orders completed</div>
+        <div><div class="tile-value">94</div><div class="tile-sub">Fulfilled this month</div></div>
+        <div class="tile-delta">↑ 18% MoM</div>
+      </div>
+      <div class="tile tile-teal">
+        <div class="tile-label">In progress</div>
+        <div><div class="tile-value">14</div><div class="tile-sub">Awaiting fulfillment</div></div>
+        <div class="tile-delta">3 due today</div>
+      </div>
+      <div class="tile tile-gold">
+        <div class="tile-label">Returns</div>
+        <div><div class="tile-value">3</div><div class="tile-sub">Refund requests open</div></div>
+        <div class="tile-delta">1 overdue</div>
+      </div>
+      <div class="tile tile-dark">
+        <div class="tile-label">Order value</div>
+        <div><div class="tile-value">$186,420</div><div class="tile-sub">Gross this month</div></div>
+        <div class="tile-delta">↑ 9.2%</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search orders…</span>
+      </div>
+<select><option>All statuses</option><option>Completed</option><option>Pending</option></select>
+<select><option>All events</option></select>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16M6 9h12M9 14h6M11 19h2"/></svg></button>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M5 21h14"/></svg></button>
+    </div>
+
+    <div class="card table-card">
+      <div class="table-scroll scroll">
+        <table class="table">
+          <thead><tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Event</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr></thead>
+          <tbody>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#6C4CE0;">VF</div>
+              <div><div class="cell-title">#ORD-10432</div><div class="cell-sub">Placed via web</div></div>
+            </div></td>
+            <td>Vera Fields</td>
+            <td>Neon Nights Festival</td>
+            <td>2x GA, 1x VIP</td>
+            <td>$318.00</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Completed</span></td>
+            <td>Oct 21</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3E7C86;">JM</div>
+              <div><div class="cell-title">#ORD-10431</div><div class="cell-sub">Placed via app</div></div>
+            </div></td>
+            <td>Jonah Marsh</td>
+            <td>Indie Loft Sessions</td>
+            <td>4x GA</td>
+            <td>$164.00</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Completed</span></td>
+            <td>Oct 21</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#F5854D;">AK</div>
+              <div><div class="cell-title">#ORD-10430</div><div class="cell-sub">Placed via web</div></div>
+            </div></td>
+            <td>Amara Kline</td>
+            <td>Sunset Rooftop Series</td>
+            <td>1x VIP</td>
+            <td>$120.00</td>
+            <td><span class="badge badge-amber"><span class="badge-dot"></span>In progress</span></td>
+            <td>Oct 20</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3B63E8;">RC</div>
+              <div><div class="cell-title">#ORD-10429</div><div class="cell-sub">Placed via app</div></div>
+            </div></td>
+            <td>Ravi Chen</td>
+            <td>Neon Nights Festival</td>
+            <td>3x GA</td>
+            <td>$246.00</td>
+            <td><span class="badge badge-amber"><span class="badge-dot"></span>In progress</span></td>
+            <td>Oct 20</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#38D9C4;">TL</div>
+              <div><div class="cell-title">#ORD-10428</div><div class="cell-sub">Placed via web</div></div>
+            </div></td>
+            <td>Tara Liu</td>
+            <td>Indie Loft Sessions</td>
+            <td>1x GA</td>
+            <td>$41.00</td>
+            <td><span class="badge badge-red"><span class="badge-dot"></span>Refund requested</span></td>
+            <td>Oct 19</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#6C4CE0;">DP</div>
+              <div><div class="cell-title">#ORD-10427</div><div class="cell-sub">Placed via web</div></div>
+            </div></td>
+            <td>Diego Pina</td>
+            <td>Sunset Rooftop Series</td>
+            <td>2x GA</td>
+            <td>$82.00</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Completed</span></td>
+            <td>Oct 19</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#F5378A;">NH</div>
+              <div><div class="cell-title">#ORD-10426</div><div class="cell-sub">Placed via app</div></div>
+            </div></td>
+            <td>Nina Hart</td>
+            <td>Neon Nights Festival</td>
+            <td>1x VIP</td>
+            <td>$120.00</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Completed</span></td>
+            <td>Oct 18</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="assets/chrome.js"></script>
+<script>renderChrome("orders","Orders","All ticket + merchandise orders across every event"); fitCanvas(".app-canvas");</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

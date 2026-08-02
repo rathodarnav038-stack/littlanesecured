@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LitTix Admin — QR scan logs</title>
+<link rel="stylesheet" href="assets/design.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  .kpi-row{ display:flex; gap:20px; height:138px; flex:0 0 auto; }
+  .kpi-row .tile{ flex:1 1 0; min-width:0; }
+  .table-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; }
+  .table-scroll{ flex:1 1 0; min-height:0; overflow-y:auto; }
+</style>
+</head>
+<body>
+<div class="app-canvas">
+  <div id="rail"></div>
+  <div id="topbar"></div>
+  <div class="content">
+
+    <div class="kpi-row">
+      <div class="tile tile-teal">
+        <div class="tile-label">Scans today</div>
+        <div><div class="tile-value">4,812</div><div class="tile-sub">Across all gates</div></div>
+        <div class="tile-delta">+320 last hr</div>
+      </div>
+      <div class="tile tile-gold">
+        <div class="tile-label">Valid</div>
+        <div><div class="tile-value">98.4%</div><div class="tile-sub">First-time valid scans</div></div>
+        <div class="tile-delta">↑ 0.6pt</div>
+      </div>
+      <div class="tile tile-orange">
+        <div class="tile-label">Duplicate</div>
+        <div><div class="tile-value">1.2%</div><div class="tile-sub">Already-scanned attempts</div></div>
+        <div class="tile-delta">↓ 0.1pt</div>
+      </div>
+      <div class="tile tile-dark">
+        <div class="tile-label">Invalid</div>
+        <div><div class="tile-value">0.4%</div><div class="tile-sub">Rejected at gate</div></div>
+        <div class="tile-delta">Flag for review</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search qr scan logs…</span>
+      </div>
+<select><option>All gates</option></select>
+<select><option>Live</option></select>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16M6 9h12M9 14h6M11 19h2"/></svg></button>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M5 21h14"/></svg></button>
+    </div>
+
+    <div class="card table-card">
+      <div class="table-scroll scroll">
+        <table class="table">
+          <thead><tr>
+            <th>Time</th>
+            <th>Ticket</th>
+            <th>Gate</th>
+            <th>Holder</th>
+            <th>Device</th>
+            <th>Result</th>
+          </tr></thead>
+          <tbody>
+          <tr>
+            <td>18:42:11</td>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3B63E8;">GA</div>
+              <div><div class="cell-title">#GA-40213</div><div class="cell-sub">General admission</div></div>
+            </div></td>
+            <td>Gate B</td>
+            <td>Vera Fields</td>
+            <td>Scanner 04</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Valid</span></td>
+          </tr>
+          <tr>
+            <td>18:42:08</td>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#6C4CE0;">VI</div>
+              <div><div class="cell-title">#VI-10042</div><div class="cell-sub">VIP access</div></div>
+            </div></td>
+            <td>Gate A</td>
+            <td>Jonah Marsh</td>
+            <td>Scanner 01</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Valid</span></td>
+          </tr>
+          <tr>
+            <td>18:42:02</td>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3B63E8;">GA</div>
+              <div><div class="cell-title">#GA-40199</div><div class="cell-sub">General admission</div></div>
+            </div></td>
+            <td>Gate C</td>
+            <td>Amara Kline</td>
+            <td>Scanner 07</td>
+            <td><span class="badge badge-amber"><span class="badge-dot"></span>Duplicate</span></td>
+          </tr>
+          <tr>
+            <td>18:41:57</td>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#38D9C4;">GA</div>
+              <div><div class="cell-title">#GA-39980</div><div class="cell-sub">General admission</div></div>
+            </div></td>
+            <td>Gate B</td>
+            <td>Ravi Chen</td>
+            <td>Scanner 04</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Valid</span></td>
+          </tr>
+          <tr>
+            <td>18:41:49</td>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#F5C542;">EB</div>
+              <div><div class="cell-title">#EB-20044</div><div class="cell-sub">Early bird</div></div>
+            </div></td>
+            <td>Gate A</td>
+            <td>Unknown holder</td>
+            <td>Scanner 02</td>
+            <td><span class="badge badge-red"><span class="badge-dot"></span>Invalid</span></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="assets/chrome.js"></script>
+<script>renderChrome("qr-scan-logs","QR scan logs","Gate entry validation in real time"); fitCanvas(".app-canvas");</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

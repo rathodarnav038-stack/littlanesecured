@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 
 interface OrdersProps {
   sales: any[]
@@ -37,240 +37,227 @@ interface Order {
   showInPres?: boolean
 }
 
-const paymentColors: Record<PaymentStatus, { bg: string; color: string }> = {
-  Paid: { bg: '#dcfce7', color: '#16a34a' },
-  Pending: { bg: '#fef3c7', color: '#d97706' },
-  Failed: { bg: '#fee2e2', color: '#dc2626' },
-  Refunded: { bg: '#ede9fe', color: '#7c3aed' },
-  Cancelled: { bg: '#f1f5f9', color: '#64748b' },
-}
-
-const emailColors: Record<EmailStatus, { bg: string; color: string }> = {
-  Delivered: { bg: '#dcfce7', color: '#16a34a' },
-  Opened: { bg: '#dbeafe', color: '#2563eb' },
-  Clicked: { bg: '#e0f2fe', color: '#0284c7' },
-  Downloaded: { bg: '#ede9fe', color: '#7c3aed' },
-  Queued: { bg: '#fef3c7', color: '#d97706' },
-  Failed: { bg: '#fee2e2', color: '#dc2626' },
-  Spam: { bg: '#fce7f3', color: '#be185d' },
-  Bounced: { bg: '#ffedd5', color: '#ea580c' },
-}
-
-const qrColors: Record<QRStatus, { bg: string; color: string }> = {
-  'Not Scanned': { bg: '#f1f5f9', color: '#64748b' },
-  'Scanned': { bg: '#dcfce7', color: '#16a34a' },
-  'Duplicate Scan': { bg: '#fef3c7', color: '#d97706' },
-  'Expired': { bg: '#ffedd5', color: '#ea580c' },
-  'Cancelled': { bg: '#fee2e2', color: '#dc2626' },
-}
-
-function Badge({ label, bg, color }: { label: string; bg: string; color: string }) {
+function OrderDrawer({
+  order,
+  onClose,
+  onResend,
+}: {
+  order: Order
+  onClose: () => void
+  onResend: (id: string) => void
+}) {
   return (
-    <span style={{
-      backgroundColor: bg, color,
-      fontSize: '11px', fontWeight: 600,
-      padding: '3px 8px', borderRadius: '20px',
-      whiteSpace: 'nowrap',
-    }}>
-      {label}
-    </span>
-  )
-}
-
-function OrderDrawer({ order, onClose, onResend }: { order: Order; onClose: () => void; onResend: (id: string) => void }) {
-  return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 100,
-      display: 'flex', justifyContent: 'flex-end',
-    }}
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        display: 'flex',
+        justify: 'flex-end',
+      }}
       onClick={onClose}
     >
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(4px)',
-      }} />
-
       <div
         style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(4px)',
+        }}
+      />
+
+      <div
+        className="scroll"
+        style={{
           position: 'relative',
-          width: '480px',
+          width: '460px',
+          maxWidth: '90vw',
           height: '100vh',
-          backgroundColor: 'var(--card)',
-          boxShadow: '-8px 0 40px rgba(0,0,0,0.15)',
+          backgroundColor: 'var(--panel)',
+          borderLeft: '1px solid var(--line)',
+          boxShadow: '-8px 0 40px rgba(0,0,0,0.5)',
           overflowY: 'auto',
           zIndex: 101,
-          animation: 'slideIn 0.25s ease',
+          padding: '24px',
         }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer header */}
-        <div style={{
-          padding: '20px 24px',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          position: 'sticky', top: 0,
-          backgroundColor: 'var(--card)',
-          zIndex: 1,
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'space-between',
+            marginBottom: '20px',
+            paddingBottom: '16px',
+            borderBottom: '1px solid var(--line)',
+          }}
+        >
           <div>
-            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--foreground)' }}>Order #{order.id.substring(0, 12)}</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{order.time}</div>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: 'var(--ink)' }}>
+              Order #{order.id.substring(0, 12)}
+            </h3>
+            <div style={{ fontSize: '11px', color: 'var(--ink-faint)', marginTop: '2px' }}>
+              {order.time}
+            </div>
           </div>
-          <button onClick={onClose} style={{
-            width: '32px', height: '32px', borderRadius: '8px',
-            border: '1px solid var(--border)', backgroundColor: 'var(--muted)',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--muted-foreground)',
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+          <button className="icon-btn" onClick={onClose}>
+            ✕
           </button>
         </div>
 
-        <div style={{ padding: '24px' }}>
-          {/* Buyer */}
-          <Section title="Buyer Information">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-              <div style={{
-                width: '52px', height: '52px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #9333EA, #C084FC)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '20px', fontWeight: 700, color: 'white', flexShrink: 0,
-              }}>
-                {order.buyer.charAt(0)}
-              </div>
-              <div>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--foreground)' }}>{order.buyer}</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{order.email}</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{order.phone || '—'}</div>
-              </div>
+        {/* Buyer Info */}
+        <div style={{ marginBottom: '20px' }}>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '.06em',
+              color: 'var(--ink-faint)',
+              marginBottom: '10px',
+            }}
+          >
+            BUYER INFORMATION
+          </div>
+          <div className="cell-main">
+            <div className="cell-thumb" style={{ width: '42px', height: '42px', fontSize: '15px', background: 'var(--grad-violet)' }}>
+              {order.buyer.charAt(0)}
             </div>
-          </Section>
-
-          {/* Ticket */}
-          <Section title="Ticket Information">
-            <InfoGrid items={[
-              { label: 'Event', value: order.event },
-              { label: 'Ticket Type', value: order.ticketType },
-              { label: 'Quantity', value: `${order.qty} tickets` },
-              { label: 'Ticket ID', value: order.ticketId || '—' },
-              { label: 'Status', value: order.qrStatus },
-            ]} />
-
-            {order.ticketId && (
-              <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginBottom: '8px' }}>Ticket Actions</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    <a
-                      href={`/api/ticket/${order.ticketId}/download`}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        padding: '6px 12px', fontSize: '11px', fontWeight: 600, textDecoration: 'none',
-                        borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: '#9333EA', color: 'white'
-                      }}
-                    >
-                      Download PDF
-                    </a>
-                    <button
-                      onClick={() => onResend(order.ticketId)}
-                      style={{
-                        padding: '6px 12px', fontSize: '11px', fontWeight: 600,
-                        borderRadius: '7px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Resend Ticket Email
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Section>
-
-          {/* Payment */}
-          <Section title="Payment Information">
-            <InfoGrid items={[
-              { label: 'Gateway', value: order.gateway },
-              { label: 'Transaction ID', value: order.txnId },
-              { label: 'Status', value: <Badge label={order.paymentStatus} {...paymentColors[order.paymentStatus]} /> },
-            ]} />
-            <div style={{ marginTop: '12px' }}>
-              <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginBottom: '8px' }}>Amount Breakdown</div>
-              <div style={{ backgroundColor: 'var(--muted)', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                  <span style={{ color: 'var(--muted-foreground)' }}>Subtotal</span>
-                  <span style={{ fontWeight: 500, color: 'var(--foreground)' }}>₹{order.subtotal.toLocaleString()}</span>
-                </div>
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700 }}>
-                  <span style={{ color: 'var(--foreground)' }}>Total Paid</span>
-                  <span style={{ color: '#9333ea' }}>₹{order.final.toLocaleString()}</span>
-                </div>
-              </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>{order.buyer}</div>
+              <div style={{ fontSize: '12px', color: 'var(--ink-soft)' }}>{order.email}</div>
+              <div style={{ fontSize: '12px', color: 'var(--ink-faint)' }}>{order.phone || '—'}</div>
             </div>
-          </Section>
+          </div>
+        </div>
 
-          {/* Errors */}
-          {order.errorLog && order.errorLog.length > 0 && (
-            <Section title="System Errors (Diagnostics)">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {order.errorLog.map((err: any, idx: number) => (
-                  <div key={idx} style={{ backgroundColor: '#fee2e2', borderRadius: '8px', padding: '12px', border: '1px solid #f87171' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase' }}>Stage: {err.stage}</span>
-                      <span style={{ fontSize: '10px', color: '#dc2626' }}>{new Date(err.at).toLocaleString('en-IN')}</span>
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#991b1b', fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                      {err.error}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
+        {/* Ticket Details */}
+        <div style={{ marginBottom: '20px' }}>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '.06em',
+              color: 'var(--ink-faint)',
+              marginBottom: '10px',
+            }}
+          >
+            TICKET DETAILS
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div style={{ background: 'var(--panel-2)', padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+              <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>EVENT</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)', marginTop: '2px' }}>{order.event}</div>
+            </div>
+            <div style={{ background: 'var(--panel-2)', padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+              <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>TICKET TYPE</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)', marginTop: '2px' }}>{order.ticketType}</div>
+            </div>
+            <div style={{ background: 'var(--panel-2)', padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+              <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>QUANTITY</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)', marginTop: '2px' }}>{order.qty} pass(es)</div>
+            </div>
+            <div style={{ background: 'var(--panel-2)', padding: '10px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+              <div style={{ fontSize: '10px', color: 'var(--ink-faint)', fontWeight: 700 }}>QR SCAN STATUS</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)', marginTop: '2px' }}>{order.qrStatus}</div>
+            </div>
+          </div>
+
+          {order.ticketId && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+              <a
+                href={`/api/ticket/${order.ticketId}/download`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 1, fontSize: '11.5px' }}
+              >
+                Download PDF
+              </a>
+              <button
+                className="btn-secondary"
+                onClick={() => onResend(order.ticketId)}
+                style={{ flex: 1, fontSize: '11.5px' }}
+              >
+                Resend Email
+              </button>
+            </div>
           )}
         </div>
-      </div>
 
-      <style>{`
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-      `}</style>
-    </div>
-  )
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: '24px' }}>
-      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-        {title}
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function InfoGrid({ items }: { items: { label: string; value: React.ReactNode }[] }) {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-      {items.map((item, i) => (
-        <div key={i} style={{ backgroundColor: 'var(--muted)', borderRadius: '8px', padding: '10px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '3px' }}>
-            {item.label}
+        {/* Payment Breakdown */}
+        <div style={{ marginBottom: '20px' }}>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '.06em',
+              color: 'var(--ink-faint)',
+              marginBottom: '10px',
+            }}
+          >
+            PAYMENT BREAKDOWN
           </div>
-          <div style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--foreground)' }}>{item.value}</div>
+          <div style={{ background: 'var(--panel-2)', borderRadius: '12px', padding: '12px', border: '1px solid var(--line)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
+              <span style={{ color: 'var(--ink-soft)' }}>Gateway</span>
+              <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{order.gateway} ({order.txnId})</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
+              <span style={{ color: 'var(--ink-soft)' }}>Subtotal</span>
+              <span style={{ fontWeight: 600, color: 'var(--ink)' }}>₹{order.subtotal.toLocaleString()}</span>
+            </div>
+            <div style={{ borderTop: '1px solid var(--line)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 800 }}>
+              <span style={{ color: 'var(--ink)' }}>Total Paid</span>
+              <span style={{ color: 'var(--violet)' }}>₹{order.final.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
-      ))}
+
+        {/* System Error Diagnostics */}
+        {order.errorLog && order.errorLog.length > 0 && (
+          <div>
+            <div
+              style={{
+                fontSize: '10px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '.06em',
+                color: 'var(--red)',
+                marginBottom: '10px',
+              }}
+            >
+              SYSTEM DIAGNOSTICS LOG
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {order.errorLog.map((err: any, idx: number) => (
+                <div key={idx} style={{ background: 'rgba(255,107,107,0.12)', borderRadius: '10px', padding: '10px', border: '1px solid rgba(255,107,107,0.3)' }}>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--red)', textTransform: 'uppercase' }}>
+                    Stage: {err.stage}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--ink-soft)', fontFamily: 'monospace', marginTop: '4px', whiteSpace: 'pre-wrap' }}>
+                    {err.error}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
-export default function Orders({ sales = [], onResend, globalSearch = '', isPresentation = false, adminKey = '', onReload }: OrdersProps) {
+export default function Orders({
+  sales = [],
+  onResend,
+  globalSearch = '',
+  isPresentation = false,
+  adminKey = '',
+}: OrdersProps) {
   const [selected, setSelected] = useState<Order | null>(null)
   const [filter, setFilter] = useState<string>('all')
   const [gatewayFilter, setGatewayFilter] = useState<string>('all')
@@ -278,494 +265,387 @@ export default function Orders({ sales = [], onResend, globalSearch = '', isPres
   const [searchQ, setSearchQ] = useState('')
   const [showPhoneList, setShowPhoneList] = useState(false)
   const [phoneCopied, setPhoneCopied] = useState(false)
+  const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
 
-  // Map SQLite sales rows to unified Order UI model
-  const orders: Order[] = useMemo(() => sales.map((s: any) => {
-    let paymentStatus: PaymentStatus = 'Pending'
-    if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)) {
-      paymentStatus = 'Paid'
-    } else if (s.status === 'failed') {
-      paymentStatus = 'Failed'
-    }
+  const effectiveSearch = searchQ || globalSearch
 
-    let emailStatus: EmailStatus = 'Queued'
-    if (s.emailStatus === 'sent') {
-      emailStatus = 'Delivered'
-    } else if (s.emailStatus === 'failed') {
-      emailStatus = 'Failed'
-    }
+  const orders: Order[] = useMemo(
+    () =>
+      sales.map((s: any) => {
+        let paymentStatus: PaymentStatus = 'Pending'
+        if (['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)) {
+          paymentStatus = 'Paid'
+        } else if (s.status === 'failed') {
+          paymentStatus = 'Failed'
+        }
 
-    const tType = s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : (String(s.gender || '').toLowerCase().includes('exclusive') ? 'Exclusive Pass' : 'General')
+        let emailStatus: EmailStatus = 'Queued'
+        if (s.emailStatus === 'sent') {
+          emailStatus = 'Delivered'
+        } else if (s.emailStatus === 'failed') {
+          emailStatus = 'Failed'
+        }
 
-    return {
-      id: s.orderId,
-      buyer: s.name,
-      email: s.email,
-      phone: s.phone,
-      event: s.event || 'FRESHERS TAKEOVER',
-      ticketType: tType,
-      qty: s.quantity || 1,
-      subtotal: s.amount,
-      tax: 0,
-      discount: 0,
-      final: s.amount,
-      gateway: s.paymentId === 'manual' ? 'Manual' : 'Razorpay',
-      txnId: s.paymentId || '—',
-      paymentStatus,
-      emailStatus,
-      downloadStatus: s.ticketId ? 'PDF' : '—',
-      qrStatus: (s.status === 'scanned' || s.scannedAt) ? 'Scanned' : 'Not Scanned',
-      time: s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—',
-      ticketId: s.ticketId || '',
-      errorLog: s.errorLog || [],
-      showInPres: s.showInPres || false
-    }
-  }), [sales])
+        const tType =
+          s.gender === 'male'
+            ? 'Male Pass'
+            : s.gender === 'female'
+            ? 'Female Pass'
+            : String(s.gender || '').toLowerCase().includes('exclusive')
+            ? 'Exclusive VIP'
+            : 'General'
 
-  const filtered = orders.filter(o => {
+        return {
+          id: s.orderId,
+          buyer: s.name,
+          email: s.email,
+          phone: s.phone,
+          event: s.event || 'FRESHERS TAKEOVER',
+          ticketType: tType,
+          qty: s.quantity || 1,
+          subtotal: s.amount,
+          tax: 0,
+          discount: 0,
+          final: s.amount,
+          gateway: s.paymentId === 'manual' ? 'Manual' : 'Razorpay',
+          txnId: s.paymentId || '—',
+          paymentStatus,
+          emailStatus,
+          downloadStatus: s.ticketId ? 'PDF' : '—',
+          qrStatus: s.status === 'scanned' || s.scannedAt ? 'Scanned' : 'Not Scanned',
+          time: s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—',
+          ticketId: s.ticketId || '',
+          errorLog: s.errorLog || [],
+          showInPres: s.showInPres || false,
+        }
+      }),
+    [sales]
+  )
+
+  const filtered = orders.filter((o) => {
     if (filter === 'paid' && o.paymentStatus !== 'Paid') return false
     if (filter === 'pending' && o.paymentStatus !== 'Pending') return false
     if (filter === 'failed' && o.paymentStatus !== 'Failed') return false
-    
+
     if (gatewayFilter === 'razorpay' && o.gateway !== 'Razorpay') return false
     if (gatewayFilter === 'manual' && o.gateway !== 'Manual') return false
 
     if (eventFilter !== 'all' && o.event.toLowerCase() !== eventFilter) return false
 
-    if (searchQ) {
-      const q = searchQ.toLowerCase()
-      if (!o.id.toLowerCase().includes(q) &&
-          !o.buyer.toLowerCase().includes(q) &&
-          !o.email.toLowerCase().includes(q) &&
-          !o.txnId.toLowerCase().includes(q)) {
+    if (effectiveSearch) {
+      const q = effectiveSearch.toLowerCase()
+      if (
+        !o.id.toLowerCase().includes(q) &&
+        !o.buyer.toLowerCase().includes(q) &&
+        !o.email.toLowerCase().includes(q) &&
+        !o.txnId.toLowerCase().includes(q)
+      ) {
         return false
       }
     }
     return true
   })
 
-  // Optimistic UI updates
-  const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
-
   const togglePresMode = async (orderId: string, currentVal: boolean) => {
-    if (!adminKey || isPresentation) return;
-    
-    const newVal = !currentVal;
-    // Instantly update UI
-    setOptimisticPres(prev => ({ ...prev, [orderId]: newVal }))
-
+    if (!adminKey || isPresentation) return
+    const newVal = !currentVal
+    setOptimisticPres((prev) => ({ ...prev, [orderId]: newVal }))
     try {
       const res = await fetch('/api/admin/toggle-presentation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
-        body: JSON.stringify({ orderId, showInPres: newVal })
+        body: JSON.stringify({ orderId, showInPres: newVal }),
       })
       if (!res.ok) {
-        // Revert if failed
-        setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
-        alert("Failed to update presentation mode.")
+        setOptimisticPres((prev) => ({ ...prev, [orderId]: currentVal }))
       }
     } catch (err) {
-      console.error(err);
-      // Revert if failed
-      setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
+      setOptimisticPres((prev) => ({ ...prev, [orderId]: currentVal }))
     }
   }
 
   const totalAmount = filtered.reduce((a, o) => {
     if (filter === 'all' && o.paymentStatus !== 'Paid') return a
-    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
+    if (o.ticketType.toLowerCase().includes('exclusive')) return a
     return a + o.final
   }, 0)
 
-  const totalRazorpay = filtered.reduce((a, o) => {
-    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Razorpay') return a
-    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
-    return a + o.final
-  }, 0)
-
-  const totalManual = filtered.reduce((a, o) => {
-    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.gateway !== 'Manual') return a
-    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
-    return a + o.final
-  }, 0)
-
-  const totalFreshers = filtered.reduce((a, o) => {
-    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'freshers takeover') return a
-    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
-    return a + o.final
-  }, 0)
-
-  const totalAura = filtered.reduce((a, o) => {
-    if ((filter === 'all' && o.paymentStatus !== 'Paid') || o.event.toLowerCase() !== 'aura genesis') return a
-    if (o.ticketType && o.ticketType.toLowerCase().includes('exclusive')) return a
-    return a + o.final
-  }, 0)
+  const totalPaidCount = filtered.filter(o => o.paymentStatus === 'Paid').length
+  const totalPendingCount = filtered.filter(o => o.paymentStatus === 'Pending').length
+  const totalFailedCount = filtered.filter(o => o.paymentStatus === 'Failed').length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Orders</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>{filtered.length} orders</span>
-            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>·</span>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: '#059669', backgroundColor: '#d1fae5', padding: '4px 10px', borderRadius: '8px', border: '1px solid #10b981' }}>
-              ₹{totalAmount.toLocaleString()} Total Revenue
-            </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+      {/* Reference KPI Stat Tiles */}
+      <div className="kpi-row">
+        <div className="tile tile-orange">
+          <div className="tile-label">ORDERS COMPLETED</div>
+          <div className="tile-value">{totalPaidCount}</div>
+          <div className="tile-sub">Fulfilled pass orders</div>
+          <div className="tile-delta">
+            <span>↑</span> {totalPaidCount} successful
           </div>
-          <div style={{ display: 'flex', gap: '8px', fontSize: '12.5px', color: 'var(--muted-foreground)', marginTop: '10px', flexWrap: 'wrap' }}>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Razorpay: <strong style={{ color: 'var(--foreground)' }}>₹{totalRazorpay.toLocaleString()}</strong></span>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Manual: <strong style={{ color: 'var(--foreground)' }}>₹{totalManual.toLocaleString()}</strong></span>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Freshers: <strong style={{ color: 'var(--foreground)' }}>₹{totalFreshers.toLocaleString()}</strong></span>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Aura: <strong style={{ color: 'var(--foreground)' }}>₹{totalAura.toLocaleString()}</strong></span>
+        </div>
+
+        <div className="tile tile-teal">
+          <div className="tile-label">IN PROGRESS</div>
+          <div className="tile-value">{totalPendingCount}</div>
+          <div className="tile-sub">Awaiting verification</div>
+          <div className="tile-delta">
+            <span>⏳</span> Live status
+          </div>
+        </div>
+
+        <div className="tile tile-gold">
+          <div className="tile-label">FAILED / REFUNDED</div>
+          <div className="tile-value">{totalFailedCount}</div>
+          <div className="tile-sub">Delivery or payment issues</div>
+          <div className="tile-delta">
+            <span>⚠</span> {totalFailedCount} needs review
+          </div>
+        </div>
+
+        <div className="tile tile-dark">
+          <div className="tile-label">FILTERED GROSS VALUE</div>
+          <div className="tile-value">₹{totalAmount.toLocaleString()}</div>
+          <div className="tile-sub">Across {filtered.length} total orders</div>
+          <div className="tile-delta up">
+            <span>↑</span> Verified sales
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: '0 0 280px' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}>
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+      {/* Reference Filter Bar */}
+      <div className="filter-bar">
+        <div className="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
             value={searchQ}
-            onChange={e => setSearchQ(e.target.value)}
-            placeholder="Search orders, buyers, TXN IDs..."
-            style={{
-              width: '100%', paddingLeft: '32px', paddingRight: '10px', paddingTop: '8px', paddingBottom: '8px',
-              backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '10px',
-              fontSize: '13px', color: 'var(--foreground)', outline: 'none',
-            }}
+            onChange={(e) => setSearchQ(e.target.value)}
+            placeholder="Search orders, buyer name, email..."
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
-          {(['all', 'paid', 'pending', 'failed'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              style={{
-                padding: '5px 12px', borderRadius: '7px', border: 'none',
-                backgroundColor: filter === f ? '#9333ea' : 'transparent',
-                color: filter === f ? 'white' : 'var(--muted-foreground)',
-                fontSize: '12px', fontWeight: filter === f ? 600 : 400,
-                cursor: 'pointer', textTransform: 'capitalize',
-              }}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="all">All statuses</option>
+          <option value="paid">Paid</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+        </select>
 
-        {/* Gateway Filters */}
-        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
-          {(['all', 'razorpay', 'manual'] as const).map(g => (
-            <button
-              key={g}
-              onClick={() => setGatewayFilter(g)}
-              style={{
-                padding: '5px 12px', borderRadius: '7px', border: 'none',
-                backgroundColor: gatewayFilter === g ? '#3b82f6' : 'transparent',
-                color: gatewayFilter === g ? 'white' : 'var(--muted-foreground)',
-                fontSize: '12px', fontWeight: gatewayFilter === g ? 600 : 400,
-                cursor: 'pointer', textTransform: 'capitalize',
-              }}
-            >
-              {g === 'all' ? 'All Gateways' : g}
-            </button>
-          ))}
-        </div>
+        <select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
+          <option value="all">All events</option>
+          <option value="freshers takeover">FRESHERS TAKEOVER</option>
+          <option value="aura genesis">AURA GENESIS</option>
+        </select>
 
-        {/* Event Filters */}
-        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
-          {(['all', 'freshers takeover', 'aura genesis'] as const).map(e => (
-            <button
-              key={e}
-              onClick={() => setEventFilter(e)}
-              style={{
-                padding: '5px 12px', borderRadius: '7px', border: 'none',
-                backgroundColor: eventFilter === e ? '#10b981' : 'transparent',
-                color: eventFilter === e ? 'white' : 'var(--muted-foreground)',
-                fontSize: '12px', fontWeight: eventFilter === e ? 600 : 400,
-                cursor: 'pointer', textTransform: 'capitalize',
-              }}
-            >
-              {e === 'all' ? 'All Events' : e}
-            </button>
-          ))}
-        </div>
+        <select value={gatewayFilter} onChange={(e) => setGatewayFilter(e.target.value)}>
+          <option value="all">All gateways</option>
+          <option value="razorpay">Razorpay</option>
+          <option value="manual">Manual</option>
+        </select>
 
-        {/* Phone List Button */}
         <button
+          className="tb-icon-btn"
           onClick={() => setShowPhoneList(true)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '6px 14px', borderRadius: '10px', border: '1px solid #9333ea',
-            backgroundColor: 'rgba(147,51,234,0.1)', color: '#9333ea',
-            fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-          }}
+          title="Phone Contact List"
+          style={{ width: '40px', height: '40px', borderRadius: '12px' }}
         >
-          📞 Phone List
+          📞
         </button>
       </div>
 
-      {/* Phone List Modal */}
-      {showPhoneList && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 200,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-        }} onClick={() => setShowPhoneList(false)}>
-          <div style={{
-            backgroundColor: 'var(--card)', borderRadius: '20px',
-            border: '1px solid var(--border)', width: '520px', maxHeight: '80vh',
-            display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          }} onClick={e => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div style={{
-              padding: '20px 24px', borderBottom: '1px solid var(--border)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--foreground)' }}>📞 Phone Number List</h3>
-                <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'var(--muted-foreground)' }}>
-                  {filtered.length} contacts (based on current filters)
-                </p>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => {
-                    const text = filtered.map(o => `${o.buyer} — ${o.phone || 'N/A'}`).join('\n')
-                    navigator.clipboard.writeText(text)
-                    setPhoneCopied(true)
-                    setTimeout(() => setPhoneCopied(false), 2000)
-                  }}
-                  style={{
-                    padding: '7px 14px', borderRadius: '8px', border: 'none',
-                    backgroundColor: phoneCopied ? '#22c55e' : '#9333ea',
-                    color: 'white', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                  }}
-                >
-                  {phoneCopied ? '✓ Copied!' : 'Copy All'}
-                </button>
-                <button
-                  onClick={() => {
-                    const csv = 'Name,Phone,Event,Pass Type\n' +
-                      filtered.map(o =>
-                        `"${o.buyer}","${o.phone || ''}","${o.event}","${o.ticketType}"`
-                      ).join('\n')
-                    const blob = new Blob([csv], { type: 'text/csv' })
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a'); a.href = url; a.download = 'phone_list.csv'; a.click()
-                  }}
-                  style={{
-                    padding: '7px 14px', borderRadius: '8px', border: '1px solid var(--border)',
-                    backgroundColor: 'var(--muted)', color: 'var(--foreground)',
-                    fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                  }}
-                >
-                  ↓ CSV
-                </button>
-                <button
-                  onClick={() => setShowPhoneList(false)}
-                  style={{
-                    padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--border)',
-                    backgroundColor: 'transparent', color: 'var(--muted-foreground)',
-                    fontSize: '14px', cursor: 'pointer',
-                  }}
-                >✕</button>
-              </div>
-            </div>
-            {/* List */}
-            <div style={{ overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {filtered.map((o, i) => (
-                <div key={o.id} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '10px 14px', borderRadius: '10px',
-                  backgroundColor: i % 2 === 0 ? 'var(--muted)' : 'transparent',
-                  border: '1px solid var(--border)',
-                }}>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>{o.buyer}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>{o.event} · {o.ticketType}</div>
-                  </div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#9333ea', fontFamily: 'monospace' }}>
-                    {o.phone || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic', fontWeight: 400 }}>No phone</span>}
-                  </div>
-                </div>
-              ))}
-              {filtered.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted-foreground)', fontSize: '13px' }}>
-                  No orders match current filters
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Table */}
-      <div 
-        className="glass-card lt-in"
-        style={{
-          borderRadius: '16px',
-          overflow: 'hidden',
-          ['--lt-i' as any]: 2,
-        }}
-      >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1400px' }}>
+      {/* Orders Data Table Card */}
+      <div className="card table-card">
+        <div className="table-scroll scroll">
+          <table className="table">
             <thead>
-              <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-                {[
-                  { label: 'Order ID', width: '110px' },
-                  { label: 'Buyer', width: '220px' },
-                  { label: 'Event', width: '180px' },
-                  { label: 'Ticket', width: '110px' },
-                  { label: 'Qty', width: '60px' },
-                  { label: 'Amount', width: '90px' },
-                  { label: 'Gateway', width: '100px' },
-                  { label: 'TXN ID', width: '120px' },
-                  { label: 'Payment', width: '110px' },
-                  { label: 'Email', width: '110px' },
-                  { label: 'Download', width: '90px' },
-                  { label: 'QR', width: '120px' },
-                  { label: 'Time', width: '180px' },
-                  ...(isPresentation ? [] : [{ label: 'Pres. Mode', width: '90px' }]),
-                  { label: '', width: '80px' }
-                ].map(col => (
-                  <th key={col.label} style={{
-                    padding: '11px 14px',
-                    fontSize: '11px', fontWeight: 700,
-                    color: 'var(--muted-foreground)',
-                    textAlign: 'left',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    whiteSpace: 'nowrap',
-                    width: col.width,
-                    minWidth: col.width,
-                  }}>
-                    {col.label}
-                  </th>
-                ))}
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Event</th>
+                <th>Pass Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                {!isPresentation && <th>Pres</th>}
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={14} style={{ textAlign: 'center', padding: '20px', color: 'var(--muted-foreground)' }}>No orders found</td>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)' }}>
+                    No orders matching criteria.
+                  </td>
                 </tr>
               ) : (
-                filtered.map((o, i) => (
-                  <tr
-                    key={o.id}
-                    className="lt-row lt-in-left"
-                    style={{
-                      borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
-                      cursor: 'pointer',
-                      ['--lt-i' as any]: i % 12,
-                    }}
-                    onClick={() => setSelected(o)}
-                  >
-                    <td style={{ padding: '13px 14px', fontSize: '12px', fontWeight: 700, color: '#9333ea', whiteSpace: 'nowrap', width: '110px', minWidth: '110px' }}>
-                      #{o.id.substring(0, 8).toUpperCase()}
-                    </td>
-                    <td style={{ padding: '13px 14px', width: '220px', minWidth: '220px', maxWidth: '220px', overflow: 'hidden' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{o.buyer}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{o.email}</div>
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '12.5px', color: 'var(--foreground)', width: '180px', minWidth: '180px', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {o.event}
-                    </td>
-                    <td style={{ padding: '13px 14px', width: '110px', minWidth: '110px' }}>
-                      <span style={{
-                        backgroundColor: o.ticketType === 'VIP' ? '#fdf4ff' : o.ticketType === 'Backstage' ? '#ede9fe' : '#f3f4f6',
-                        color: o.ticketType === 'VIP' ? '#a21caf' : o.ticketType === 'Backstage' ? '#7c3aed' : '#374151',
-                        fontSize: '11px', fontWeight: 600,
-                        padding: '3px 8px', borderRadius: '6px',
-                        display: 'inline-block',
-                      }}>
-                        {o.ticketType}
-                      </span>
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '13px', color: 'var(--foreground)', fontWeight: 500, width: '60px', minWidth: '60px' }}>
-                      {o.qty}
-                    </td>
-                    <td style={{ padding: '13px 14px', width: '90px', minWidth: '90px' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--foreground)' }}>₹{o.final.toLocaleString()}</div>
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', width: '100px', minWidth: '100px' }}>
-                      {o.gateway}
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'monospace', whiteSpace: 'nowrap', width: '120px', minWidth: '120px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {o.txnId !== '—' ? o.txnId.substring(0, 10) : '—'}
-                    </td>
-                    <td style={{ padding: '13px 14px', whiteSpace: 'nowrap', width: '110px', minWidth: '110px' }}>
-                      <Badge label={o.paymentStatus} {...paymentColors[o.paymentStatus]} />
-                    </td>
-                    <td style={{ padding: '13px 14px', whiteSpace: 'nowrap', width: '110px', minWidth: '110px' }}>
-                      <Badge label={o.emailStatus} {...emailColors[o.emailStatus]} />
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '12px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', width: '90px', minWidth: '90px' }}>
-                      {o.downloadStatus}
-                    </td>
-                    <td style={{ padding: '13px 14px', whiteSpace: 'nowrap', width: '120px', minWidth: '120px' }}>
-                      <Badge label={o.qrStatus} {...qrColors[o.qrStatus]} />
-                    </td>
-                    <td style={{ padding: '13px 14px', fontSize: '11px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap', width: '180px', minWidth: '180px' }}>
-                      {o.time}
-                    </td>
-                    {!isPresentation && (
-                      <td style={{ padding: '13px 14px', width: '90px', minWidth: '90px', textAlign: 'center' }}>
+                filtered.map((o) => {
+                  const presVal = optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : o.showInPres
+
+                  return (
+                    <tr key={o.id} onClick={() => setSelected(o)} style={{ cursor: 'pointer' }}>
+                      <td>
+                        <div className="cell-main">
+                          <div
+                            className="cell-thumb"
+                            style={{
+                              background:
+                                o.paymentStatus === 'Paid'
+                                  ? 'var(--grad-violet)'
+                                  : o.paymentStatus === 'Failed'
+                                  ? 'var(--grad-orange)'
+                                  : 'var(--grad-gold)',
+                            }}
+                          >
+                            {o.buyer.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="cell-title">#{o.id.substring(0, 10)}</div>
+                            <div className="cell-sub">{o.gateway}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{o.buyer}</div>
+                        <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{o.email}</div>
+                      </td>
+                      <td>{o.event}</td>
+                      <td>
+                        <span style={{ fontWeight: 600 }}>{o.ticketType}</span> ({o.qty})
+                      </td>
+                      <td style={{ fontWeight: 700, color: 'var(--ink)' }}>₹{o.final.toLocaleString()}</td>
+                      <td>
+                        {o.paymentStatus === 'Paid' ? (
+                          <span className="badge badge-green">
+                            <span className="badge-dot" />
+                            Completed
+                          </span>
+                        ) : o.paymentStatus === 'Failed' ? (
+                          <span className="badge badge-red">
+                            <span className="badge-dot" />
+                            Failed
+                          </span>
+                        ) : (
+                          <span className="badge badge-amber">
+                            <span className="badge-dot" />
+                            In Progress
+                          </span>
+                        )}
+                      </td>
+                      <td>{o.time}</td>
+                      {!isPresentation && (
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => togglePresMode(o.id, !!presVal)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                            }}
+                            title="Toggle presentation visibility"
+                          >
+                            {presVal ? '👁️' : '🙈'}
+                          </button>
+                        </td>
+                      )}
+                      <td onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={e => { 
-                            e.stopPropagation(); 
-                            const currentVal = optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : !!o.showInPres;
-                            togglePresMode(o.id, currentVal); 
-                          }}
-                          style={{
-                            padding: '6px', borderRadius: '8px',
-                            border: 'none',
-                            backgroundColor: (optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : o.showInPres) ? '#f3e8ff' : 'var(--muted)',
-                            color: (optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : o.showInPres) ? '#9333ea' : 'var(--muted-foreground)',
-                            fontSize: '16px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            width: '32px', height: '32px', transition: 'all 0.1s'
-                          }}
-                          title={(optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : o.showInPres) ? 'Visible on Presentation' : 'Hidden on Presentation'}
+                          className="btn-secondary"
+                          onClick={() => setSelected(o)}
+                          style={{ height: '28px', padding: '0 10px', fontSize: '11px' }}
                         >
-                          {(optimisticPres[o.id] !== undefined ? optimisticPres[o.id] : o.showInPres) ? '👁️' : '🙈'}
+                          View
                         </button>
                       </td>
-                    )}
-                    <td style={{ padding: '13px 14px', width: '80px', minWidth: '80px' }}>
-                      <button
-                        onClick={e => { e.stopPropagation(); setSelected(o) }}
-                        style={{
-                          padding: '5px 10px', borderRadius: '7px',
-                          border: '1px solid var(--border)',
-                          backgroundColor: 'var(--muted)',
-                          fontSize: '11.5px', fontWeight: 600, color: 'var(--foreground)',
-                          cursor: 'pointer', whiteSpace: 'nowrap',
-                        }}
-                      >
-                        View →
-                      </button>
-                    </td>
-                  </tr>
-                ))
-
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {selected && <OrderDrawer order={selected} onClose={() => setSelected(null)} onResend={onResend} />}
+      {/* Slide-over Order Details Drawer */}
+      {selected && (
+        <OrderDrawer
+          order={selected}
+          onClose={() => setSelected(null)}
+          onResend={onResend}
+        />
+      )}
+
+      {/* Phone List Modal */}
+      {showPhoneList && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            backgroundColor: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <div className="card" style={{ width: '480px', maxWidth: '92vw', padding: '24px' }}>
+            <div className="card-head">
+              <h3>📞 Phone Contacts ({filtered.filter(o => o.phone).length})</h3>
+              <button className="icon-btn" onClick={() => setShowPhoneList(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button
+                className="btn-primary"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  const txt = filtered.filter(o => o.phone).map(o => `${o.buyer} — ${o.phone}`).join('\n')
+                  navigator.clipboard.writeText(txt)
+                  setPhoneCopied(true)
+                  setTimeout(() => setPhoneCopied(false), 2000)
+                }}
+              >
+                {phoneCopied ? 'Copied ✓' : 'Copy All'}
+              </button>
+              <button
+                className="btn-secondary"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  const csv = 'Name,Phone,Email,Event,Pass\n' + filtered.filter(o => o.phone).map(o => `"${o.buyer}","${o.phone}","${o.email}","${o.event}","${o.ticketType}"`).join('\n')
+                  const blob = new Blob([csv], { type: 'text/csv' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = 'phone_contacts.csv'
+                  a.click()
+                }}
+              >
+                Download CSV
+              </button>
+            </div>
+
+            <div className="scroll" style={{ maxHeight: '300px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {filtered.filter(o => o.phone).map((o, idx) => (
+                <div key={idx} style={{ background: 'var(--panel-2)', padding: '8px 12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink)' }}>{o.buyer}</div>
+                    <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{o.event} · {o.ticketType}</div>
+                  </div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--violet)' }}>{o.phone}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

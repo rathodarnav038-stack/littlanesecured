@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LitTix Admin — Customers</title>
+<link rel="stylesheet" href="assets/design.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  .kpi-row{ display:flex; gap:20px; height:138px; flex:0 0 auto; }
+  .kpi-row .tile{ flex:1 1 0; min-width:0; }
+  .table-card{ flex:1 1 0; min-height:0; display:flex; flex-direction:column; }
+  .table-scroll{ flex:1 1 0; min-height:0; overflow-y:auto; }
+</style>
+</head>
+<body>
+<div class="app-canvas">
+  <div id="rail"></div>
+  <div id="topbar"></div>
+  <div class="content">
+
+    <div class="kpi-row">
+      <div class="tile tile-gold">
+        <div class="tile-label">New this week</div>
+        <div><div class="tile-value">89</div><div class="tile-sub">Across all channels</div></div>
+        <div class="tile-delta">+12 today</div>
+      </div>
+      <div class="tile tile-teal">
+        <div class="tile-label">Total customers</div>
+        <div><div class="tile-value">24,318</div><div class="tile-sub">Active accounts</div></div>
+        <div class="tile-delta">↑ 3.4%</div>
+      </div>
+      <div class="tile tile-orange">
+        <div class="tile-label">Repeat buyers</div>
+        <div><div class="tile-value">41%</div><div class="tile-sub">Of last 90 days orders</div></div>
+        <div class="tile-delta">+2.1pt</div>
+      </div>
+      <div class="tile tile-dark">
+        <div class="tile-label">Lifetime value</div>
+        <div><div class="tile-value">$214</div><div class="tile-sub">Average per customer</div></div>
+        <div class="tile-delta">↑ $8</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search customers…</span>
+      </div>
+<select><option>All segments</option></select>
+<select><option>Sort: Recent</option></select>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16M6 9h12M9 14h6M11 19h2"/></svg></button>
+      <button class="icon-btn" style="width:40px;height:40px;border-radius:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M5 21h14"/></svg></button>
+    </div>
+
+    <div class="card table-card">
+      <div class="table-scroll scroll">
+        <table class="table">
+          <thead><tr>
+            <th>Customer</th>
+            <th>Email</th>
+            <th>Orders</th>
+            <th>Lifetime value</th>
+            <th>Source</th>
+            <th>Last active</th>
+          </tr></thead>
+          <tbody>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3B63E8;">ER</div>
+              <div><div class="cell-title">Eva Robinson</div><div class="cell-sub">CEO · Alabama Machinery</div></div>
+            </div></td>
+            <td>eva@alabamamachinery.com</td>
+            <td>6</td>
+            <td>$1,240</td>
+            <td><span class="badge badge-blue"><span class="badge-dot"></span>Referral</span></td>
+            <td>2h ago</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#38D9C4;">MY</div>
+              <div><div class="cell-title">Marcus Yun</div><div class="cell-sub">Frequent attendee</div></div>
+            </div></td>
+            <td>marcus.yun@mail.com</td>
+            <td>11</td>
+            <td>$2,180</td>
+            <td><span class="badge badge-blue"><span class="badge-dot"></span>Instagram</span></td>
+            <td>5h ago</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#F5C542;">PN</div>
+              <div><div class="cell-title">Priya Nandan</div><div class="cell-sub">New signup</div></div>
+            </div></td>
+            <td>priya.n@mail.com</td>
+            <td>1</td>
+            <td>$41</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Organic</span></td>
+            <td>1d ago</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#6C4CE0;">OB</div>
+              <div><div class="cell-title">Owen Baxter</div><div class="cell-sub">VIP regular</div></div>
+            </div></td>
+            <td>owen.baxter@mail.com</td>
+            <td>18</td>
+            <td>$3,920</td>
+            <td><span class="badge badge-blue"><span class="badge-dot"></span>Referral</span></td>
+            <td>2d ago</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#3DDC84;">SR</div>
+              <div><div class="cell-title">Sofia Reyes</div><div class="cell-sub">Group organizer</div></div>
+            </div></td>
+            <td>sofia.reyes@mail.com</td>
+            <td>9</td>
+            <td>$1,760</td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>Organic</span></td>
+            <td>3d ago</td>
+          </tr>
+          <tr>
+            <td><div class="cell-main">
+              <div class="cell-thumb" style="background:#FF6B6B;">LF</div>
+              <div><div class="cell-title">Liam Foster</div><div class="cell-sub">Corporate account</div></div>
+            </div></td>
+            <td>liam.foster@mail.com</td>
+            <td>4</td>
+            <td>$980</td>
+            <td><span class="badge badge-amber"><span class="badge-dot"></span>Email</span></td>
+            <td>4d ago</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="assets/chrome.js"></script>
+<script>renderChrome("customers","Customers","Every customer profile and lifetime value"); fitCanvas(".app-canvas");</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

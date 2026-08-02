@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import Customers from './pages/Customers'
@@ -25,33 +25,138 @@ type Page =
   | 'admins'
   | 'settings'
 
-const navItems: { id: Page; label: string; icon: string }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-  { id: 'orders', label: 'Orders', icon: 'shopping_cart' },
-  { id: 'tickets', label: 'Tickets', icon: 'confirmation_number' },
-  { id: 'customers', label: 'Customers', icon: 'group' },
-  { id: 'events', label: 'Events', icon: 'event' },
-  { id: 'email', label: 'Email Delivery', icon: 'mail' },
-  { id: 'payments', label: 'Payments', icon: 'payments' },
-  { id: 'refunds', label: 'Refunds', icon: 'keyboard_return' },
-  { id: 'qr', label: 'QR Scan Logs', icon: 'qr_code_scanner' },
-  { id: 'analytics', label: 'Analytics', icon: 'analytics' },
-  { id: 'settings', label: 'Settings', icon: 'settings' },
-]
-
-const NavIcon = ({ icon }: { icon: string }) => {
-  return <span className="material-symbols-outlined">{icon}</span>
+interface NavItemDef {
+  id: Page
+  label: string
+  count?: number
+  svgIcon: React.ReactNode
 }
 
+const navItems: NavItemDef[] = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'orders',
+    label: 'Orders',
+    count: 14,
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 01-8 0" />
+      </svg>
+    ),
+  },
+  {
+    id: 'tickets',
+    label: 'Tickets',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M2 9a3 3 0 010 6v2a2 2 0 002 2h16a2 2 0 002-2v-2a3 3 0 010-6V7a2 2 0 00-2-2H4a2 2 0 00-2 2v2z" />
+        <line x1="13" y1="5" x2="13" y2="19" strokeDasharray="2 2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'customers',
+    label: 'Customers',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 00-3-3.87" />
+        <path d="M16 3.13a4 4 0 010 7.75" />
+      </svg>
+    ),
+  },
+  {
+    id: 'events',
+    label: 'Events',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+    ),
+  },
+  {
+    id: 'email',
+    label: 'Email delivery',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
+  },
+  {
+    id: 'payments',
+    label: 'Payments',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+  },
+  {
+    id: 'qr',
+    label: 'QR scan logs',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+      </svg>
+    ),
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    svgIcon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+      </svg>
+    ),
+  },
+]
+
 interface AppProps {
-  isPresentation?: boolean;
+  isPresentation?: boolean
 }
 
 export default function App({ isPresentation = false }: AppProps) {
   const [page, setPage] = useState<Page>('dashboard')
-  const [dark, setDark] = useState(true) // true = dark mode, false = light mode
+  const [dark, setDark] = useState(true)
   const [search, setSearch] = useState('')
-  const [adminKey, setAdminKey] = useState(sessionStorage.getItem('ft_admin_key') || localStorage.getItem('ft_admin_key') || '')
+  const [adminKey, setAdminKey] = useState(
+    sessionStorage.getItem('ft_admin_key') || localStorage.getItem('ft_admin_key') || ''
+  )
   const [keyInput, setKeyInput] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [authChecking, setAuthChecking] = useState(true)
@@ -62,39 +167,14 @@ export default function App({ isPresentation = false }: AppProps) {
     paidOrders: 0,
     totalRevenue: 0,
     emailFailures: 0,
-    ticketFailures: 0
+    ticketFailures: 0,
   })
   const [testMode, setTestMode] = useState(true)
   const [showManualModal, setShowManualModal] = useState(false)
   const [isManualSubmitting, setIsManualSubmitting] = useState(false)
 
-  // Obsidian Glass animated features
-  const [spotlightPos, setSpotlightPos] = useState({ x: -1000, y: -1000 })
-  const [showCurtain, setShowCurtain] = useState(() => {
-    // Only show curtain once per session
-    return !sessionStorage.getItem('lt_curtain_shown')
-  })
-
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      setSpotlightPos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('pointermove', handlePointerMove, { passive: true })
-    
-    if (showCurtain) {
-      const timer = setTimeout(() => {
-        setShowCurtain(false)
-        sessionStorage.setItem('lt_curtain_shown', '1')
-      }, 1200)
-      return () => {
-        window.removeEventListener('pointermove', handlePointerMove)
-        clearTimeout(timer)
-      }
-    }
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove)
-    }
-  }, [showCurtain])
+  // Rail tabs state
+  const [railTab, setRailTab] = useState<'events' | 'archived'>('events')
 
   // Manual generation state
   const [manualName, setManualName] = useState('')
@@ -112,19 +192,20 @@ export default function App({ isPresentation = false }: AppProps) {
       return false
     }
     try {
-      const res = await fetch(`/api/admin/sales?key=${encodeURIComponent(keyToUse)}${isPresentation ? '&pres=true' : ''}`)
+      const res = await fetch(
+        `/api/admin/sales?key=${encodeURIComponent(keyToUse)}${isPresentation ? '&pres=true' : ''}`
+      )
       const data = await res.json().catch(() => ({}))
       if (res.status === 401 || !res.ok || !data.success) {
-        const errReason = data.message || 'Access Denied: Dashboard is bound to its original deployment device.'
+        const errReason = data.message || 'Access Denied: Admin key invalid.'
         handleLogout(errReason)
         return false
       }
       const fetchedSales = data.sales || []
-      const filteredSales = isPresentation 
+      const filteredSales = isPresentation
         ? fetchedSales.filter((s: any) => s.showInPres)
         : fetchedSales
 
-      // Recalculate summary if in presentation mode
       let activeSummary = data.summary
       if (isPresentation) {
         const totalOrders = filteredSales.length
@@ -132,13 +213,13 @@ export default function App({ isPresentation = false }: AppProps) {
         const totalRevenue = filteredSales
           .filter((s: any) => s.status === 'paid')
           .reduce((sum: number, s: any) => sum + (Number(s.amount) || 0), 0)
-        
+
         activeSummary = {
           totalOrders,
           paidOrders,
           totalRevenue,
           emailFailures: 0,
-          ticketFailures: 0
+          ticketFailures: 0,
         }
       }
 
@@ -212,8 +293,14 @@ export default function App({ isPresentation = false }: AppProps) {
     const isInvite = manualEvent === 'FT LINEUP INVITE'
     const finalEvent = isInvite ? 'FRESHERS TAKEOVER' : manualEvent
     const finalGender = isInvite ? 'Exclusive' : (isAura ? 'aura' : manualGender)
-    const finalAmount = isInvite ? 0 : manualAmount  // always use what admin typed
-    const finalTicketType = isInvite ? 'Exclusive VIP Pass' : (isAura ? 'Aura Genesis' : (manualGender === 'female' ? 'Female Pass' : 'Male Pass'))
+    const finalAmount = isInvite ? 0 : manualAmount
+    const finalTicketType = isInvite
+      ? 'Exclusive VIP Pass'
+      : isAura
+      ? 'Aura Genesis'
+      : manualGender === 'female'
+      ? 'Female Pass'
+      : 'Male Pass'
 
     setIsManualSubmitting(true)
     try {
@@ -221,7 +308,7 @@ export default function App({ isPresentation = false }: AppProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-key': adminKey
+          'x-admin-key': adminKey,
         },
         body: JSON.stringify({
           name: manualName,
@@ -231,8 +318,8 @@ export default function App({ isPresentation = false }: AppProps) {
           ticketType: finalTicketType,
           quantity: manualQty,
           amount: finalAmount,
-          event: finalEvent
-        })
+          event: finalEvent,
+        }),
       })
       const data = await res.json()
       if (data.success) {
@@ -241,7 +328,6 @@ export default function App({ isPresentation = false }: AppProps) {
         setManualName('')
         setManualEmail('')
         setManualPhone('')
-        // Restore last saved price for current selection
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
         } else if (manualGender === 'female') {
@@ -271,60 +357,96 @@ export default function App({ isPresentation = false }: AppProps) {
     }
   }
 
+  // Auth checking screen
   if (authChecking && adminKey) {
     return (
-      <div style={{
-        display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', justifyContent: 'center', height: '100vh',
-        backgroundColor: '#0d0d0f', color: '#f4f4f5', fontFamily: "'Inter', sans-serif"
-      }}>
-        <div style={{
-          width: '28px', height: '28px', borderRadius: '50%',
-          border: '3px solid rgba(168,85,247,0.2)', borderTopColor: '#A855F7',
-          animation: 'spin 0.8s linear infinite'
-        }} />
-        <p style={{ color: '#9a9a9a', fontSize: '13px', margin: 0 }}>Authenticating admin key...</p>
+      <div className="app-canvas flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="w-8 h-8 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+        <p className="text-xs text-slate-400 font-medium">Authenticating admin workspace...</p>
       </div>
     )
   }
 
+  // Login screen (matching reference login.html split layout)
   if (!isAuthenticated) {
     return (
-      <div style={{
-        display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', justifyContent: 'center', height: '100vh',
-        backgroundColor: '#0d0d0f', color: '#f4f4f5', fontFamily: "'Inter', sans-serif"
-      }}>
-        <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 700 }}>🎟 LitTix Enterprise Admin</h2>
-        <p style={{ color: '#9a9a9a', fontSize: '13px', margin: 0 }}>Enter your admin key to unlock the dashboard.</p>
-        {authError && (
-          <div style={{
-            color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-            padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 500, width: '260px', textAlign: 'center'
-          }}>
-            {authError}
+      <div className={`login-canvas ${dark ? '' : 'theme-light'}`}>
+        {/* Left Art Panel */}
+        <div className="login-art">
+          <div className="brand">
+            <div className="mark">L</div>
+            <span style={{ fontSize: '15px', fontWeight: 800 }}>LitTix Enterprise</span>
           </div>
-        )}
-        <input
-          type="password"
-          value={keyInput}
-          onChange={e => setKeyInput(e.target.value)}
-          placeholder="Admin key"
-          onKeyDown={e => { if (e.key === 'Enter') handleLogin() }}
-          style={{
-            backgroundColor: '#17171a', border: '1px solid #2a2a2e', color: '#f4f4f5',
-            padding: '10px 14px', borderRadius: '10px', fontSize: '14px', outline: 'none', width: '260px'
-          }}
-        />
-        <button
-          onClick={handleLogin}
-          disabled={authChecking}
-          style={{
-            backgroundColor: '#A855F7', color: '#fff', border: 'none', padding: '10px 20px',
-            borderRadius: '10px', fontWeight: 600, cursor: authChecking ? 'not-allowed' : 'pointer',
-            fontSize: '14px', width: '260px', opacity: authChecking ? 0.6 : 1
-          }}
-        >
-          {authChecking ? 'Verifying...' : 'Unlock Dashboard'}
-        </button>
+
+          <div style={{ margin: 'auto 0' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.02em', margin: '0 0 16px' }}>
+              Run every gate, order and payout from one clear screen.
+            </h1>
+            <p style={{ fontSize: '13px', color: 'var(--ink-faint)', margin: 0, maxWidth: '420px', lineHeight: 1.5 }}>
+              Live ticketing operations for Pune's premier college fests & events. Zero delay, instant validation.
+            </p>
+          </div>
+
+          <div className="art-tiles" style={{ display: 'flex', gap: '12px' }}>
+            <div className="tile tile-orange" style={{ flex: 1, padding: '12px 14px' }}>
+              <div className="tile-label">REVENUE MTD</div>
+              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>₹{summary.totalRevenue || 0}</div>
+            </div>
+            <div className="tile tile-teal" style={{ flex: 1, padding: '12px 14px' }}>
+              <div className="tile-label">ORDERS</div>
+              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>{summary.totalOrders || 0}</div>
+            </div>
+            <div className="tile tile-gold" style={{ flex: 1, padding: '12px 14px' }}>
+              <div className="tile-label">PAID PASSES</div>
+              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>{summary.paidOrders || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Login Form */}
+        <div className="login-form-wrap">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleLogin()
+            }}
+            className="login-form"
+          >
+            <div>
+              <h1>Welcome back</h1>
+              <p className="lead">Log in to the LitTix admin workspace.</p>
+            </div>
+
+            {authError && <div className="banner">{authError}</div>}
+
+            <div className="field">
+              <label>Admin Key</label>
+              <input
+                type="password"
+                value={keyInput}
+                onChange={(e) => setKeyInput(e.target.value)}
+                placeholder="Enter workspace key"
+                autoFocus
+              />
+            </div>
+
+            <button type="submit" disabled={authChecking} className="btn-primary">
+              {authChecking ? 'Verifying...' : 'Log in'}
+            </button>
+
+            <div className="divider">or</div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setKeyInput('littlane2026')
+              }}
+              className="btn-secondary"
+            >
+              Use Default Key
+            </button>
+          </form>
+        </div>
       </div>
     )
   }
@@ -332,18 +454,43 @@ export default function App({ isPresentation = false }: AppProps) {
   function renderPage(page: Page) {
     switch (page) {
       case 'dashboard':
-        return <Dashboard sales={sales} summary={summary} testMode={testMode} onManualGenerate={() => setShowManualModal(true)} />
+        return (
+          <Dashboard
+            sales={sales}
+            summary={summary}
+            testMode={testMode}
+            onManualGenerate={() => setShowManualModal(true)}
+          />
+        )
       case 'orders':
-      case 'payments':
-        return <Orders sales={sales} onResend={handleResend} globalSearch={search} isPresentation={isPresentation} adminKey={adminKey} onReload={() => fetchSales(adminKey)} />
+        return (
+          <Orders
+            sales={sales}
+            onResend={handleResend}
+            globalSearch={search}
+            isPresentation={isPresentation}
+            adminKey={adminKey}
+            onReload={() => fetchSales(adminKey)}
+          />
+        )
       case 'tickets':
-        return <Tickets sales={sales} onResend={handleResend} adminKey={adminKey} onReload={() => fetchSales(adminKey)} globalSearch={search} isPresentation={isPresentation} />
+        return (
+          <Tickets
+            sales={sales}
+            onResend={handleResend}
+            adminKey={adminKey}
+            onReload={() => fetchSales(adminKey)}
+            globalSearch={search}
+            isPresentation={isPresentation}
+          />
+        )
       case 'customers':
         return <Customers sales={sales} adminKey={adminKey} globalSearch={search} />
       case 'events':
         return <Events sales={sales} adminKey={adminKey} onNavigateToTickets={() => setPage('tickets')} />
       case 'email':
         return <EmailDelivery sales={sales} onResend={handleResend} />
+      case 'payments':
       case 'refunds':
         return <Refunds sales={sales} />
       case 'qr':
@@ -355,143 +502,186 @@ export default function App({ isPresentation = false }: AppProps) {
       case 'admins':
         return <Settings sales={sales} adminKey={adminKey} testMode={testMode} />
       default:
-        return <Dashboard sales={sales} summary={summary} testMode={testMode} onManualGenerate={() => setShowManualModal(true)} />
+        return (
+          <Dashboard
+            sales={sales}
+            summary={summary}
+            testMode={testMode}
+            onManualGenerate={() => setShowManualModal(true)}
+          />
+        )
     }
   }
 
+  const currentPageObj = navItems.find((n) => n.id === page)
+
   return (
-    <div className={`min-h-screen ${dark ? '' : 'theme-light'}`}>
-      {/* Aurora Ambient Backgrounds */}
-      {dark && (
-        <div className="lt-aurora">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      )}
-
-      {/* Cursor Spotlight */}
-      {dark && (
-        <div
-          className="lt-spotlight"
-          style={{
-            left: spotlightPos.x,
-            top: spotlightPos.y,
-          }}
-        />
-      )}
-
-      {/* Side Navigation Bar */}
-      <aside className="fixed left-4 top-4 bottom-4 w-sidebar-width glass-card rounded-xl z-50 flex flex-col gap-2 p-4">
-        <div className="mb-6 flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg iris-gradient flex items-center justify-center text-white">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>confirmation_number</span>
-          </div>
-          <div>
-            <h1 className="font-headline-md text-headline-md font-bold text-primary tracking-tight">LitTix</h1>
-            <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Enterprise Admin</p>
+    <div className={`app-canvas ${dark ? '' : 'theme-light'}`}>
+      {/* Sidebar Rail */}
+      <aside className="rail">
+        <div className="rail-brand">
+          <div className="mark">L</div>
+          <div className="word">
+            <b>LitTix</b>
+            <span>Enterprise Admin</span>
           </div>
         </div>
-        
-        <nav className="flex-1 space-y-1 overflow-y-auto">
-          {navItems.map(item => {
-            const active = page === item.id;
+
+        <div className="rail-tabs">
+          <button
+            className={railTab === 'events' ? 'active' : ''}
+            onClick={() => setRailTab('events')}
+          >
+            Events
+          </button>
+          <button
+            className={railTab === 'archived' ? 'active' : ''}
+            onClick={() => setRailTab('archived')}
+          >
+            Archived
+          </button>
+        </div>
+
+        <nav className="rail-nav">
+          {navItems.map((item) => {
+            const active = page === item.id
             return (
               <button
                 key={item.id}
                 onClick={() => setPage(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg relative transition-all active:scale-95 text-left ${
-                  active 
-                  ? "bg-secondary-container/20 text-primary font-bold before:content-[''] before:absolute before:left-0 before:w-1 before:h-4 before:bg-primary before:rounded-full hover:bg-white/5" 
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:scale-[0.98]"
-                }`}
+                className={`rail-link ${active ? 'active' : ''}`}
               >
-                <NavIcon icon={item.icon} />
-                <span className="font-body-sm text-body-sm">{item.label}</span>
+                {item.svgIcon}
+                <span>{item.label}</span>
+                {item.id === 'orders' && sales.length > 0 && (
+                  <span className="count">{sales.length}</span>
+                )}
               </button>
             )
           })}
         </nav>
 
-        <div className="mt-auto p-2 glass-card rounded-lg flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full border border-white/20 bg-primary/20 flex items-center justify-center text-primary font-bold">
-            A
+        <div className="rail-promo" onClick={() => setShowManualModal(true)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <div>
+            + New Ticket
+            <span>Generate & email pass</span>
           </div>
-          <div className="overflow-hidden text-left">
-            <p className="font-body-sm text-body-sm text-on-surface truncate">Atharva</p>
-            <p className="text-[10px] text-on-surface-variant truncate">Super Admin</p>
-          </div>
-          <button onClick={handleLogout} className="ml-auto text-on-surface-variant hover:text-on-surface">
-            <span className="material-symbols-outlined">logout</span>
-          </button>
         </div>
       </aside>
 
-      {/* Top Navigation Bar */}
-      <header className="fixed top-4 left-[calc(268px+2rem)] right-4 h-topbar-height glass-card rounded-full z-40 flex items-center justify-between px-6">
-        <div className="flex items-center gap-4 flex-1">
-          <div className="relative w-full max-w-md">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
-            <input 
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-1.5 text-body-sm w-full focus:ring-1 focus:ring-primary focus:bg-white/10 outline-none transition-all text-on-surface placeholder-on-surface-variant/60" 
-              placeholder="Search analytics, tickets, or customers..." 
-              type="text"
-            />
+      {/* Header Topbar */}
+      <header className="topbar">
+        <div className="tb-profile">
+          <div className="tb-avatar-sm">AT</div>
+          <div className="who">
+            <div className="name">
+              Atharva <span className="badge-pro">PRO</span>
+            </div>
+            <div className="handle">
+              {currentPageObj?.label || 'Dashboard'} · Pune Ops
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <button 
+
+        <div className="topbar-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={`Search ${currentPageObj?.label.toLowerCase() || 'dashboard'}...`}
+          />
+        </div>
+
+        <div className="topbar-actions">
+          <button
             onClick={() => setDark(!dark)}
-            className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all flex items-center justify-center cursor-pointer"
+            className="tb-icon-btn"
             title="Toggle Light/Dark Theme"
           >
-            <span className="material-symbols-outlined">
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
               {dark ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
-          <div className={`flex items-center gap-1 ${testMode ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'} border px-3 py-1 rounded-full`}>
-            <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${testMode ? 'bg-orange-400' : 'bg-green-400'} opacity-75`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${testMode ? 'bg-orange-500' : 'bg-green-500'}`}></span>
-            </span>
-            <span className="text-[11px] font-bold tracking-wider uppercase">{testMode ? 'TEST' : 'LIVE'}</span>
-          </div>
-          <button className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span className="material-symbols-outlined">notifications</span></button>
-          <button className="p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"><span className="material-symbols-outlined">help</span></button>
-          <button 
-            onClick={() => setShowManualModal(true)}
-            className="iris-gradient iris-glow px-6 py-2 rounded-full text-white font-bold text-body-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border-none cursor-pointer"
+
+          <div
+            className={`badge ${
+              testMode ? 'badge-amber' : 'badge-green'
+            }`}
+            style={{ padding: '6px 12px', fontSize: '11px' }}
           >
-            <span className="material-symbols-outlined text-[20px]">add</span>
-            New Ticket
+            <span className="badge-dot" />
+            {testMode ? 'TEST MODE' : 'LIVE MODE'}
+          </div>
+
+          <button className="tb-icon-btn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            <div className="tb-dot" />
+          </button>
+
+          <button
+            className="tb-cta"
+            onClick={() => setShowManualModal(true)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New ticket
           </button>
         </div>
       </header>
 
-      {/* Main Content Canvas */}
-      <main className="ml-[calc(268px+2rem)] mt-[calc(64px+2.5rem)] mr-4 mb-4 pb-12 space-y-6 min-h-screen relative z-10">
-        {renderPage(page)}
-      </main>
+      {/* Main Page Content */}
+      <main className="content fade-in-up">{renderPage(page)}</main>
 
       {/* Manual Ticket Modal */}
       {showManualModal && (
-        <div className="lt-modal-backdrop" style={{
-          position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', fontFamily: "'Inter', sans-serif"
-        }}>
-          <div className="lt-modal-panel glass-card" style={{
-            borderRadius: '24px',
-            padding: '32px', width: '480px', position: 'relative',
-          }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: 700, color: 'var(--foreground)' }}>Generate Manual Ticket</h3>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.75)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              width: '460px',
+              maxWidth: '92vw',
+              padding: '24px',
+            }}
+          >
+            <div className="card-head">
+              <h3>🎟 Generate & Email Ticket</h3>
+              <button
+                className="icon-btn"
+                onClick={() => setShowManualModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
             <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>SELECT EVENT</label>
+              <div className="field">
+                <label>SELECT EVENT</label>
                 <select
                   value={manualEvent}
-                  onChange={e => {
+                  onChange={(e) => {
                     const evt = e.target.value
                     setManualEvent(evt)
                     if (evt === 'AURA GENESIS') {
@@ -502,113 +692,117 @@ export default function App({ isPresentation = false }: AppProps) {
                       setManualAmount(localStorage.getItem('ft_price_male') || '499')
                     }
                   }}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
                 >
                   <option value="FRESHERS TAKEOVER">FRESHERS TAKEOVER</option>
                   <option value="AURA GENESIS">AURA GENESIS</option>
                   <option value="FT LINEUP INVITE">FT LINEUP INVITE (FREE)</option>
                 </select>
               </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE NAME</label>
+
+              <div className="field">
+                <label>ATTENDEE NAME</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Priya Nair"
                   value={manualName}
-                  onChange={e => setManualName(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                  onChange={(e) => setManualName(e.target.value)}
                 />
               </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE EMAIL</label>
+
+              <div className="field">
+                <label>ATTENDEE EMAIL</label>
                 <input
                   type="email"
                   required
                   placeholder="priya@example.com"
                   value={manualEmail}
-                  onChange={e => setManualEmail(e.target.value)}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                  onChange={(e) => setManualEmail(e.target.value)}
                 />
               </div>
+
               {manualEvent !== 'FT LINEUP INVITE' && (
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>ATTENDEE PHONE</label>
+                <div className="field">
+                  <label>ATTENDEE PHONE</label>
                   <input
                     type="text"
                     placeholder="+91 99999 88888"
                     value={manualPhone}
-                    onChange={e => setManualPhone(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                    onChange={(e) => setManualPhone(e.target.value)}
                   />
                 </div>
               )}
+
               <div style={{ display: 'grid', gridTemplateColumns: manualEvent === 'FT LINEUP INVITE' ? '1fr' : '1fr 1fr', gap: '10px' }}>
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PASS TYPE</label>
+                <div className="field">
+                  <label>PASS TYPE</label>
                   {manualEvent === 'FT LINEUP INVITE' ? (
-                    <div style={{
-                      width: '100%', padding: '10px', borderRadius: '8px',
-                      border: '1px solid #9333ea', backgroundColor: 'rgba(147,51,234,0.1)',
-                      color: '#a855f7', fontWeight: 600, fontSize: '13px',
-                      display: 'flex', alignItems: 'center', gap: '6px'
-                    }}>
+                    <div
+                      style={{
+                        padding: '10px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid #7C5CFA',
+                        backgroundColor: 'rgba(124,92,250,0.12)',
+                        color: '#7C5CFA',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                      }}
+                    >
                       ✨ Exclusive VIP Invite (Free)
                     </div>
                   ) : manualEvent === 'AURA GENESIS' ? (
-                    <div style={{
-                      width: '100%', padding: '10px', borderRadius: '8px',
-                      border: '1px solid #f59e0b', backgroundColor: 'rgba(245,158,11,0.1)',
-                      color: '#d97706', fontWeight: 600, fontSize: '13px',
-                      display: 'flex', alignItems: 'center', gap: '6px'
-                    }}>
+                    <div
+                      style={{
+                        padding: '10px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid #F5B942',
+                        backgroundColor: 'rgba(245,185,66,0.12)',
+                        color: '#F5B942',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                      }}
+                    >
                       ✨ Aura Genesis Pass
                     </div>
                   ) : (
                     <select
                       value={manualGender}
-                      onChange={e => handleManualGenderChange(e.target.value)}
-                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', color: 'var(--foreground)' }}
+                      onChange={(e) => handleManualGenderChange(e.target.value)}
                     >
                       <option value="male">Freshers Male Pass (₹499)</option>
                       <option value="female">Freshers Female Pass (₹399)</option>
                     </select>
                   )}
                 </div>
+
                 {manualEvent !== 'FT LINEUP INVITE' && (
-                  <div>
-                    <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--muted-foreground)', display: 'block', marginBottom: '4px' }}>PRICE (₹)</label>
+                  <div className="field">
+                    <label>PRICE (₹)</label>
                     <input
                       type="number"
                       value={manualAmount}
-                      onChange={e => {
+                      onChange={(e) => {
                         const val = e.target.value
                         setManualAmount(val)
-                        const key = manualEvent === 'AURA GENESIS' ? 'ft_price_aura' : (manualGender === 'female' ? 'ft_price_female' : 'ft_price_male')
+                        const key =
+                          manualEvent === 'AURA GENESIS'
+                            ? 'ft_price_aura'
+                            : manualGender === 'female'
+                            ? 'ft_price_female'
+                            : 'ft_price_male'
                         localStorage.setItem(key, val)
-                      }}
-                      style={{
-                        width: '100%', padding: '10px', borderRadius: '8px',
-                        border: manualEvent === 'AURA GENESIS' ? '1px solid #f59e0b' : '1px solid var(--border)',
-                        backgroundColor: manualEvent === 'AURA GENESIS' ? 'rgba(245,158,11,0.08)' : 'var(--muted)',
-                        color: manualEvent === 'AURA GENESIS' ? '#d97706' : 'var(--foreground)',
-                        fontWeight: manualEvent === 'AURA GENESIS' ? 700 : 400,
                       }}
                     />
                   </div>
                 )}
               </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
                 <button
                   type="submit"
                   disabled={isManualSubmitting}
-                  className="lt-shimmer-btn lt-ripple iris-gradient iris-glow"
-                  style={{
-                    flex: 1, padding: '12px', borderRadius: '12px', border: 'none',
-                    color: 'white', fontWeight: 700, fontSize: '14px',
-                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer',
-                    opacity: isManualSubmitting ? 0.6 : 1,
-                  }}
+                  className="btn-primary"
+                  style={{ flex: 1 }}
                 >
                   {isManualSubmitting ? 'Processing...' : 'Generate & Email'}
                 </button>
@@ -616,14 +810,8 @@ export default function App({ isPresentation = false }: AppProps) {
                   type="button"
                   disabled={isManualSubmitting}
                   onClick={() => setShowManualModal(false)}
-                  className="lt-hover-scale"
-                  style={{
-                    flex: 1, padding: '12px', borderRadius: '12px',
-                    border: '1px solid rgba(255,255,255,0.09)', backgroundColor: 'rgba(255,255,255,0.04)',
-                    color: 'var(--foreground)', fontWeight: 600,
-                    cursor: isManualSubmitting ? 'not-allowed' : 'pointer',
-                    backdropFilter: 'blur(8px)',
-                  }}
+                  className="btn-secondary"
+                  style={{ flex: 1 }}
                 >
                   Cancel
                 </button>

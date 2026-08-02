@@ -5,105 +5,192 @@ interface EmailDeliveryProps {
   onResend: (ticketId: string) => Promise<void>
 }
 
-const statusColors: Record<string, { bg: string; color: string }> = {
-  sent: { bg: '#dcfce7', color: '#16a34a' },
-  failed: { bg: '#fee2e2', color: '#dc2626' },
-  pending: { bg: '#fef3c7', color: '#d97706' },
-}
-
-function Badge({ label, bg, color }: { label: string; bg: string; color: string }) {
-  return <span style={{ backgroundColor: bg, color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>{label}</span>
-}
-
 export default function EmailDelivery({ sales = [], onResend }: EmailDeliveryProps) {
-  // Only select records that initiated email sending
-  const emailRecords = sales.filter(s => s.emailStatus)
+  const [filterStatus, setFilterStatus] = useState<'all' | 'sent' | 'failed' | 'pending'>('all')
+  const [search, setSearch] = useState('')
 
-  const logs = emailRecords.map((s: any, idx: number) => {
+  const emailRecords = sales.filter((s) => s.emailStatus)
+
+  const logs = emailRecords.map((s: any) => {
     return {
       id: s.ticketId || s.orderId,
-      time: s.updatedAt || s.createdAt || '—',
+      time: s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—',
       recipient: s.email,
-      name: s.name,
-      subject: `Your ${s.event || 'FRESHERS TAKEOVER'} Ticket Pass`,
+      name: s.name || 'Attendee',
+      subject: `Your ${s.event || 'FRESHERS TAKEOVER'} Pass`,
       status: s.emailStatus, // sent, failed, pending
       error: s.emailError || '—',
-      retryCount: s.errorLog ? s.errorLog.filter((log: any) => log.stage === 'email').length : 0
+      retryCount: s.errorLog ? s.errorLog.filter((log: any) => log.stage === 'email').length : 0,
     }
   })
 
-  const sent = logs.filter(l => l.status === 'sent').length
-  const failed = logs.filter(l => l.status === 'failed').length
-  const pending = logs.filter(l => l.status === 'pending').length
+  const sentCount = logs.filter((l) => l.status === 'sent').length
+  const failedCount = logs.filter((l) => l.status === 'failed').length
+  const pendingCount = logs.filter((l) => l.status === 'pending').length
+  const totalCount = logs.length
+
+  const deliveredPct = totalCount > 0 ? Math.round((sentCount / totalCount) * 100) : 100
+
+  const filteredLogs = logs.filter((l) => {
+    if (filterStatus !== 'all' && l.status !== filterStatus) return false
+    if (search) {
+      const q = search.toLowerCase()
+      return (
+        l.recipient.toLowerCase().includes(q) ||
+        l.name.toLowerCase().includes(q) ||
+        l.subject.toLowerCase().includes(q)
+      )
+    }
+    return true
+  })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div>
-        <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Email Delivery</h1>
-        <p style={{ fontSize: '13px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>Monitor ticket emails (SQLite)</p>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-        {[
-          { label: 'Total Emails', value: logs.length, color: '#9333ea', icon: '📧' },
-          { label: 'Sent Successfully', value: sent, color: '#22c55e', icon: '✓' },
-          { label: 'Failed Deliveries', value: failed, color: '#ef4444', icon: '✗' },
-          { label: 'In Queue', value: pending, color: '#f59e0b', icon: '⏳' },
-        ].map((s, idx) => (
-          <div key={s.label} className="glass-card lt-in" style={{ borderRadius: '14px', padding: '16px', ['--lt-i' as any]: idx }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: '26px', fontWeight: 800, color: s.color, letterSpacing: '-1px' }}>{s.value}</div>
-              <div style={{ fontSize: '20px' }}>{s.icon}</div>
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{s.label}</div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+      {/* Reference KPI Stat Tiles */}
+      <div className="kpi-row">
+        <div className="tile tile-gold">
+          <div className="tile-label">DELIVERED RATE</div>
+          <div className="tile-value">{deliveredPct}%</div>
+          <div className="tile-sub">{sentCount} of {totalCount} delivered</div>
+          <div className="tile-delta">
+            <span>✓</span> High deliverability
           </div>
-        ))}
+        </div>
+
+        <div className="tile tile-teal">
+          <div className="tile-label">SENT SUCCESSFULLY</div>
+          <div className="tile-value">{sentCount}</div>
+          <div className="tile-sub">Gmail SMTP dispatched</div>
+          <div className="tile-delta">
+            <span>↑</span> {sentCount} sent
+          </div>
+        </div>
+
+        <div className="tile tile-orange">
+          <div className="tile-label">DELIVERY FAILURES</div>
+          <div className="tile-value">{failedCount}</div>
+          <div className="tile-sub">SMTP or timeout errors</div>
+          <div className={`tile-delta ${failedCount > 0 ? 'down' : 'up'}`}>
+            <span>{failedCount > 0 ? '⚠' : '✓'}</span>{' '}
+            {failedCount > 0 ? `${failedCount} retries pending` : 'Zero errors'}
+          </div>
+        </div>
+
+        <div className="tile tile-dark">
+          <div className="tile-label">IN QUEUE</div>
+          <div className="tile-value">{pendingCount}</div>
+          <div className="tile-sub">Awaiting SMTP trigger</div>
+          <div className="tile-delta">
+            <span>⏳</span> Queue clear
+          </div>
+        </div>
       </div>
 
-      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 5 }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
+      {/* Reference Filter Bar */}
+      <div className="filter-bar">
+        <div className="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search email logs by recipient, name..."
+          />
+        </div>
+
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
+          <option value="all">All statuses</option>
+          <option value="sent">Delivered (Sent)</option>
+          <option value="failed">Failed</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+
+      {/* Email Delivery Table Card */}
+      <div className="card table-card">
+        <div className="table-scroll scroll">
+          <table className="table">
             <thead>
-              <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-                {['Trigger Time', 'Recipient', 'Name', 'Subject', 'Status', 'Retries', 'Last Error', 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '11px 14px', fontSize: '11px', fontWeight: 700, color: 'var(--muted-foreground)', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
+              <tr>
+                <th>Recipient</th>
+                <th>Subject</th>
+                <th>Trigger Time</th>
+                <th>Status</th>
+                <th>Retries</th>
+                <th>Diagnostic Error</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {logs.length === 0 ? (
+              {filteredLogs.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '20px', color: 'var(--muted-foreground)' }}>No emails triggered yet</td>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)' }}>
+                    No email logs matching criteria.
+                  </td>
                 </tr>
               ) : (
-                logs.map((l, i) => {
-                  const sc = statusColors[l.status] || statusColors.pending
-                  return (
-                    <tr key={l.id}
-                      style={{ borderBottom: i < logs.length - 1 ? '1px solid var(--border)' : 'none' }}
-                      onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'var(--muted)'}
-                      onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'transparent'}
-                    >
-                      <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{l.time}</td>
-                      <td style={{ padding: '12px 14px', fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>{l.recipient}</td>
-                      <td style={{ padding: '12px 14px', fontSize: '12.5px', color: 'var(--foreground)' }}>{l.name}</td>
-                      <td style={{ padding: '12px 14px', fontSize: '12.5px', color: 'var(--foreground)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.subject}</td>
-                      <td style={{ padding: '12px 14px' }}><Badge label={l.status} {...sc} /></td>
-                      <td style={{ padding: '12px 14px', fontSize: '12.5px', color: 'var(--foreground)', textAlign: 'center' }}>{l.retryCount}</td>
-                      <td style={{ padding: '12px 14px', fontSize: '12px', color: '#dc2626', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={l.error}>{l.error}</td>
-                      <td style={{ padding: '12px 14px' }}>
-                        {l.status === 'failed' && (
-                          <button
-                            onClick={() => onResend(l.id)}
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', fontSize: '11px', fontWeight: 600, color: 'var(--foreground)', cursor: 'pointer' }}
-                          >
-                            Retry Resend
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })
+                filteredLogs.map((l) => (
+                  <tr key={l.id}>
+                    <td>
+                      <div className="cell-main">
+                        <div
+                          className="cell-thumb"
+                          style={{
+                            background:
+                              l.status === 'sent'
+                                ? 'var(--grad-teal)'
+                                : l.status === 'failed'
+                                ? 'var(--grad-orange)'
+                                : 'var(--grad-gold)',
+                          }}
+                        >
+                          ✉
+                        </div>
+                        <div>
+                          <div className="cell-title">{l.recipient}</div>
+                          <div className="cell-sub">{l.name}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ fontWeight: 600 }}>{l.subject}</td>
+                    <td>{l.time}</td>
+                    <td>
+                      {l.status === 'sent' ? (
+                        <span className="badge badge-green">
+                          <span className="badge-dot" />
+                          Delivered
+                        </span>
+                      ) : l.status === 'failed' ? (
+                        <span className="badge badge-red">
+                          <span className="badge-dot" />
+                          Failed
+                        </span>
+                      ) : (
+                        <span className="badge badge-amber">
+                          <span className="badge-dot" />
+                          Queued
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ fontWeight: 700 }}>{l.retryCount}</td>
+                    <td style={{ color: 'var(--red)', fontSize: '11px', fontFamily: 'monospace' }} title={l.error}>
+                      {l.error}
+                    </td>
+                    <td>
+                      {l.status === 'failed' && (
+                        <button
+                          className="btn-primary"
+                          onClick={() => onResend(l.id)}
+                          style={{ height: '28px', padding: '0 10px', fontSize: '11px' }}
+                        >
+                          Retry Resend
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

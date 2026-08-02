@@ -28,45 +28,43 @@ interface Ticket {
   orderId: string
 }
 
-const typeColors: Record<string, { bg: string; color: string }> = {
-  General: { bg: '#f3f4f6', color: '#374151' },
-  'Male Pass': { bg: '#dbeafe', color: '#1e40af' },
-  'Female Pass': { bg: '#fce7f3', color: '#9d174d' },
-  VIP: { bg: '#fdf4ff', color: '#a21caf' },
-  Backstage: { bg: '#ede9fe', color: '#7c3aed' },
-}
-
-const statusColors: Record<string, { bg: string; color: string }> = {
-  Active: { bg: '#dcfce7', color: '#16a34a' },
-  Scanned: { bg: '#dbeafe', color: '#2563eb' },
-  Cancelled: { bg: '#fee2e2', color: '#dc2626' },
-  Expired: { bg: '#ffedd5', color: '#ea580c' },
-}
-
-function Badge({ label, bg, color }: { label: string; bg: string; color: string }) {
-  return <span style={{ backgroundColor: bg, color, fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>{label}</span>
-}
-
-export default function Tickets({ sales = [], onResend, adminKey, onReload, globalSearch = '', isPresentation = false }: TicketsProps) {
+export default function Tickets({
+  sales = [],
+  onResend,
+  adminKey,
+  onReload,
+  globalSearch = '',
+  isPresentation = false,
+}: TicketsProps) {
   const [eventFilter, setEventFilter] = useState<string>('all')
   const [cancellingId, setCancellingId] = useState<string | null>(null)
-  
-  // Only show records with generated tickets and apply search if provided
-  const ticketSales = sales.filter(s => {
+  const [searchQ, setSearchQ] = useState('')
+  const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
+
+  const effectiveSearch = searchQ || globalSearch
+
+  const ticketSales = sales.filter((s) => {
     if (!s.ticketId) return false
-    if (eventFilter !== 'all' && (s.event || 'FRESHERS TAKEOVER').toLowerCase() !== eventFilter) return false
-    
-    const q = globalSearch.toLowerCase()
-    if (q) {
-      return (s.ticketId || '').toLowerCase().includes(q) || 
-             (s.name || '').toLowerCase().includes(q) || 
-             (s.email || '').toLowerCase().includes(q)
+    if (eventFilter !== 'all' && (s.event || 'FRESHERS TAKEOVER').toLowerCase() !== eventFilter)
+      return false
+
+    if (effectiveSearch) {
+      const q = effectiveSearch.toLowerCase()
+      return (
+        (s.ticketId || '').toLowerCase().includes(q) ||
+        (s.name || '').toLowerCase().includes(q) ||
+        (s.email || '').toLowerCase().includes(q)
+      )
     }
     return true
   })
 
   const handleCancel = async (ticketId: string) => {
-    if (!window.confirm(`Are you sure you want to CANCEL ticket ${ticketId}? Scanning it at the gate will be rejected.`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to CANCEL ticket ${ticketId}? Scanning it at the gate will be rejected.`
+      )
+    ) {
       return
     }
     setCancellingId(ticketId)
@@ -75,9 +73,9 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-key': adminKey
+          'x-admin-key': adminKey,
         },
-        body: JSON.stringify({ ticketId })
+        body: JSON.stringify({ ticketId }),
       })
       const data = await res.json()
       if (data.success) {
@@ -93,31 +91,21 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
     }
   }
 
-  // Optimistic UI updates
-  const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
-
   const togglePresMode = async (orderId: string, currentVal: boolean) => {
-    if (!adminKey || isPresentation) return;
-    
-    const newVal = !currentVal;
-    // Instantly update UI
-    setOptimisticPres(prev => ({ ...prev, [orderId]: newVal }))
-
+    if (!adminKey || isPresentation) return
+    const newVal = !currentVal
+    setOptimisticPres((prev) => ({ ...prev, [orderId]: newVal }))
     try {
       const res = await fetch('/api/admin/toggle-presentation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
-        body: JSON.stringify({ orderId, showInPres: newVal })
+        body: JSON.stringify({ orderId, showInPres: newVal }),
       })
       if (!res.ok) {
-        // Revert if failed
-        setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
-        alert("Failed to update presentation mode.")
+        setOptimisticPres((prev) => ({ ...prev, [orderId]: currentVal }))
       }
     } catch (err) {
-      console.error(err);
-      // Revert if failed
-      setOptimisticPres(prev => ({ ...prev, [orderId]: currentVal }))
+      setOptimisticPres((prev) => ({ ...prev, [orderId]: currentVal }))
     }
   }
 
@@ -130,158 +118,258 @@ export default function Tickets({ sales = [], onResend, adminKey, onReload, glob
       email: s.email,
       phone: s.phone || '—',
       event: s.event || 'FRESHERS TAKEOVER',
-      type: s.gender === 'male' ? 'Male Pass' : s.gender === 'female' ? 'Female Pass' : (String(s.gender || '').toLowerCase().includes('exclusive') ? 'Exclusive Pass' : 'General'),
+      type:
+        s.gender === 'male'
+          ? 'Male Pass'
+          : s.gender === 'female'
+          ? 'Female Pass'
+          : String(s.gender || '').toLowerCase().includes('exclusive')
+          ? 'Exclusive VIP'
+          : 'General',
       qty: s.quantity || 1,
-      price: s.amount,
+      price: s.amount || 0,
       generated: s.generatedAt ? new Date(s.generatedAt).toLocaleString('en-IN') : '—',
       expiry: 'Event End',
-      status: isCancelled ? 'Cancelled' : (isScanned ? 'Scanned' : 'Active'),
+      status: isCancelled ? 'Cancelled' : isScanned ? 'Scanned' : 'Active',
       qr: '✓',
       pdf: '✓',
       png: '✓',
       showInPres: s.showInPres || false,
+      orderId: s.orderId,
     }
   })
 
   const totalAmount = tickets.reduce((a, t) => a + t.price, 0)
-  const totalFreshers = tickets.reduce((a, t) => {
-    if (t.event.toLowerCase() !== 'freshers takeover') return a
-    return a + t.price
-  }, 0)
-  const totalAura = tickets.reduce((a, t) => {
-    if (t.event.toLowerCase() !== 'aura genesis') return a
-    return a + t.price
-  }, 0)
+  const activeCount = tickets.filter((t) => t.status === 'Active').length
+  const scannedCount = tickets.filter((t) => t.status === 'Scanned').length
+  const cancelledCount = tickets.filter((t) => t.status === 'Cancelled').length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.5px', margin: 0 }}>Tickets</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>{tickets.length} tickets</span>
-            <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>·</span>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: '#059669', backgroundColor: '#d1fae5', padding: '4px 10px', borderRadius: '8px', border: '1px solid #10b981' }}>
-              ₹{totalAmount.toLocaleString()} Total
-            </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+      {/* Reference KPI Stat Tiles */}
+      <div className="kpi-row">
+        <div className="tile tile-teal">
+          <div className="tile-label">GENERATED PASSES</div>
+          <div className="tile-value">{tickets.length}</div>
+          <div className="tile-sub">Across all selected events</div>
+          <div className="tile-delta">
+            <span>🎫</span> Valid inventory
           </div>
-          <div style={{ display: 'flex', gap: '8px', fontSize: '12.5px', color: 'var(--muted-foreground)', marginTop: '10px', flexWrap: 'wrap' }}>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Freshers: <strong style={{ color: 'var(--foreground)' }}>₹{totalFreshers.toLocaleString()}</strong></span>
-            <span style={{ backgroundColor: 'var(--muted)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)' }}>Aura: <strong style={{ color: 'var(--foreground)' }}>₹{totalAura.toLocaleString()}</strong></span>
+        </div>
+
+        <div className="tile tile-gold">
+          <div className="tile-label">ACTIVE UNCLAIMED</div>
+          <div className="tile-value">{activeCount}</div>
+          <div className="tile-sub">Ready for gate scan</div>
+          <div className="tile-delta">
+            <span>✓</span> Gate ready
+          </div>
+        </div>
+
+        <div className="tile tile-orange">
+          <div className="tile-label">SCANNED AT GATE</div>
+          <div className="tile-value">{scannedCount}</div>
+          <div className="tile-sub">Validated entry passes</div>
+          <div className="tile-delta">
+            <span>↑</span> {scannedCount} entered
+          </div>
+        </div>
+
+        <div className="tile tile-dark">
+          <div className="tile-label">TOTAL TICKET VALUE</div>
+          <div className="tile-value">₹{totalAmount.toLocaleString()}</div>
+          <div className="tile-sub">{cancelledCount} cancelled passes</div>
+          <div className="tile-delta up">
+            <span>↑</span> Gross pass sales
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-        {/* Event Filters */}
-        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--muted)', padding: '3px', borderRadius: '10px' }}>
-          {(['all', 'freshers takeover', 'aura genesis'] as const).map(e => (
-            <button
-              key={e}
-              onClick={() => setEventFilter(e)}
-              style={{
-                padding: '5px 12px', borderRadius: '7px', border: 'none',
-                backgroundColor: eventFilter === e ? '#10b981' : 'transparent',
-                color: eventFilter === e ? 'white' : 'var(--muted-foreground)',
-                fontSize: '12px', fontWeight: eventFilter === e ? 600 : 400,
-                cursor: 'pointer', textTransform: 'capitalize',
-              }}
-            >
-              {e === 'all' ? 'All Events' : e}
-            </button>
-          ))}
+      {/* Reference Filter Bar */}
+      <div className="filter-bar">
+        <div className="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            value={searchQ}
+            onChange={(e) => setSearchQ(e.target.value)}
+            placeholder="Search tickets by ID, buyer name, email..."
+          />
         </div>
+
+        <select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
+          <option value="all">All events</option>
+          <option value="freshers takeover">FRESHERS TAKEOVER</option>
+          <option value="aura genesis">AURA GENESIS</option>
+        </select>
+
+        <button
+          className="tb-icon-btn"
+          onClick={() => {
+            const txt = tickets.map((t) => `${t.id} - ${t.buyer} (${t.type})`).join('\n')
+            navigator.clipboard.writeText(txt)
+            alert('Ticket list copied to clipboard!')
+          }}
+          title="Copy List"
+          style={{ width: '40px', height: '40px', borderRadius: '12px' }}
+        >
+          📋
+        </button>
       </div>
 
-      <div className="glass-card lt-in" style={{ borderRadius: '16px', overflow: 'hidden', ['--lt-i' as any]: 2 }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
+      {/* Tickets Data Table Card */}
+      <div className="card table-card">
+        <div className="table-scroll scroll">
+          <table className="table">
             <thead>
-              <tr style={{ backgroundColor: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-                {['Ticket ID', 'Attendee', 'Event', 'Type', 'Qty', 'Price', 'Generated', 'Status', ...(isPresentation ? [] : ['Pres. Mode']), 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '11px 14px', fontSize: '11px', fontWeight: 700, color: 'var(--muted-foreground)', textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
+              <tr>
+                <th>Ticket ID</th>
+                <th>Attendee</th>
+                <th>Event</th>
+                <th>Pass Type</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Generated</th>
+                {!isPresentation && <th>Pres</th>}
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {tickets.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ textAlign: 'center', padding: '20px', color: 'var(--muted-foreground)' }}>No tickets generated yet</td>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)' }}>
+                    No tickets generated yet.
+                  </td>
                 </tr>
               ) : (
-                tickets.map((t, i) => {
-                  const tc = typeColors[t.type] || typeColors.General
-                  const sc = statusColors[t.status] || statusColors.Active
+                tickets.map((t) => {
+                  const presVal =
+                    optimisticPres[t.orderId] !== undefined
+                      ? optimisticPres[t.orderId]
+                      : t.showInPres
+
                   return (
-                    <tr key={t.id}
-                      style={{ borderBottom: i < tickets.length - 1 ? '1px solid var(--border)' : 'none' }}
-                      onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'var(--muted)'}
-                      onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'transparent'}
+                    <tr
+                      key={t.id}
+                      style={{
+                        opacity: t.status === 'Cancelled' ? 0.5 : 1,
+                      }}
                     >
-                      <td style={{ padding: '13px 14px', fontSize: '12.5px', fontWeight: 700, color: '#9333ea', fontFamily: 'monospace' }}>{t.id}</td>
-                      <td style={{ padding: '13px 14px' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)' }}>{t.buyer}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>{t.email}</div>
-                      </td>
-                      <td style={{ padding: '13px 14px', fontSize: '12.5px', color: 'var(--foreground)', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.event}</td>
-                      <td style={{ padding: '13px 14px' }}><Badge label={t.type} {...tc} /></td>
-                      <td style={{ padding: '13px 14px', fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', textAlign: 'center' }}>{t.qty}</td>
-                      <td style={{ padding: '13px 14px', fontSize: '13px', fontWeight: 700, color: '#9333ea' }}>₹{t.price.toLocaleString()}</td>
-                      <td style={{ padding: '13px 14px', fontSize: '11.5px', color: 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>{t.generated}</td>
-                      <td style={{ padding: '13px 14px' }}><Badge label={t.status} {...sc} /></td>
-                      {!isPresentation && (
-                        <td style={{ padding: '13px 14px', textAlign: 'center' }}>
-                          <button
-                            onClick={e => { 
-                              e.stopPropagation(); 
-                              const currentVal = optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : !!t.showInPres;
-                              togglePresMode(t.orderId, currentVal); 
-                            }}
+                      <td>
+                        <div className="cell-main">
+                          <div
+                            className="cell-thumb"
                             style={{
-                              padding: '6px', borderRadius: '8px',
-                              border: 'none',
-                              backgroundColor: (optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '#f3e8ff' : 'var(--muted)',
-                              color: (optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '#9333ea' : 'var(--muted-foreground)',
-                              fontSize: '16px', cursor: 'pointer',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              width: '32px', height: '32px', transition: 'all 0.1s'
+                              background:
+                                t.status === 'Scanned'
+                                  ? 'var(--grad-teal)'
+                                  : t.status === 'Cancelled'
+                                  ? 'var(--grad-orange)'
+                                  : 'var(--grad-violet)',
                             }}
-                            title={(optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? 'Visible on Presentation' : 'Hidden on Presentation'}
                           >
-                            {(optimisticPres[t.orderId] !== undefined ? optimisticPres[t.orderId] : t.showInPres) ? '👁️' : '🙈'}
+                            🎟
+                          </div>
+                          <div>
+                            <div className="cell-title">#{t.id}</div>
+                            <div className="cell-sub">{t.qty} ticket(s)</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{t.buyer}</div>
+                        <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{t.email}</div>
+                      </td>
+                      <td>{t.event}</td>
+                      <td>
+                        <span style={{ fontWeight: 600 }}>{t.type}</span>
+                      </td>
+                      <td style={{ fontWeight: 700, color: 'var(--ink)' }}>
+                        {t.price === 0 ? 'FREE' : `₹${t.price.toLocaleString()}`}
+                      </td>
+                      <td>
+                        {t.status === 'Active' ? (
+                          <span className="badge badge-green">
+                            <span className="badge-dot" />
+                            Active
+                          </span>
+                        ) : t.status === 'Scanned' ? (
+                          <span className="badge badge-blue">
+                            <span className="badge-dot" />
+                            Scanned
+                          </span>
+                        ) : (
+                          <span className="badge badge-red">
+                            <span className="badge-dot" />
+                            Cancelled
+                          </span>
+                        )}
+                      </td>
+                      <td>{t.generated}</td>
+                      {!isPresentation && (
+                        <td>
+                          <button
+                            onClick={() => togglePresMode(t.orderId, !!presVal)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                            }}
+                            title="Toggle presentation visibility"
+                          >
+                            {presVal ? '👁️' : '🙈'}
                           </button>
                         </td>
                       )}
-                      <td style={{ padding: '13px 14px' }}>
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <button
-                            onClick={() => onResend(t.id)}
-                            disabled={t.status === 'Cancelled'}
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--muted)', fontSize: '11px', fontWeight: 600, color: t.status === 'Cancelled' ? 'var(--muted-foreground)' : 'var(--foreground)', cursor: t.status === 'Cancelled' ? 'not-allowed' : 'pointer' }}
-                          >
-                            Resend Email
-                          </button>
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px' }}>
                           <a
                             href={t.status === 'Cancelled' ? '#' : `/api/ticket/${t.id}/download`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ padding: '4px 10px', borderRadius: '6px', border: 'none', backgroundColor: t.status === 'Cancelled' ? '#fca5a5' : '#9333ea', color: 'white', textDecoration: 'none', fontSize: '11px', fontWeight: 600, cursor: t.status === 'Cancelled' ? 'not-allowed' : 'pointer' }}
-                          >
-                            Download PDF
-                          </a>
-                          <button
-                            onClick={() => handleCancel(t.id)}
-                            disabled={t.status === 'Cancelled' || cancellingId === t.id}
+                            className="btn-secondary"
                             style={{
-                              padding: '4px 10px', borderRadius: '6px', border: 'none',
-                              backgroundColor: '#EF4444', color: 'white',
-                              fontSize: '11px', fontWeight: 600,
-                              cursor: t.status === 'Cancelled' || cancellingId === t.id ? 'not-allowed' : 'pointer',
-                              opacity: t.status === 'Cancelled' ? 0.4 : 1
+                              height: '28px',
+                              padding: '0 8px',
+                              fontSize: '11px',
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              pointerEvents: t.status === 'Cancelled' ? 'none' : 'auto',
                             }}
                           >
-                            {cancellingId === t.id ? '...' : 'Cancel'}
+                            PDF
+                          </a>
+                          <button
+                            className="btn-secondary"
+                            onClick={() => onResend(t.id)}
+                            style={{ height: '28px', padding: '0 8px', fontSize: '11px' }}
+                            disabled={t.status === 'Cancelled'}
+                          >
+                            Resend
                           </button>
+                          {t.status !== 'Cancelled' && (
+                            <button
+                              onClick={() => handleCancel(t.id)}
+                              disabled={cancellingId === t.id}
+                              style={{
+                                height: '28px',
+                                padding: '0 8px',
+                                fontSize: '11px',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid rgba(255,107,107,0.3)',
+                                backgroundColor: 'rgba(255,107,107,0.12)',
+                                color: 'var(--red)',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {cancellingId === t.id ? '...' : 'Cancel'}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
