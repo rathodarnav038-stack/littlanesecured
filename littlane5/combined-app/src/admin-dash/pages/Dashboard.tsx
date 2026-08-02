@@ -425,10 +425,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         <div className="right-col">
           {/* Creative Event Overview Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px' }}>
-            {/* Event 1: Freshers Takeover */}
+            {/* Event 1: Freshers Takeover Male */}
             <div
               className="card lt-hover-lift"
-              onClick={() => setPopupEvent('freshers takeover')}
+              onClick={() => setPopupEvent('freshers male')}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(108, 76, 224, 0.12) 0%, rgba(59, 99, 232, 0.03) 100%)',
@@ -443,17 +443,45 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontSize: '15px' }}>🎉</span>
-                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover</h4>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover (Male)</h4>
                 </div>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Main College Event</p>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Male Passes Sold</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{maleCount + femaleCount}</div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{maleCount}</div>
                 <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
               </div>
             </div>
 
-            {/* Event 2: Aura Genesis */}
+            {/* Event 2: Freshers Takeover Female */}
+            <div
+              className="card lt-hover-lift"
+              onClick={() => setPopupEvent('freshers female')}
+              style={{
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(244, 63, 94, 0.03) 100%)',
+                border: '1px solid var(--line)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '15px' }}>👩</span>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover (Female)</h4>
+                </div>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Female Passes Sold</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#EC4899', fontFamily: 'monospace' }}>{femaleCount}</div>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
+              </div>
+            </div>
+
+            {/* Event 3: Aura Genesis */}
             <div
               className="card lt-hover-lift"
               onClick={() => setPopupEvent('aura genesis')}
@@ -481,7 +509,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               </div>
             </div>
 
-            {/* Event 3: FT Lineup Invite */}
+            {/* Event 4: FT Lineup Invite */}
             <div
               className="card lt-hover-lift"
               onClick={() => setPopupEvent('ft lineup invite')}
@@ -585,12 +613,14 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#fff' }}>
-                  {popupEvent === 'freshers takeover' ? '🎉 Freshers Takeover' : popupEvent === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
+                  {popupEvent === 'freshers male' ? '🎉 Freshers Takeover (Male)' : popupEvent === 'freshers female' ? '👩 Freshers Takeover (Female)' : popupEvent === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
                 </h3>
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
                   {(() => {
-                    const list = popupEvent === 'freshers takeover'
-                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA'))
+                    const list = popupEvent === 'freshers male'
+                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
+                      : popupEvent === 'freshers female'
+                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
                       : popupEvent === 'aura genesis'
                       ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
                       : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
@@ -621,8 +651,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Buyer List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {(() => {
-                const list = popupEvent === 'freshers takeover'
-                  ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA'))
+                const list = popupEvent === 'freshers male'
+                  ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
+                  : popupEvent === 'freshers female'
+                  ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
                   : popupEvent === 'aura genesis'
                   ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
                   : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
@@ -656,7 +688,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                         width: '36px',
                         height: '36px',
                         borderRadius: '10px',
-                        background: popupEvent === 'freshers takeover' ? 'var(--grad-violet)' : popupEvent === 'aura genesis' ? 'var(--grad-teal)' : 'var(--grad-gold)',
+                        background: popupEvent === 'freshers male' ? 'var(--grad-violet)' : popupEvent === 'freshers female' ? 'linear-gradient(135deg, #EC4899 0%, #F43F5E 100%)' : popupEvent === 'aura genesis' ? 'var(--grad-teal)' : 'var(--grad-gold)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

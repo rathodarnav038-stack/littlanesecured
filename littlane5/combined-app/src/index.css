@@ -9,12 +9,12 @@
   --topbar-h: 76px;
   --gutter: 20px;
   --pad: 24px;
-  --bg: #0A0B10;
-  --panel: #12131B;
-  --panel-2: #181A24;
-  --panel-3: #1E202C;
-  --line: rgba(255, 255, 255, .07);
-  --line-soft: rgba(255, 255, 255, .04);
+  --bg: #000000;
+  --panel: #09090B;
+  --panel-2: #141417;
+  --panel-3: #1E1E24;
+  --line: rgba(255, 255, 255, .05);
+  --line-soft: rgba(255, 255, 255, .025);
   --ink: #F5F4F8;
   --ink-soft: #9C9AAB;
   --ink-faint: #64626F;
@@ -31,27 +31,27 @@
   --radius-lg: 18px;
   --radius-md: 14px;
   --radius-sm: 10px;
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 10px 30px -14px rgba(0, 0, 0, .6);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, .02) inset, 0 10px 30px -14px rgba(0, 0, 0, .8);
 }
 
 .theme-light {
-  --bg: #F1F5F9;
+  --bg: #F8FAFC;
   --panel: #FFFFFF;
-  --panel-2: #F8FAFC;
+  --panel-2: #F1F5F9;
   --panel-3: #E2E8F0;
-  --line: rgba(0, 0, 0, 0.08);
-  --line-soft: rgba(0, 0, 0, 0.04);
+  --line: rgba(0, 0, 0, 0.06);
+  --line-soft: rgba(0, 0, 0, 0.03);
   --ink: #0F172A;
   --ink-soft: #475569;
   --ink-faint: #94A3B8;
-  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 @theme {
   --color-violet-brand: #7C5CFA;
-  --color-panel-bg: #12131B;
-  --color-panel-2: #181A24;
-  --color-panel-3: #1E202C;
+  --color-panel-bg: #09090B;
+  --color-panel-2: #141417;
+  --color-panel-3: #1E1E24;
 }
 
 * {
@@ -76,6 +76,10 @@ html, body {
   background: radial-gradient(900px 500px at 85% -10%, rgba(124, 92, 250, .18), transparent 60%),
     radial-gradient(700px 400px at -5% 100%, rgba(59, 130, 246, .10), transparent 60%), var(--bg);
   transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.app-canvas.theme-light {
+  background: radial-gradient(900px 500px at 85% -10%, rgba(124, 92, 250, 0.03), transparent 60%), var(--bg);
 }
 
 @media (max-width: 1180px) {
@@ -103,14 +107,13 @@ html, body {
   left: 0;
   bottom: 0;
   width: var(--rail-w);
-  background: rgba(255, 255, 255, .015);
+  background: var(--panel);
   border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   padding: 20px 16px;
   z-index: 20;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .rail-brand {
