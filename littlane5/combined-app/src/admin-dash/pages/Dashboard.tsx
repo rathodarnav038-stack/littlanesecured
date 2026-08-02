@@ -615,10 +615,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               maxWidth: '90vw',
               maxHeight: '480px',
               overflowY: 'auto',
-              background: 'rgba(24, 25, 33, 0.98)',
+              background: 'var(--panel)',
               border: '1px solid var(--line)',
               borderRadius: '20px',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+              boxShadow: 'var(--shadow-card)',
               padding: '24px',
               zIndex: 200,
               backdropFilter: 'blur(40px)',
@@ -628,18 +628,18 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#fff' }}>
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--ink)' }}>
                   {popupEvent.name === 'freshers male' ? '🎉 Freshers Takeover (Male)' : popupEvent.name === 'freshers female' ? '👩 Freshers Takeover (Female)' : popupEvent.name === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
                 </h3>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--ink-soft)', marginTop: '4px' }}>
                   {(() => {
                     const list = popupEvent.name === 'freshers male'
-                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
-                      : popupEvent.name === 'freshers female'
-                      ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
-                      : popupEvent.name === 'aura genesis'
-                      ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
-                      : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
+                       ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
+                       : popupEvent.name === 'freshers female'
+                       ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
+                       : popupEvent.name === 'aura genesis'
+                       ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
+                       : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
                     return `${list.length} ticket buyers`
                   })()}
                 </div>
@@ -647,9 +647,9 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <button
                 onClick={() => setPopupEvent(null)}
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#fff',
+                  background: 'var(--panel-2)',
+                  border: '1px solid var(--line)',
+                  color: 'var(--ink)',
                   width: '30px',
                   height: '30px',
                   borderRadius: '9px',
@@ -677,7 +677,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
                 if (list.length === 0) {
                   return (
-                    <div style={{ textAlign: 'center', padding: '32px', color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>
+                    <div style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)', fontSize: '13px' }}>
                       No buyers for this event yet.
                     </div>
                   )
@@ -691,13 +691,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '10px 12px',
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      background: 'var(--panel-2)',
+                      border: '1px solid var(--line)',
                       borderRadius: '12px',
-                      transition: 'background 0.15s',
                     }}
-                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                    onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
@@ -715,13 +712,13 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                         {(s.name || '?').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div style={{ fontSize: '12.5px', fontWeight: 600, color: '#fff' }}>{s.name || 'Unknown'}</div>
-                        <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.45)' }}>{s.email || '—'}</div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--ink)' }}>{s.name || 'Unknown'}</div>
+                        <div style={{ fontSize: '10.5px', color: 'var(--ink-soft)' }}>{s.email || '—'}</div>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#fff' }}>₹{(s.amount || 0).toLocaleString()}</div>
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{s.gender || 'pass'}</div>
+                      <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--ink)' }}>₹{(s.amount || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '10px', color: 'var(--ink-faint)' }}>{s.gender || 'pass'}</div>
                     </div>
                   </div>
                 ))
