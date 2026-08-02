@@ -13,7 +13,7 @@ interface DashboardProps {
 export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d'>('7d')
   const [chartMode, setChartMode] = useState<'actual' | 'forecast'>('actual')
-  const [popupEvent, setPopupEvent] = useState<string | null>(null)
+  const [popupEvent, setPopupEvent] = useState<{ name: string; top: number; left: number } | null>(null)
 
   const paidSales = sales.filter(s =>
     ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
@@ -181,32 +181,31 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
-      {/* KPI Stat Tiles (Reference .kpi-row Layout) */}
       <div className="kpi-row">
         <div className="tile tile-orange">
           <div className="tile-label">REVENUE MTD</div>
           <div className="tile-value">₹{totalRevenue.toLocaleString()}</div>
           <div className="tile-sub">From {paidSales.length} paid passes</div>
           <div className="tile-delta">
-            <span>↑</span> ₹{todayRevenue.toLocaleString()} today
+            <span>↑</span> Verified sales
           </div>
         </div>
 
         <div className="tile tile-teal">
-          <div className="tile-label">TOTAL ORDERS</div>
-          <div className="tile-value">{sales.length}</div>
-          <div className="tile-sub">{paidSales.length} confirmed paid</div>
+          <div className="tile-label">TODAY'S REVENUE</div>
+          <div className="tile-value">₹{todayRevenue.toLocaleString()}</div>
+          <div className="tile-sub">Sales logged today</div>
           <div className="tile-delta">
-            <span>↑</span> {testMode ? 'Test mode' : 'Live mode'}
+            <span>🟢</span> Live operations
           </div>
         </div>
 
         <div className="tile tile-gold">
-          <div className="tile-label">TICKETS SCANNED</div>
-          <div className="tile-value">{qrScannedCount}</div>
-          <div className="tile-sub">Of {totalTickets} total passes</div>
+          <div className="tile-label">CONFIRMED PAID</div>
+          <div className="tile-value">{paidSales.length}</div>
+          <div className="tile-sub">Tickets successfully issued</div>
           <div className="tile-delta">
-            <span>✓</span> Gate active
+            <span>✓</span> {testMode ? 'Test mode' : 'Live mode'}
           </div>
         </div>
 
@@ -428,7 +427,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 1: Freshers Takeover Male */}
             <div
               className="card lt-hover-lift"
-              onClick={() => setPopupEvent('freshers male')}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPopupEvent({ name: 'freshers male', top: rect.top + window.scrollY, left: rect.left - 520 })
+              }}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(108, 76, 224, 0.12) 0%, rgba(59, 99, 232, 0.03) 100%)',
@@ -456,7 +458,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 2: Freshers Takeover Female */}
             <div
               className="card lt-hover-lift"
-              onClick={() => setPopupEvent('freshers female')}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPopupEvent({ name: 'freshers female', top: rect.top + window.scrollY, left: rect.left - 520 })
+              }}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(244, 63, 94, 0.03) 100%)',
@@ -484,7 +489,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 3: Aura Genesis */}
             <div
               className="card lt-hover-lift"
-              onClick={() => setPopupEvent('aura genesis')}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPopupEvent({ name: 'aura genesis', top: rect.top + window.scrollY, left: rect.left - 520 })
+              }}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(56, 217, 196, 0.12) 0%, rgba(59, 130, 246, 0.03) 100%)',
@@ -512,7 +520,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Event 4: FT Lineup Invite */}
             <div
               className="card lt-hover-lift"
-              onClick={() => setPopupEvent('ft lineup invite')}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setPopupEvent({ name: 'ft lineup invite', top: rect.top + window.scrollY, left: rect.left - 520 })
+              }}
               style={{
                 cursor: 'pointer',
                 background: 'linear-gradient(135deg, rgba(245, 197, 66, 0.12) 0%, rgba(245, 133, 77, 0.03) 100%)',
@@ -580,33 +591,36 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       </div>
 
       {popupEvent && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-          }}
-          onClick={() => setPopupEvent(null)}
-        >
+        <>
+          {/* Transparent click catcher backdrop */}
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 199,
+              background: 'rgba(0, 0, 0, 0.25)',
+              backdropFilter: 'blur(3px)',
+              WebkitBackdropFilter: 'blur(3px)',
+            }}
+            onClick={() => setPopupEvent(null)}
+          />
+
           <div
             className="scroll"
-            onClick={(e) => e.stopPropagation()}
             style={{
-              width: '520px',
-              maxWidth: '92vw',
-              maxHeight: '80vh',
+              position: 'fixed',
+              top: `${Math.max(80, Math.min(popupEvent.top, window.innerHeight - 520))}px`,
+              left: `${Math.max(20, popupEvent.left)}px`,
+              width: '500px',
+              maxWidth: '90vw',
+              maxHeight: '480px',
               overflowY: 'auto',
-              background: 'rgba(30, 32, 44, 0.92)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(24, 25, 33, 0.98)',
+              border: '1px solid var(--line)',
               borderRadius: '20px',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
-              padding: '28px',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+              padding: '24px',
+              zIndex: 200,
               backdropFilter: 'blur(40px)',
               WebkitBackdropFilter: 'blur(40px)',
             }}
@@ -614,16 +628,16 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#fff' }}>
-                  {popupEvent === 'freshers male' ? '🎉 Freshers Takeover (Male)' : popupEvent === 'freshers female' ? '👩 Freshers Takeover (Female)' : popupEvent === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#fff' }}>
+                  {popupEvent.name === 'freshers male' ? '🎉 Freshers Takeover (Male)' : popupEvent.name === 'freshers female' ? '👩 Freshers Takeover (Female)' : popupEvent.name === 'aura genesis' ? '✨ Aura Genesis' : '⭐ FT Lineup Invite'} — Buyers
                 </h3>
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
                   {(() => {
-                    const list = popupEvent === 'freshers male'
+                    const list = popupEvent.name === 'freshers male'
                       ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
-                      : popupEvent === 'freshers female'
+                      : popupEvent.name === 'freshers female'
                       ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
-                      : popupEvent === 'aura genesis'
+                      : popupEvent.name === 'aura genesis'
                       ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
                       : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
                     return `${list.length} ticket buyers`
@@ -636,11 +650,11 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.15)',
                   color: '#fff',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '10px',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '9px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -653,11 +667,11 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             {/* Buyer List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {(() => {
-                const list = popupEvent === 'freshers male'
+                const list = popupEvent.name === 'freshers male'
                   ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male')))
-                  : popupEvent === 'freshers female'
+                  : popupEvent.name === 'freshers female'
                   ? paidSales.filter(s => !(s.gender || '').toLowerCase().includes('exclusive') && !(s.event || '').toUpperCase().includes('AURA') && (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female')))
-                  : popupEvent === 'aura genesis'
+                  : popupEvent.name === 'aura genesis'
                   ? paidSales.filter(s => (s.event || '').toUpperCase().includes('AURA'))
                   : paidSales.filter(s => (s.gender || '').toLowerCase().includes('exclusive') || (s.ticketType || '').toLowerCase().includes('exclusive'))
 
@@ -676,7 +690,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      padding: '12px 14px',
+                      padding: '10px 12px',
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '12px',
@@ -687,26 +701,26 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '10px',
-                        background: popupEvent === 'freshers male' ? 'var(--grad-violet)' : popupEvent === 'freshers female' ? 'linear-gradient(135deg, #EC4899 0%, #F43F5E 100%)' : popupEvent === 'aura genesis' ? 'var(--grad-teal)' : 'var(--grad-gold)',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '9px',
+                        background: popupEvent.name === 'freshers male' ? 'var(--grad-violet)' : popupEvent.name === 'freshers female' ? 'linear-gradient(135deg, #EC4899 0%, #F43F5E 100%)' : popupEvent.name === 'aura genesis' ? 'var(--grad-teal)' : 'var(--grad-gold)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: '#fff',
-                        fontSize: '13px',
+                        fontSize: '12px',
                         fontWeight: 700,
                       }}>
                         {(s.name || '?').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{s.name || 'Unknown'}</div>
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>{s.email || '—'}</div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 600, color: '#fff' }}>{s.name || 'Unknown'}</div>
+                        <div style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.45)' }}>{s.email || '—'}</div>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>₹{(s.amount || 0).toLocaleString()}</div>
+                      <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#fff' }}>₹{(s.amount || 0).toLocaleString()}</div>
                       <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{s.gender || 'pass'}</div>
                     </div>
                   </div>
@@ -714,7 +728,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               })()}
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )
