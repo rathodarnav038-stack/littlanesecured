@@ -60,8 +60,10 @@ function OrderDrawer({
       <div
         style={{
           position: 'absolute',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
         }}
       />
 
@@ -72,9 +74,9 @@ function OrderDrawer({
           width: '460px',
           maxWidth: '90vw',
           height: '100vh',
-          backgroundColor: 'var(--panel)',
-          borderLeft: '1px solid var(--line)',
-          boxShadow: '-8px 0 40px rgba(0,0,0,0.5)',
+          backgroundColor: '#0C0A1A',
+          borderLeft: '2px solid rgba(124, 92, 250, 0.3)',
+          boxShadow: '-8px 0 60px rgba(90, 50, 200, 0.25), -2px 0 20px rgba(0,0,0,0.6)',
           overflowY: 'auto',
           zIndex: 101,
           padding: '24px',
