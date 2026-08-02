@@ -297,20 +297,19 @@ html, body {
   padding: 0 var(--pad);
   border-bottom: 1px solid var(--line);
   z-index: 100;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: saturate(180%) blur(40px);
-  -webkit-backdrop-filter: saturate(180%) blur(40px);
-  transform: translateZ(0);
-  will-change: backdrop-filter;
-  isolation: isolate;
+  background: rgba(0, 0, 0, 0.45) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(40px) !important;
+  backdrop-filter: saturate(180%) blur(40px) !important;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .theme-light .topbar {
-  background: rgba(248, 250, 252, 0.6);
-  backdrop-filter: saturate(180%) blur(40px);
-  -webkit-backdrop-filter: saturate(180%) blur(40px);
-  transform: translateZ(0);
-  will-change: backdrop-filter;
+  background: rgba(248, 250, 252, 0.5) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(40px) !important;
+  backdrop-filter: saturate(180%) blur(40px) !important;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .tb-profile {
