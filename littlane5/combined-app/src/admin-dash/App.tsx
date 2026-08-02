@@ -376,7 +376,7 @@ export default function App({ isPresentation = false }: AppProps) {
         <div className="login-art">
           <div className="brand">
             <div className="mark">L</div>
-            <span style={{ fontSize: '15px', fontWeight: 800 }}>LitTix Enterprise</span>
+            <span style={{ fontSize: '15px', fontWeight: 800 }}>LITTLANE ENTERTAINMENT</span>
           </div>
 
           <div style={{ margin: 'auto 0' }}>
@@ -388,18 +388,26 @@ export default function App({ isPresentation = false }: AppProps) {
             </p>
           </div>
 
-          <div className="art-tiles" style={{ display: 'flex', gap: '12px' }}>
-            <div className="tile tile-orange" style={{ flex: 1, padding: '12px 14px' }}>
-              <div className="tile-label">REVENUE MTD</div>
-              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>₹{summary.totalRevenue || 0}</div>
+          <div className="mock-graph-container" style={{ 
+            background: 'var(--panel-2)', 
+            border: '1px solid var(--line)',
+            borderRadius: '16px',
+            padding: '20px',
+            marginTop: 'auto'
+          }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ink-soft)', marginBottom: '16px', letterSpacing: '0.05em' }}>
+              LIVE TRAFFIC SENSORS
             </div>
-            <div className="tile tile-teal" style={{ flex: 1, padding: '12px 14px' }}>
-              <div className="tile-label">ORDERS</div>
-              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>{summary.totalOrders || 0}</div>
-            </div>
-            <div className="tile tile-gold" style={{ flex: 1, padding: '12px 14px' }}>
-              <div className="tile-label">PAID PASSES</div>
-              <div className="tile-value" style={{ fontSize: '18px', marginTop: '4px' }}>{summary.paidOrders || 0}</div>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end', height: '64px' }}>
+              {[30, 45, 25, 60, 80, 55, 90, 70, 100, 65, 85, 40, 75, 50, 95].map((h, i) => (
+                <div key={i} style={{ 
+                  flex: 1, 
+                  height: `${h}%`, 
+                  background: i % 3 === 0 ? 'var(--grad-orange)' : i % 2 === 0 ? 'var(--grad-teal)' : 'var(--grad-violet)',
+                  borderRadius: '3px',
+                  opacity: 0.8
+                }} />
+              ))}
             </div>
           </div>
         </div>
@@ -415,7 +423,7 @@ export default function App({ isPresentation = false }: AppProps) {
           >
             <div>
               <h1>Welcome back</h1>
-              <p className="lead">Log in to the LitTix admin workspace.</p>
+              <p className="lead">LOGIN TO THE NEXORACULT Experience</p>
             </div>
 
             {authError && <div className="banner">{authError}</div>}
@@ -435,17 +443,6 @@ export default function App({ isPresentation = false }: AppProps) {
               {authChecking ? 'Verifying...' : 'Log in'}
             </button>
 
-            <div className="divider">or</div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setKeyInput('littlane2026')
-              }}
-              className="btn-secondary"
-            >
-              Use Default Key
-            </button>
           </form>
         </div>
       </div>
