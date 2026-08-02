@@ -202,6 +202,8 @@ html, body {
 }
 
 .rail-link svg, .rail-link .material-symbols-outlined {
+  width: 18px;
+  height: 18px;
   font-size: 18px;
   flex: 0 0 auto;
   opacity: .85;
@@ -251,6 +253,12 @@ html, body {
   cursor: pointer;
   color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rail-promo svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
 }
 
 .rail-promo:hover {
@@ -353,6 +361,12 @@ html, body {
   font-size: 12.5px;
 }
 
+.topbar-search svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
 .topbar-search input {
   background: transparent;
   border: none;
@@ -382,6 +396,12 @@ html, body {
   color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.tb-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .tb-icon-btn:hover {

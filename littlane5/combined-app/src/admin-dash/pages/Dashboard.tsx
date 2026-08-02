@@ -8,9 +8,10 @@ interface DashboardProps {
   summary: any
   testMode: boolean
   onManualGenerate: () => void
+  onViewTickets: (eventFilterVal: string) => void
 }
 
-export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
+export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate, onViewTickets }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d'>('7d')
   const [chartMode, setChartMode] = useState<'actual' | 'forecast'>('actual')
 
@@ -422,39 +423,90 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
         {/* Right Column */}
         <div className="right-col">
-          {/* Creative Promo Card */}
-          <div className="promo-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <div className="mark" style={{ width: '28px', height: '28px', fontSize: '13px', background: 'rgba(255,255,255,0.2)' }}>
-                L
+          {/* Creative Event Overview Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px' }}>
+            {/* Event 1: Freshers Takeover */}
+            <div
+              className="card lt-hover-lift"
+              onClick={() => onViewTickets('freshers takeover')}
+              style={{
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, rgba(108, 76, 224, 0.12) 0%, rgba(59, 99, 232, 0.03) 100%)',
+                border: '1px solid var(--line)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '15px' }}>🎉</span>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover</h4>
+                </div>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Main College Event</p>
               </div>
-              <span className="badge-pro" style={{ background: 'rgba(255,255,255,0.25)' }}>
-                LITTLANE CREATIVE
-              </span>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{maleCount + femaleCount}</div>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
+              </div>
             </div>
 
-            <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 800 }}>
-              Freshers Takeover & Aura Genesis
-            </h3>
-            <p style={{ margin: 0, fontSize: '12px', opacity: 0.9, lineHeight: 1.4 }}>
-              Pune's premier college fest ops engine. Instant QR validation, manual pass issue, & automated delivery.
-            </p>
+            {/* Event 2: Aura Genesis */}
+            <div
+              className="card lt-hover-lift"
+              onClick={() => onViewTickets('aura genesis')}
+              style={{
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, rgba(56, 217, 196, 0.12) 0%, rgba(59, 130, 246, 0.03) 100%)',
+                border: '1px solid var(--line)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '15px' }}>✨</span>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Aura Genesis</h4>
+                </div>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Electronic Skyline Showcase</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#38D9C4', fontFamily: 'monospace' }}>{auraCount}</div>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
+              </div>
+            </div>
 
-            <div className="promo-btns">
-              <button
-                className="promo-btn promo-btn-primary"
-                onClick={onManualGenerate}
-              >
-                + Issue Pass
-              </button>
-              <button
-                className="promo-btn promo-btn-secondary"
-                onClick={() => {
-                  alert('LitTix Live Ops is active and synchronized with Razorpay & Gmail SMTP.')
-                }}
-              >
-                Ops Status
-              </button>
+            {/* Event 3: FT Lineup Invite */}
+            <div
+              className="card lt-hover-lift"
+              onClick={() => onViewTickets('ft lineup invite')}
+              style={{
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, rgba(245, 197, 66, 0.12) 0%, rgba(245, 133, 77, 0.03) 100%)',
+                border: '1px solid var(--line)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '15px' }}>⭐</span>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>FT Lineup Invite</h4>
+                </div>
+                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>VIP Exclusive Passes</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#F5B942', fontFamily: 'monospace' }}>{inviteCount}</div>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
+              </div>
             </div>
           </div>
 

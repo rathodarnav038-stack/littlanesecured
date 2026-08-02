@@ -175,6 +175,7 @@ export default function App({ isPresentation = false }: AppProps) {
 
   // Rail tabs state
   const [railTab, setRailTab] = useState<'events' | 'archived'>('events')
+  const [ticketEventFilter, setTicketEventFilter] = useState('all')
 
   // Manual generation state
   const [manualName, setManualName] = useState('')
@@ -460,6 +461,10 @@ export default function App({ isPresentation = false }: AppProps) {
             summary={summary}
             testMode={testMode}
             onManualGenerate={() => setShowManualModal(true)}
+            onViewTickets={(val) => {
+              setTicketEventFilter(val)
+              setPage('tickets')
+            }}
           />
         )
       case 'orders':
@@ -482,6 +487,8 @@ export default function App({ isPresentation = false }: AppProps) {
             onReload={() => fetchSales(adminKey)}
             globalSearch={search}
             isPresentation={isPresentation}
+            eventFilter={ticketEventFilter}
+            onEventFilterChange={setTicketEventFilter}
           />
         )
       case 'customers':

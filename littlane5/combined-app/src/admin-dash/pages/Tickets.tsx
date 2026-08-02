@@ -7,6 +7,8 @@ interface TicketsProps {
   onReload: () => Promise<void> | void
   globalSearch?: string
   isPresentation?: boolean
+  eventFilter?: string
+  onEventFilterChange?: (val: string) => void
 }
 
 interface Ticket {
@@ -35,8 +37,13 @@ export default function Tickets({
   onReload,
   globalSearch = '',
   isPresentation = false,
+  eventFilter: propEventFilter,
+  onEventFilterChange: propOnEventFilterChange,
 }: TicketsProps) {
-  const [eventFilter, setEventFilter] = useState<string>('all')
+  const [internalEventFilter, setInternalEventFilter] = useState<string>('all')
+  const eventFilter = propEventFilter !== undefined ? propEventFilter : internalEventFilter
+  const setEventFilter = propOnEventFilterChange !== undefined ? propOnEventFilterChange : setInternalEventFilter
+
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [searchQ, setSearchQ] = useState('')
   const [optimisticPres, setOptimisticPres] = useState<Record<string, boolean>>({})
@@ -45,7 +52,16 @@ export default function Tickets({
 
   const ticketSales = sales.filter((s) => {
     if (!s.ticketId) return false
-    if (eventFilter !== 'all' && (s.event || 'FRESHERS TAKEOVER').toLowerCase() !== eventFilter)
+
+    const isVip =
+      (s.gender || '').toLowerCase().includes('exclusive') ||
+      (s.ticketType || '').toLowerCase().includes('exclusive') ||
+      (s.ticketType || '').toLowerCase().includes('vip')
+
+    const isAura = (s.event || '').toUpperCase().includes('AURA')
+    const category = isVip ? 'ft lineup invite' : isAura ? 'aura genesis' : 'freshers takeover'
+
+    if (eventFilter !== 'all' && category !== eventFilter)
       return false
 
     if (effectiveSearch) {
@@ -203,6 +219,7 @@ export default function Tickets({
           <option value="all">All events</option>
           <option value="freshers takeover">FRESHERS TAKEOVER</option>
           <option value="aura genesis">AURA GENESIS</option>
+          <option value="ft lineup invite">FT LINEUP INVITE</option>
         </select>
 
         <button
