@@ -296,20 +296,21 @@ html, body {
   justify-content: space-between;
   padding: 0 var(--pad);
   border-bottom: 1px solid var(--line);
-  z-index: 15;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: saturate(180%) blur(40px);
+  -webkit-backdrop-filter: saturate(180%) blur(40px);
   transform: translateZ(0);
-  will-change: transform;
+  will-change: backdrop-filter;
+  isolation: isolate;
 }
 
 .theme-light .topbar {
-  background: rgba(248, 250, 252, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(248, 250, 252, 0.6);
+  backdrop-filter: saturate(180%) blur(40px);
+  -webkit-backdrop-filter: saturate(180%) blur(40px);
   transform: translateZ(0);
-  will-change: transform;
+  will-change: backdrop-filter;
 }
 
 .tb-profile {
@@ -460,15 +461,14 @@ html, body {
 
 /* ── Content Viewport ──────────────────────────────────────────────── */
 .content {
-  margin-top: var(--topbar-h);
   margin-left: var(--rail-w);
   padding: var(--pad);
-  min-height: calc(100vh - var(--topbar-h));
+  padding-top: calc(var(--topbar-h) + var(--pad));
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: var(--gutter);
   position: relative;
-  z-index: 10;
 }
 
 .kpi-row {
