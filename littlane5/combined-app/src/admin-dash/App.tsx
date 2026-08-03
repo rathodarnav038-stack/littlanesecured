@@ -800,16 +800,29 @@ export default function App({ isPresentation = false }: AppProps) {
                 )}
               </div>
 
+              {manualSuccessMsg && (
+                <div style={{
+                  padding: '10px 12px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'rgba(61, 220, 132, 0.12)',
+                  border: '1px solid rgba(61, 220, 132, 0.3)',
+                  color: '#3DDC84',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  marginTop: '4px',
+                }}>
+                  ✓ Ticket Sent successfully! Ready for next ticket.
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
                 <button
                   type="submit"
                   disabled={isManualSubmitting}
-                  className="btn-primary"
+                  className={manualSuccessMsg ? "btn-primary btn-success-glow" : "btn-primary"}
                   style={{
                     flex: 1,
-                    backgroundColor: manualSuccessMsg ? '#3DDC84' : undefined,
-                    borderColor: manualSuccessMsg ? '#3DDC84' : undefined,
-                    boxShadow: manualSuccessMsg ? '0 4px 16px rgba(61,220,132,0.3)' : undefined,
                     transition: 'all 0.2s',
                   }}
                 >
