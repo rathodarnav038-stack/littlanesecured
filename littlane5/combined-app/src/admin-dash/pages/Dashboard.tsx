@@ -75,31 +75,42 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
     if (period === '7d') {
       const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      const dayMap = new Map<string, { revenue: number; orders: number; forecast: number }>()
+      // Use ISO date string (YYYY-MM-DD) as map key so sales only match their exact date
+      const dateKeyMap = new Map<string, { label: string; revenue: number; orders: number; forecast: number }>()
       for (let i = 6; i >= 0; i--) {
         const d = new Date(now)
         d.setDate(d.getDate() - i)
-        const key = weekdays[d.getDay()]
-        dayMap.set(key, { revenue: 0, orders: 0, forecast: 5000 })
+        const dateKey = d.toISOString().slice(0, 10) // e.g. "2026-08-04"
+        const label = weekdays[d.getDay()]
+        dateKeyMap.set(dateKey, { label, revenue: 0, orders: 0, forecast: 0 })
       }
       paidSales.forEach(s => {
-        const d = new Date(s.paidAt || s.createdAt)
-        const key = weekdays[d.getDay()]
-        if (dayMap.has(key)) {
-          const cur = dayMap.get(key)!
+        const raw = s.paidAt || s.createdAt
+        if (!raw) return
+        const d = new Date(raw)
+        // Build the local YYYY-MM-DD so timezone doesn't shift the date
+        const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        if (dateKeyMap.has(dateKey)) {
+          const cur = dateKeyMap.get(dateKey)!
           cur.revenue += s.amount || 0
           cur.orders += 1
-          cur.forecast = cur.revenue * 1.25 + 1200
         }
       })
-      chartData.push(...Array.from(dayMap.entries()).map(([time, v]) => ({ time, ...v })))
+      chartData.push(...Array.from(dateKeyMap.values()).map(v => ({
+        time: v.label,
+        revenue: v.revenue,
+        orders: v.orders,
+        forecast: v.revenue > 0 ? Math.round(v.revenue * 1.25 + 1200) : 0,
+      })))
     } else {
       const blocks = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm']
       const blockMap = new Map<string, { revenue: number; orders: number; forecast: number }>()
-      blocks.forEach(b => blockMap.set(b, { revenue: 0, orders: 0, forecast: 1000 }))
+      blocks.forEach(b => blockMap.set(b, { revenue: 0, orders: 0, forecast: 0 }))
 
       paidSales.forEach(s => {
-        const d = new Date(s.paidAt || s.createdAt)
+        const raw = s.paidAt || s.createdAt
+        if (!raw) return
+        const d = new Date(raw)
         if (d.toDateString() === todayStr) {
           const hour = d.getHours()
           const blockIndex = Math.floor(hour / 3)
@@ -108,7 +119,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             const cur = blockMap.get(key)!
             cur.revenue += s.amount || 0
             cur.orders += 1
-            cur.forecast = cur.revenue * 1.2 + 500
+            cur.forecast = Math.round(cur.revenue * 1.2 + 500)
           }
         }
       })
