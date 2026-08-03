@@ -30,6 +30,12 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
     .filter(s => s.createdAt && new Date(s.createdAt).toDateString() === todayStr)
     .reduce((acc, s) => acc + (s.amount || 0), 0)
 
+  const manualSales = revenueSales.filter(s => s.paymentId === 'manual')
+  const razorpaySales = revenueSales.filter(s => s.paymentId !== 'manual')
+
+  const manualRevenue = manualSales.reduce((acc, s) => acc + (s.amount || 0), 0)
+  const razorpayRevenue = razorpaySales.reduce((acc, s) => acc + (s.amount || 0), 0)
+
   const emailFailures = sales.filter(s => s.emailStatus === 'failed').length
   const ticketFailures = sales.filter(s => s.status === 'ticket_generation_failed').length
   const qrScannedCount = sales.filter(s => s.status === 'scanned' || !!s.scannedAt).length
@@ -114,10 +120,16 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
   const liveFeed = useMemo(() => {
     const list: any[] = []
-    sales.slice(0, 15).forEach(sale => {
-      const timeLabel = sale.createdAt
-        ? new Date(sale.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : 'just now'
+    sales.forEach(sale => {
+      const generatedAt = sale.generatedAt || sale.createdAt
+      const dateVal = generatedAt ? new Date(generatedAt) : new Date()
+      const diffMin = Math.round((Date.now() - dateVal.getTime()) / 60000)
+      const timeLabel =
+        diffMin > 60
+          ? `${Math.round(diffMin / 60)}h ago`
+          : diffMin > 0
+          ? `${diffMin}m ago`
+          : 'just now'
 
       list.push({
         id: `created-${sale.orderId}`,
@@ -197,6 +209,23 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
           <div className="tile-sub">Sales logged today</div>
           <div className="tile-delta">
             <span>🟢</span> Live operations
+          </div>
+        </div>
+
+        <div className="tile tile-violet">
+          <div className="tile-label">COLLECTED BY METHOD</div>
+          <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, opacity: 0.85 }}>Razorpay:</span>
+              <span style={{ fontSize: '15px', fontWeight: 800 }}>₹{razorpayRevenue.toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, opacity: 0.85 }}>Manual:</span>
+              <span style={{ fontSize: '15px', fontWeight: 800 }}>₹{manualRevenue.toLocaleString()}</span>
+            </div>
+          </div>
+          <div className="tile-delta" style={{ marginTop: '10px' }}>
+            <span>💳</span> RZP ({razorpaySales.length}) · MAN ({manualSales.length})
           </div>
         </div>
 

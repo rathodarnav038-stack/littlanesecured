@@ -506,7 +506,13 @@ export default function Orders({
                           </div>
                           <div>
                             <div className="cell-title">#{o.id.substring(0, 10)}</div>
-                            <div className="cell-sub">{o.gateway}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                              {o.gateway === 'Manual' ? (
+                                <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245, 197, 66, 0.15)', color: '#F5C542', border: '1px solid rgba(245, 197, 66, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manual</span>
+                              ) : (
+                                <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124, 92, 250, 0.15)', color: '#7C5CFA', border: '1px solid rgba(124, 92, 250, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
