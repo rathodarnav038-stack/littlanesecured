@@ -518,7 +518,7 @@ export default function Orders({
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{o.buyer}</div>
-                        <div style={{ fontSize: '10.5px', color: 'var(--ink-faint)' }}>{o.email}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--ink-soft)' }}>{o.email}</div>
                       </td>
                       <td>{o.event}</td>
                       <td>

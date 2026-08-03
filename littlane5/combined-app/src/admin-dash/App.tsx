@@ -172,6 +172,7 @@ export default function App({ isPresentation = false }: AppProps) {
   const [testMode, setTestMode] = useState(true)
   const [showManualModal, setShowManualModal] = useState(false)
   const [isManualSubmitting, setIsManualSubmitting] = useState(false)
+  const [manualSuccessMsg, setManualSuccessMsg] = useState<string | null>(null)
 
   // Rail tabs state
   const [railTab, setRailTab] = useState<'events' | 'archived'>('events')
@@ -324,11 +325,13 @@ export default function App({ isPresentation = false }: AppProps) {
       })
       const data = await res.json()
       if (data.success) {
-        alert(`Ticket manually generated: ${data.ticket.id}`)
-        setShowManualModal(false)
+        setManualSuccessMsg('Ticket Sent!')
         setManualName('')
         setManualEmail('')
         setManualPhone('')
+        setTimeout(() => {
+          setManualSuccessMsg(null)
+        }, 3000)
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
         } else if (manualGender === 'female') {
@@ -802,9 +805,15 @@ export default function App({ isPresentation = false }: AppProps) {
                   type="submit"
                   disabled={isManualSubmitting}
                   className="btn-primary"
-                  style={{ flex: 1 }}
+                  style={{
+                    flex: 1,
+                    backgroundColor: manualSuccessMsg ? '#3DDC84' : undefined,
+                    borderColor: manualSuccessMsg ? '#3DDC84' : undefined,
+                    boxShadow: manualSuccessMsg ? '0 4px 16px rgba(61,220,132,0.3)' : undefined,
+                    transition: 'all 0.2s',
+                  }}
                 >
-                  {isManualSubmitting ? 'Processing...' : 'Generate & Email'}
+                  {isManualSubmitting ? 'Processing...' : manualSuccessMsg ? '✓ Ticket Sent!' : 'Generate & Email'}
                 </button>
                 <button
                   type="button"

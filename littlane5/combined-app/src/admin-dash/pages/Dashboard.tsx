@@ -74,16 +74,17 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
     const now = new Date()
 
     if (period === '7d') {
+      const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
       const dayMap = new Map<string, { revenue: number; orders: number; forecast: number }>()
       for (let i = 6; i >= 0; i--) {
         const d = new Date(now)
         d.setDate(d.getDate() - i)
-        const key = d.toLocaleDateString('en-IN', { weekday: 'short' })
+        const key = weekdays[d.getDay()]
         dayMap.set(key, { revenue: 0, orders: 0, forecast: 5000 })
       }
       paidSales.forEach(s => {
         const d = new Date(s.paidAt || s.createdAt)
-        const key = d.toLocaleDateString('en-IN', { weekday: 'short' })
+        const key = weekdays[d.getDay()]
         if (dayMap.has(key)) {
           const cur = dayMap.get(key)!
           cur.revenue += s.amount || 0
