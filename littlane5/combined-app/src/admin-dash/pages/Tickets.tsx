@@ -50,7 +50,7 @@ export default function Tickets({
 
   const effectiveSearch = searchQ || globalSearch
 
-  const ticketSales = sales.filter((s) => {
+  const baseTicketSales = sales.filter((s) => {
     if (!s.ticketId) return false
 
     const isVip =
@@ -64,6 +64,10 @@ export default function Tickets({
     if (eventFilter !== 'all' && category !== eventFilter)
       return false
 
+    return true
+  })
+
+  const ticketSales = baseTicketSales.filter((s) => {
     if (effectiveSearch) {
       const q = effectiveSearch.toLowerCase()
       return (
@@ -125,7 +129,7 @@ export default function Tickets({
     }
   }
 
-  const tickets: Ticket[] = ticketSales.map((s: any) => {
+  const mapTicket = (s: any): Ticket => {
     const isCancelled = s.status === 'cancelled'
     const isScanned = s.status === 'scanned' || !!s.scannedAt
     return {
@@ -153,12 +157,15 @@ export default function Tickets({
       showInPres: s.showInPres || false,
       orderId: s.orderId,
     }
-  })
+  }
 
-  const totalAmount = tickets.reduce((a, t) => a + t.price, 0)
-  const activeCount = tickets.filter((t) => t.status === 'Active').length
-  const scannedCount = tickets.filter((t) => t.status === 'Scanned').length
-  const cancelledCount = tickets.filter((t) => t.status === 'Cancelled').length
+  const baseTickets: Ticket[] = baseTicketSales.map(mapTicket)
+  const tickets: Ticket[] = ticketSales.map(mapTicket)
+
+  const totalAmount = baseTickets.reduce((a, t) => a + t.price, 0)
+  const activeCount = baseTickets.filter((t) => t.status === 'Active').length
+  const scannedCount = baseTickets.filter((t) => t.status === 'Scanned').length
+  const cancelledCount = baseTickets.filter((t) => t.status === 'Cancelled').length
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
