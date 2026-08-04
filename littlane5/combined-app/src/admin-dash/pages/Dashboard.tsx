@@ -11,7 +11,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
-  const [period, setPeriod] = useState<'today' | '7d'>('7d')
+  const [period, setPeriod] = useState<'today' | '7d' | '30d'>('7d')
   const [chartMode, setChartMode] = useState<'actual' | 'forecast'>('actual')
   const [popupEvent, setPopupEvent] = useState<{ name: string; top: number; left: number } | null>(null)
 
@@ -73,22 +73,31 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
     const chartData = []
     const now = new Date()
 
-    if (period === '7d') {
+    if (period === '30d' || period === '7d') {
+      const daysCount = period === '30d' ? 29 : 6
       const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      // Use ISO date string (YYYY-MM-DD) as map key so sales only match their exact date
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      
       const dateKeyMap = new Map<string, { label: string; revenue: number; orders: number; forecast: number }>()
-      for (let i = 6; i >= 0; i--) {
+      for (let i = daysCount; i >= 0; i--) {
         const d = new Date(now)
         d.setDate(d.getDate() - i)
-        const dateKey = d.toISOString().slice(0, 10) // e.g. "2026-08-04"
-        const label = weekdays[d.getDay()]
+        const dateKey = d.toISOString().slice(0, 10)
+        
+        let label = ''
+        if (period === '7d') {
+          label = weekdays[d.getDay()]
+        } else {
+          // 30d label format: "Aug 4" (to prevent overlapping on x-axis)
+          label = `${months[d.getMonth()]} ${d.getDate()}`
+        }
+        
         dateKeyMap.set(dateKey, { label, revenue: 0, orders: 0, forecast: 0 })
       }
       paidSales.forEach(s => {
         const raw = s.paidAt || s.createdAt
         if (!raw) return
         const d = new Date(raw)
-        // Build the local YYYY-MM-DD so timezone doesn't shift the date
         const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
         if (dateKeyMap.has(dateKey)) {
           const cur = dateKeyMap.get(dateKey)!
@@ -274,6 +283,12 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               </div>
               <div className="card-head-actions">
                 <div className="pill-toggle">
+                  <button
+                    className={period === '30d' ? 'active' : ''}
+                    onClick={() => setPeriod('30d')}
+                  >
+                    30 Days
+                  </button>
                   <button
                     className={period === '7d' ? 'active' : ''}
                     onClick={() => setPeriod('7d')}
