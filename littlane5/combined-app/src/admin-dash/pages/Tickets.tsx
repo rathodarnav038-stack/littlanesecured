@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 interface TicketsProps {
   sales: any[]
+  allSales?: any[]
   onResend: (ticketId: string) => Promise<void>
   adminKey: string
   onReload: () => Promise<void> | void
@@ -32,6 +33,7 @@ interface Ticket {
 
 export default function Tickets({
   sales = [],
+  allSales = [],
   onResend,
   adminKey,
   onReload,
@@ -67,7 +69,10 @@ export default function Tickets({
     return true
   })
 
-  const ticketSales = baseTicketSales.filter((s) => {
+  // When searching, search against ALL sales (even hidden ones), otherwise just the visible ones
+  const salesToSearch = effectiveSearch && isPresentation && allSales.length > 0 ? allSales : baseTicketSales
+
+  const ticketSales = salesToSearch.filter((s) => {
     if (effectiveSearch) {
       const q = effectiveSearch.toLowerCase()
       return (

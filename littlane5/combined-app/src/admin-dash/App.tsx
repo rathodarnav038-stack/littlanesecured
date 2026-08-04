@@ -162,6 +162,7 @@ export default function App({ isPresentation = false }: AppProps) {
   const [authChecking, setAuthChecking] = useState(true)
   const [authError, setAuthError] = useState('')
   const [sales, setSales] = useState<any[]>([])
+  const [allSales, setAllSales] = useState<any[]>([])
   const [summary, setSummary] = useState<any>({
     totalOrders: 0,
     paidOrders: 0,
@@ -226,6 +227,7 @@ export default function App({ isPresentation = false }: AppProps) {
       }
 
       setSales(filteredSales)
+      setAllSales(fetchedSales)
       setSummary(activeSummary)
       setTestMode(data.testMode)
       setIsAuthenticated(true)
@@ -478,6 +480,7 @@ export default function App({ isPresentation = false }: AppProps) {
         return (
           <Tickets
             sales={sales}
+            allSales={allSales}
             onResend={handleResend}
             adminKey={adminKey}
             onReload={() => fetchSales(adminKey)}
