@@ -500,7 +500,7 @@ export default function App({ isPresentation = false }: AppProps) {
       case 'refunds':
         return <Refunds sales={sales} />
       case 'qr':
-        return <QRScans sales={sales} />
+        return <QRScans sales={sales} isPresentation={isPresentation} />
       case 'analytics':
       case 'reports':
         return <Analytics sales={sales} />

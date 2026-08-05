@@ -2,9 +2,10 @@ import { useState } from 'react'
 
 interface QRScansProps {
   sales: any[]
+  isPresentation?: boolean
 }
 
-export default function QRScans({ sales = [] }: QRScansProps) {
+export default function QRScans({ sales = [], isPresentation = false }: QRScansProps) {
   const [filterResult, setFilterResult] = useState<string>('all')
   const [search, setSearch] = useState('')
 
@@ -39,6 +40,9 @@ export default function QRScans({ sales = [] }: QRScansProps) {
     }
     return true
   })
+
+  // Strictly for /dashhboard (presentation mode), limit to recent 260 logs
+  const displayScans = isPresentation ? filteredScans.slice(0, 260) : filteredScans
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
@@ -117,14 +121,14 @@ export default function QRScans({ sales = [] }: QRScansProps) {
               </tr>
             </thead>
             <tbody>
-              {filteredScans.length === 0 ? (
+              {displayScans.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-faint)' }}>
                     No QR scan logs registered yet.
                   </td>
                 </tr>
               ) : (
-                filteredScans.map((s) => (
+                displayScans.map((s) => (
                   <tr key={s.id}>
                     <td>{s.time}</td>
                     <td>
