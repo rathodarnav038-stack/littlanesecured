@@ -30,7 +30,11 @@ export default function QRScanner({ onBack, onScan }: Props) {
     async function start() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
+          video: { 
+            facingMode: 'environment',
+            width: { ideal: 720 },
+            height: { ideal: 720 }
+          },
         })
         if (cancelled) {
           stream.getTracks().forEach((t) => t.stop())
@@ -51,13 +55,20 @@ export default function QRScanner({ onBack, onScan }: Props) {
       const video = videoRef.current
       const canvas = canvasRef.current
       if (video && canvas && video.readyState === video.HAVE_ENOUGH_DATA && !scannedRef.current) {
-        const ctx = canvas.getContext('2d')
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
         if (ctx) {
-          canvas.width = video.videoWidth
-          canvas.height = video.videoHeight
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-          const code = jsQR(imageData.data, imageData.width, imageData.height)
+          const maxDim = 500
+          const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight))
+          const w = Math.floor(video.videoWidth * scale)
+          const h = Math.floor(video.videoHeight * scale)
+          
+          canvas.width = w
+          canvas.height = h
+          ctx.drawImage(video, 0, 0, w, h)
+          const imageData = ctx.getImageData(0, 0, w, h)
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert"
+          })
           if (code && code.data) {
             scannedRef.current = true
             setDetected(true)
@@ -66,14 +77,14 @@ export default function QRScanner({ onBack, onScan }: Props) {
           }
         }
       }
-      rafRef.current = requestAnimationFrame(tick)
+      rafRef.current = setTimeout(tick, 250) as any
     }
 
     start()
 
     return () => {
       cancelled = true
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (rafRef.current) clearTimeout(rafRef.current)
       streamRef.current?.getTracks().forEach((t) => t.stop())
     }
   }, [onScan])
