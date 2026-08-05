@@ -16,8 +16,8 @@ app.use(express.json());
 // ==================== EVENT & PRICING ====================
 const EVENT = { name: EVENT_NAME };
 const PRICING = {
-    female: 499,
-    male: 599
+    female: 599,
+    male: 699
 };
 
 // ==================== RAZORPAY SETUP ====================
@@ -773,7 +773,7 @@ app.get('/api/test-email', async (req, res) => {
             ticketId: 'TEST-123456',
             gender: 'male',
             quantity: 1,
-            amount: 599,
+            amount: 699,
             pdfPath: '', // skip attachment path for simple test
             qrBuffer: null,
             downloadUrl: 'https://littlane.in'

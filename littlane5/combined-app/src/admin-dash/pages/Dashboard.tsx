@@ -422,7 +422,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Male Pass (₹599)</span>
+                    <span style={{ color: 'var(--ink)' }}>Male Pass (₹699)</span>
                     <span className="muted">{maleCount} ({malePct}%)</span>
                   </div>
                   <div className="bar">
@@ -435,7 +435,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Female Pass (₹499)</span>
+                    <span style={{ color: 'var(--ink)' }}>Female Pass (₹599)</span>
                     <span className="muted">{femaleCount} ({femalePct}%)</span>
                   </div>
                   <div className="bar">

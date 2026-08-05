@@ -123,7 +123,7 @@ class TextScramble{
 }
 
 /* ==================== BOOKING POPUP (FRESHERS TAKEOVER) ==================== */
-const FT_PRICING = { female: 499, male: 599 };
+const FT_PRICING = { female: 599, male: 699 };
 
 class BookingPopup{
     constructor(){
