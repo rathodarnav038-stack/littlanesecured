@@ -32,235 +32,10 @@
 
     <!-- Old event popup removed -->
 
-    <!-- ==================== BOOKING FORM POPUP (LITTIX STYLE) ==================== -->
-    <style>
-        .littix-form { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 0.75rem; }
-        .littix-field { display: flex; flex-direction: column; gap: 0.25rem; }
-        .littix-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; color: #A0A0A0; }
-        html[data-theme="light"] .littix-label { color: #6B6B6B; }
-        .littix-input { border-radius: 0.75rem; padding: 0.75rem 0.875rem; font-size: 0.825rem; outline: none; transition: all 0.25s; border: 1px solid #2A2A2A; background-color: #1A1A1A; color: #ffffff; }
-        html[data-theme="light"] .littix-input { border: 1px solid #E4E4E7; background-color: #ffffff; color: #111111; }
-        .littix-input:focus { border-color: #A855F7; box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
-        .littix-btn { width: 100%; border: none; cursor: pointer; border-radius: 0.75rem; padding: 0.85rem; font-weight: 700; font-size: 0.95rem; background-color: #A855F7; color: white; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 20px rgba(168,85,247,0.25); transition: transform 0.2s, box-shadow 0.2s; }
-        .littix-btn:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(168,85,247,0.4); }
-        .littix-btn:active { transform: scale(0.97); }
-        #bookingPopup { border-radius: 1.25rem; background: var(--bg); overflow: hidden; max-height: 82vh; display: flex; flex-direction: column; }
-        .littix-rate { font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-align: center; }
-        html[data-theme="light"] .littix-rate { color: #111111; }
+    <!-- All ticket/event popups removed — event concluded -->
 
-        /* ==================== EVENT FLYER POPUP STYLES ==================== */
-        .flyer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            padding: 0;
-        }
-        .flyer-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .flyer-container {
-            position: relative;
-            max-width: min(92vw, 420px);
-            width: 100%;
-            background: #000;
-            border-radius: 1.25rem;
-            overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 60px rgba(168, 85, 247, 0.15);
-            cursor: pointer;
-            transform: scale(0.92);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .flyer-overlay.active .flyer-container {
-            transform: scale(1);
-        }
-        .flyer-close {
-            position: absolute;
-            top: 0.9rem;
-            right: 0.9rem;
-            width: 2.2rem;
-            height: 2.2rem;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-            z-index: 10;
-        }
-        .flyer-close:hover {
-            background: rgba(239, 68, 68, 0.9);
-            border-color: transparent;
-            transform: rotate(90deg);
-        }
-        .flyer-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            max-height: 80vh;
-            object-fit: cover;
-        }
+    <!-- All ticket/event popups removed — event concluded -->
 
-        @media (max-width: 480px) {
-            .flyer-container {
-                max-width: 92vw;
-                border-radius: 1rem;
-            }
-        }
-    </style>
-    <div class="event-popup-overlay" id="bookingOverlay" style="display: none; align-items: center; justify-content: center;">
-        <div class="event-popup" id="bookingPopup" style="max-width: 380px; width: 100%; padding: 1.5rem 1.25rem;">
-            <button class="event-close" id="bookingClose" aria-label="Close" style="top: 0.75rem; right: 0.75rem; background: rgba(0,0,0,0.1); border: none; font-size: 1rem; cursor: pointer; color: var(--text); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; z-index: 100;">✕</button>
-
-            <!-- FORM STEP -->
-            <div id="bookingFormStep" style="overflow-y: auto; max-height: calc(82vh - 3rem); padding-right: 4px;">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
-                    <span style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A855F7;">FRESHERS TAKEOVER</span>
-                    <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0;">Book Your Pass</h2>
-                    <p style="font-size: 0.8rem; color: #A0A0A0; margin: 0;">Female Pass ₹599 · Male Pass ₹699</p>
-                    <div style="margin-top: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 8px 10px; color: #fca5a5; font-size: 0.8rem; font-weight: 700; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);">
-                        <span style="font-size: 1rem;">🔥</span> Almost Sold Out - Last Few Spots Remaining!
-                    </div>
-                </div>
-                <form id="ticketBookingForm" class="littix-form">
-                    <div class="littix-field">
-                        <label class="littix-label" for="b_name">Attendee Name</label>
-                        <input class="littix-input" type="text" id="b_name" name="name" placeholder="e.g. Jordan Clarke" required>
-                    </div>
-                    <div class="littix-field">
-                        <label class="littix-label" for="b_email">Attendee Email</label>
-                        <input class="littix-input" type="email" id="b_email" name="email" placeholder="jordan@example.com" required>
-                    </div>
-                    <div class="littix-field">
-                        <label class="littix-label" for="b_phone">Phone Number</label>
-                        <input class="littix-input" type="tel" id="b_phone" name="phone" placeholder="+91 98765 43210" required>
-                    </div>
-                    <div class="littix-field">
-                        <label class="littix-label" for="b_gender">Pass Type</label>
-                        <select class="littix-input" id="b_gender" name="gender" required>
-                            <option value="female">Female Pass (₹599)</option>
-                            <option value="male">Male Pass (₹699)</option>
-                        </select>
-                    </div>
-                    <input type="hidden" id="b_quantity" name="quantity" value="1">
-                    <div style="margin-top: 0.75rem;">
-                        <div class="littix-rate">Total: <span id="b_totalRate">₹0</span></div>
-                        <p id="b_formError" style="display:none; color:#f87171; font-size:0.75rem; margin: 0 0 0.5rem;"></p>
-                        <button type="submit" class="littix-btn" id="b_submitBtn">
-                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                                <rect x="1" y="1" width="16" height="16" rx="3" stroke="white" stroke-width="1.5" />
-                                <path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <span id="b_submitLabel">Pay & Get Pass</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- SUCCESS STEP — "My Ticket" card -->
-            <div id="bookingSuccessStep" style="display:none; overflow-y: auto; max-height: calc(82vh - 3rem); padding-right: 4px; padding-top: 0.5rem;">
-                <p style="text-align:center; font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 0 0 0.75rem;">You're in! 🎉</p>
-
-                <div style="background:#0d0d0f; border-radius:12px; overflow:hidden; max-width:300px; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.4); border: 1px solid #1a1a1a;">
-                    <!-- Banner with badges -->
-                    <div style="position:relative;">
-                        <img src="images/freshers-takeover-banner.png" alt="FRESHERS TAKEOVER" style="width:100%; display:block; aspect-ratio:1/1; object-fit:cover;">
-                        <span style="position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.7); color:#fff; border: 1px solid rgba(255,255,255,0.25); font-size:0.55rem; font-weight:700; padding:2px 8px; border-radius:99px;">NOT SCANNED</span>
-                        <span style="position:absolute; top:8px; right:8px; background:#22c55e; color:#fff; font-size:0.55rem; font-weight:700; padding:2px 8px; border-radius:99px;">ACTIVE</span>
-                    </div>
-
-                    <!-- White details panel -->
-                    <div style="background:#ffffff; padding:1rem; color: #0d0d0f;">
-                        <p style="margin:0 0 0.5rem; font-size:0.7rem; font-weight:700; color:#A855F7; text-transform:uppercase; letter-spacing:0.05em;">Main Stage · General Admission</p>
-
-                        <!-- Attendee Name -->
-                        <div style="margin-bottom: 0.6rem; background: #fafafa; padding: 4px 10px; border-radius: 6px; border: 1px solid #eee;">
-                            <span style="font-size:0.55rem; color:#888; text-transform:uppercase; display:block; margin-bottom: 1px;">Attendee Name</span>
-                            <span id="b_sumAttendeeName" style="font-size: 0.8rem; font-weight: 700; color: #111;"></span>
-                        </div>
-
-                        <div style="display:flex; gap:0.25rem; flex-wrap:wrap; margin-bottom:0.6rem;">
-                            <span id="b_pillDate" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
-                            <span id="b_pillTime" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
-                            <span id="b_pillVenue" style="background:#f2f2f5; color:#333; font-size:0.62rem; font-weight:600; padding:3px 6px; border-radius:99px;"></span>
-                        </div>
-
-                        <hr style="border:none; border-top:1px solid #eee; margin:0.6rem 0;">
-
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.6rem;">
-                            <div>
-                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Pass Type</div>
-                                <div id="b_sumType" style="font-size:0.8rem; font-weight:700; color:#0d0d0f;"></div>
-                            </div>
-                            <div style="text-align:center;">
-                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Qty</div>
-                                <div id="b_sumQty" style="font-size:0.8rem; font-weight:700; color:#0d0d0f;"></div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Price</div>
-                                <div id="b_sumPrice" style="font-size:0.8rem; font-weight:700; color:#A855F7;"></div>
-                            </div>
-                        </div>
-
-                        <hr style="border:none; border-top:1px solid #eee; margin:0.6rem 0;">
-
-                        <div style="font-size:0.55rem; color:#888; text-transform:uppercase;">Ticket ID</div>
-                        <div id="b_sumTicketId" style="font-size:0.8rem; font-weight:700; color:#0d0d0f; margin-bottom:0.2rem; letter-spacing:0.02em;"></div>
-                        <div id="b_sumGeneratedBy" style="font-size:0.58rem; color:#888; margin-bottom:0.6rem;"></div>
-
-                        <div style="text-align:center; margin: 0.4rem 0 0.5rem;">
-                            <img id="b_qrImg" src="" alt="Ticket QR" style="width:110px; height:110px; display:inline-block;">
-                            <p style="font-size:0.58rem; color:#888; margin-top:0.2rem; margin-bottom:0;">Show QR code at entry</p>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.6rem;">
-                            <p style="font-weight:900; color:#A855F7; margin:0; font-size:0.7rem; letter-spacing:0.02em;">FRESHERS TAKEOVER</p>
-                            <p style="font-weight:700; color:#888; margin:0; font-size:0.55rem; letter-spacing:0.05em;">LITTLANE</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="b_successEmailBox" style="margin-top:0.6rem; border:1px solid #22c55e; border-radius:8px; padding:0.4rem 0.6rem; text-align:center;">
-                    <span style="color:#22c55e; font-weight:700; font-size:0.7rem;">✓ <span id="b_successEmailMsg">Sent to your email</span></span>
-                </div>
-                <p id="b_emailErrorMsg" style="display:none; color:#f87171; font-size:0.68rem; margin-top: 0.5rem; text-align:center;"></p>
-
-                <a id="b_downloadBtn" href="#" class="littix-btn" style="text-decoration:none; display:flex; margin-top:0.6rem; padding: 0.65rem; font-size:0.85rem;" download>Download Ticket (PDF)</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== EVENT FLYER POPUP ==================== -->
-    <div class="flyer-overlay" id="flyerOverlay">
-        <div class="flyer-container">
-            <button class="flyer-close" id="flyerClose" aria-label="Close">✕</button>
-            <img class="flyer-img" id="flyerImg" src="images/event-poster.jpg" alt="Freshers Takeover Flyer">
-        </div>
-    </div>
-
-    <!-- Floating event trigger (Removed for now) -->
-    <!--
-    <button class="event-trigger" id="eventTrigger" aria-label="Book Tickets">
-        <span class="event-trigger-pulse"></span>
-        <span class="event-trigger-text">🎟 Book Tickets</span>
-    </button>
-    -->
 
     <!-- ==================== NAVBAR ==================== -->
     <nav class="navbar" id="navbar">
@@ -271,7 +46,7 @@
             <a href="#partners" class="nav-link">Partners</a>
             <a href="#contact" class="nav-link">Contact</a>
         </div>
-        <a href="#" class="nav-cta magnetic" data-magnetic data-book-trigger>Book Now</a>
+
         <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </nav>
 
@@ -282,7 +57,7 @@
             <a href="#experience" class="mobile-link"><span>Experience</span></a>
             <a href="#partners" class="mobile-link"><span>Partners</span></a>
             <a href="#contact" class="mobile-link"><span>Contact</span></a>
-            <a href="#" class="mobile-cta" data-book-trigger><span>Book Now</span></a>
+
         </div>
     </div>
 
@@ -335,15 +110,16 @@
         </div>
         <div class="hero-sub-section">
             <p class="hero-tagline">Pune's premier college fest curators.<br>Sold-out nights. Loud sound. Zero chill.</p>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-                <div style="display:flex;align-items:center;gap:8px;background:rgba(238,9,121,0.12);border:1px solid rgba(238,9,121,0.4);border-radius:100px;padding:6px 16px;">
-                    <span style="width:8px;height:8px;border-radius:50%;background:#ee0979;display:inline-block;animation:dotblink 1.2s ease-in-out infinite;"></span>
-                    <span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ee0979;">Limited Tickets — Book Now</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:0 16px;">
+                <div style="text-align:center;">
+                    <div style="font-size:clamp(2.2rem, 7vw, 4.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.02em;background:linear-gradient(135deg,#ffffff 0%,#A855F7 50%,#ee0979 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Outfit',sans-serif;">FRESHERS TAKEOVER</div>
+                    <div style="font-size:clamp(1rem, 3.5vw, 1.6rem);font-weight:700;color:rgba(255,255,255,0.85);margin-top:10px;letter-spacing:0.01em;">Thanks for the crazy support 🔥</div>
+                    <div style="font-size:clamp(0.75rem,2.2vw,1rem);color:rgba(255,255,255,0.45);margin-top:8px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">05 Aug 2026 · Flo The Brewery, Pune</div>
                 </div>
-                <a href="#" class="btn-primary magnetic" data-magnetic data-book-trigger>
-                    <span class="btn-text">🎟️ Freshers Takeover</span><span class="btn-arrow">→</span>
-                </a>
-                <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase;">05 Aug 2026 · Flo The Brewery, Pune</span>
+                <div style="display:flex;align-items:center;gap:10px;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.35);border-radius:100px;padding:8px 22px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#A855F7;display:inline-block;"></span>
+                    <span style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A855F7;">Event Concluded — See You Next Time!</span>
+                </div>
             </div>
         </div>
         <div class="hero-scroll-indicator"><div class="scroll-line"></div><span>Scroll</span></div>
