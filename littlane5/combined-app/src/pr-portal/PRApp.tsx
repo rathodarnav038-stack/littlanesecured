@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import './pr.css'
 
 // ==================== TYPES ====================
 interface PRUser {
@@ -59,39 +58,40 @@ function LoginPage({ onLogin }: { onLogin: (user: PRUser) => void }) {
   }
 
   return (
-    <div className="pr-login-bg">
-      <div className="pr-login-card">
-        <div className="pr-logo">
-          <span className="pr-logo-text">LITTLANE</span>
-          <span className="pr-logo-dot">●</span>
-          <span className="pr-logo-sub">Partner Portal</span>
+    <div className="app-canvas" style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: 900, letterSpacing: '2px' }}>
+            LITTLANE <span style={{ color: 'var(--accent)' }}>●</span>
+          </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--ink-faint)', marginTop: '8px' }}>Partner Portal</div>
         </div>
-        <p className="pr-login-hint">Sign in to manage your ticket sales</p>
-        <form onSubmit={handleSubmit} className="pr-login-form">
-          <div className="pr-field">
-            <label>Username</label>
+        
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>USERNAME</label>
             <input
               type="text"
               value={username}
               onChange={e => setUsername(e.target.value)}
               placeholder="partner1"
-              autoComplete="username"
               required
+              style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '12px', borderRadius: '8px', color: 'var(--ink)', fontSize: '0.9rem' }}
             />
           </div>
-          <div className="pr-field">
-            <label>Password</label>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>PASSWORD</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              autoComplete="current-password"
               required
+              style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '12px', borderRadius: '8px', color: 'var(--ink)', fontSize: '0.9rem' }}
             />
           </div>
-          {error && <div className="pr-error">{error}</div>}
-          <button type="submit" className="pr-btn pr-btn-primary" disabled={loading}>
+          {error && <div style={{ color: '#fca5a5', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', padding: '10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center' }}>{error}</div>}
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '12px', marginTop: '8px' }}>
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
@@ -128,7 +128,6 @@ function SellTicketModal({
 
     try {
       if (paymentMethod === 'razorpay') {
-        // Step 1: Create order on server
         const res = await fetch(`${API}/api/pr/create-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -137,7 +136,6 @@ function SellTicketModal({
         const data = await res.json()
         if (!data.success) throw new Error(data.message || 'Failed to create order')
 
-        // Step 2: Open Razorpay
         const rzp = new (window as any).Razorpay({
           key: data.keyId,
           amount: data.amount * 100,
@@ -146,7 +144,7 @@ function SellTicketModal({
           description: `${gender === 'male' ? 'Male' : 'Female'} Pass — Freshers Takeover`,
           order_id: data.orderId,
           prefill: { name, email, contact: phone },
-          theme: { color: '#A855F7' },
+          theme: { color: '#7C5CFA' },
           handler: async (response: any) => {
             const verRes = await fetch(`${API}/api/verify-payment`, {
               method: 'POST',
@@ -173,7 +171,6 @@ function SellTicketModal({
         rzp.open()
         setLoading(false)
       } else {
-        // Cash: submit for admin approval
         const res = await fetch(`${API}/api/pr/cash-request`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -195,66 +192,64 @@ function SellTicketModal({
 
   if (step === 'done' || step === 'pending') {
     return (
-      <div className="pr-modal-overlay" onClick={onClose}>
-        <div className="pr-modal" onClick={e => e.stopPropagation()}>
-          <div className="pr-modal-result">
-            <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', textAlign: 'center' }}>{message}</p>
-            <button className="pr-btn pr-btn-primary" style={{ marginTop: 20 }} onClick={onClose}>Done</button>
-          </div>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
+        <div className="card" onClick={e => e.stopPropagation()} style={{ width: '400px', textAlign: 'center', padding: '32px' }}>
+          <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>{message}</p>
+          <button className="btn btn-primary" style={{ marginTop: 24, width: '100%' }} onClick={onClose}>Done</button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="pr-modal-overlay" onClick={onClose}>
-      <div className="pr-modal" onClick={e => e.stopPropagation()}>
-        <div className="pr-modal-head">
-          <span>Sell Ticket</span>
-          <button className="pr-modal-close" onClick={onClose}>✕</button>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={onClose}>
+      <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid var(--line)', background: 'var(--panel-2)' }}>
+          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Sell Ticket</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--ink-faint)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
         </div>
-        <form onSubmit={handleSubmit} className="pr-modal-form">
-          <div className="pr-field">
-            <label>Attendee Name</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Riya Sharma" required />
+        <form onSubmit={handleSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>ATTENDEE NAME</label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Riya Sharma" required style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }} />
           </div>
-          <div className="pr-field">
-            <label>Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="riya@example.com" required />
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>EMAIL</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="riya@example.com" required style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }} />
           </div>
-          <div className="pr-field">
-            <label>Phone</label>
-            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" required />
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>PHONE</label>
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" required style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }} />
           </div>
-          <div className="pr-row">
-            <div className="pr-field">
-              <label>Pass Type</label>
-              <select value={gender} onChange={e => setGender(e.target.value as any)}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>PASS TYPE</label>
+              <select value={gender} onChange={e => setGender(e.target.value as any)} style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }}>
                 <option value="male">Male Pass (₹{PRICING.male})</option>
                 <option value="female">Female Pass (₹{PRICING.female})</option>
               </select>
             </div>
-            <div className="pr-field">
-              <label>Payment</label>
-              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as any)}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>PAYMENT</label>
+              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as any)} style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }}>
                 <option value="razorpay">Razorpay (Online)</option>
                 <option value="cash">Cash (Needs Approval)</option>
               </select>
             </div>
           </div>
 
-          <div className="pr-amount-box">
-            <span>Total to collect</span>
-            <span className="pr-amount">₹{amount}</span>
+          <div style={{ background: 'var(--panel-3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--ink-soft)' }}>Total to collect</span>
+            <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent)' }}>₹{amount}</span>
           </div>
 
           {paymentMethod === 'cash' && (
-            <div className="pr-cash-notice">
+            <div style={{ background: 'rgba(245, 197, 66, 0.15)', border: '1px solid rgba(245, 197, 66, 0.3)', color: '#F5C542', padding: '12px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600 }}>
               ⚠️ Cash sales require admin approval before the ticket is sent.
             </div>
           )}
 
-          <button type="submit" className="pr-btn pr-btn-primary" disabled={loading}>
+          <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '14px', marginTop: '8px', fontSize: '1rem' }}>
             {loading ? 'Processing…' : paymentMethod === 'razorpay' ? `Pay ₹${amount} via Razorpay` : 'Submit for Approval'}
           </button>
         </form>
@@ -264,7 +259,7 @@ function SellTicketModal({
 }
 
 // ==================== PR DASHBOARD ====================
-function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => void }) {
+function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLogout: () => void, dark: boolean, setDark: any }) {
   const [sales, setSales] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showSell, setShowSell] = useState(false)
@@ -297,107 +292,161 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
 
   function statusBadge(status: string) {
     if (['ticket_generated', 'emailed', 'scanned'].includes(status))
-      return <span className="pr-badge pr-badge-green">✓ Sent</span>
+      return <span style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>✓ Sent</span>
     if (status === 'pr_cash_pending')
-      return <span className="pr-badge pr-badge-yellow">⏳ Pending</span>
+      return <span style={{ background: 'rgba(245,197,66,0.15)', color: '#F5C542', border: '1px solid rgba(245,197,66,0.25)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>⏳ Pending</span>
     if (status === 'paid')
-      return <span className="pr-badge pr-badge-green">✓ Paid</span>
+      return <span style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>✓ Paid</span>
     if (status === 'created')
-      return <span className="pr-badge pr-badge-gray">Pending Payment</span>
-    return <span className="pr-badge pr-badge-gray">{status}</span>
+      return <span style={{ background: 'rgba(124,92,250,0.15)', color: '#7C5CFA', border: '1px solid rgba(124,92,250,0.25)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pending Payment</span>
+    return <span style={{ background: 'var(--panel-3)', color: 'var(--ink-faint)', border: '1px solid var(--line)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{status}</span>
   }
 
   return (
-    <div className="pr-dashboard">
-      {/* Header */}
-      <header className="pr-header">
-        <div className="pr-header-left">
-          <span className="pr-header-logo">LITTLANE <span>●</span></span>
-          <span className="pr-header-name">{prUser.displayName}</span>
-        </div>
-        <div className="pr-header-right">
-          <button className="pr-btn pr-btn-primary" onClick={() => setShowSell(true)}>
-            + Sell Ticket
-          </button>
-          <button className="pr-btn pr-btn-ghost" onClick={onLogout}>
-            Sign Out
-          </button>
-        </div>
-      </header>
-
-      {/* KPI tiles */}
-      <div className="pr-kpi-row">
-        <div className="pr-kpi pr-kpi-purple">
-          <div className="pr-kpi-label">Tickets Sold</div>
-          <div className="pr-kpi-value">{totalSold}</div>
-        </div>
-        <div className="pr-kpi pr-kpi-green">
-          <div className="pr-kpi-label">Revenue Collected</div>
-          <div className="pr-kpi-value">₹{totalRevenue.toLocaleString()}</div>
-        </div>
-        <div className="pr-kpi pr-kpi-yellow">
-          <div className="pr-kpi-label">Pending Approval</div>
-          <div className="pr-kpi-value">{pending}</div>
-        </div>
-        <div className="pr-kpi pr-kpi-teal">
-          <div className="pr-kpi-label">Confirmed</div>
-          <div className="pr-kpi-value">{confirmed}</div>
-        </div>
-      </div>
-
-      {/* Sales table */}
-      <div className="pr-table-card">
-        <div className="pr-table-head">
-          <span>Your Ticket Sales</span>
-          <button className="pr-btn pr-btn-ghost pr-btn-sm" onClick={fetchSales}>↻ Refresh</button>
-        </div>
-        {loading ? (
-          <div className="pr-empty">Loading…</div>
-        ) : sales.length === 0 ? (
-          <div className="pr-empty">No tickets sold yet. Click <strong>Sell Ticket</strong> to start!</div>
-        ) : (
-          <div className="pr-table-scroll">
-            <table className="pr-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Attendee</th>
-                  <th>Pass Type</th>
-                  <th>Amount</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th>Ticket ID</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sales.map(s => (
-                  <tr key={s.orderId}>
-                    <td>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{s.name}</div>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.55 }}>{s.email}</div>
-                    </td>
-                    <td style={{ textTransform: 'capitalize' }}>{s.gender} Pass</td>
-                    <td style={{ fontWeight: 700 }}>₹{s.amount?.toLocaleString()}</td>
-                    <td>
-                      <span className={`pr-badge ${s.paymentMethod === 'cash' ? 'pr-badge-yellow' : 'pr-badge-purple'}`}>
-                        {s.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'}
-                      </span>
-                    </td>
-                    <td>{statusBadge(s.status)}</td>
-                    <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
-                    <td>
-                      <button className="pr-btn pr-btn-ghost pr-btn-sm" onClick={() => setViewSale(s)}>
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className={`app-canvas ${dark ? '' : 'theme-light'}`}>
+      <div className="main-content">
+        {/* Header Topbar */}
+        <header className="topbar">
+          <div className="tb-profile">
+            <div className="tb-avatar-sm" style={{ background: 'var(--accent)', color: '#fff' }}>
+              {prUser.displayName.charAt(0).toUpperCase()}
+            </div>
+            <div className="who">
+              <div className="name">
+                {prUser.displayName} <span className="badge-pro">PR</span>
+              </div>
+              <div className="handle">Partner Dashboard</div>
+            </div>
           </div>
-        )}
+
+          <div style={{ flex: 1 }} />
+
+          <div className="topbar-actions">
+            <button
+              onClick={() => setDark(!dark)}
+              className="tb-icon-btn"
+              title="Toggle Light/Dark Theme"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                {dark ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
+            <div
+              className="badge badge-green"
+              style={{ padding: '6px 12px', fontSize: '11px' }}
+            >
+              <span className="badge-dot" />
+              LIVE MODE
+            </div>
+            <button className="btn btn-ghost" onClick={onLogout}>
+              Sign Out
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowSell(true)}>
+              + Sell Ticket
+            </button>
+          </div>
+        </header>
+
+        <div className="content-pad scroll" style={{ flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+            
+            {/* KPI tiles */}
+            <div className="kpi-row">
+              <div className="tile tile-purple">
+                <div className="tile-label">TICKETS SOLD</div>
+                <div className="tile-value">{totalSold}</div>
+                <div className="tile-sub">Total pass orders generated</div>
+                <div className="tile-delta"><span>↑</span> {totalSold} total</div>
+              </div>
+              <div className="tile tile-green">
+                <div className="tile-label">REVENUE COLLECTED</div>
+                <div className="tile-value">₹{totalRevenue.toLocaleString()}</div>
+                <div className="tile-sub">Across all confirmed sales</div>
+                <div className="tile-delta"><span>✓</span> Verified sales</div>
+              </div>
+              <div className="tile tile-orange">
+                <div className="tile-label">PENDING APPROVAL</div>
+                <div className="tile-value">{pending}</div>
+                <div className="tile-sub">Cash sales awaiting admin action</div>
+                <div className="tile-delta"><span>⏳</span> Live status</div>
+              </div>
+              <div className="tile tile-teal">
+                <div className="tile-label">CONFIRMED TICKETS</div>
+                <div className="tile-value">{confirmed}</div>
+                <div className="tile-sub">Tickets sent to attendees</div>
+                <div className="tile-delta"><span>✓</span> Successful deliveries</div>
+              </div>
+            </div>
+
+            {/* Sales table */}
+            <div className="card table-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className="btn btn-ghost btn-sm" onClick={fetchSales}>↻ Refresh</button>
+                </div>
+              </div>
+              
+              {loading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>Loading…</div>
+              ) : sales.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
+                  No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
+                </div>
+              ) : (
+                <div className="table-scroll scroll">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Attendee</th>
+                        <th>Pass Type</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Ticket ID</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sales.map(s => (
+                        <tr key={s.orderId}>
+                          <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                          <td>
+                            <div className="cell-main">
+                              <div className="cell-thumb" style={{ background: 'var(--panel-3)' }}>{s.name.charAt(0)}</div>
+                              <div>
+                                <div className="cell-title">{s.name}</div>
+                                <div className="cell-sub">{s.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ textTransform: 'capitalize', fontWeight: 600 }}>{s.gender} Pass</td>
+                          <td style={{ fontWeight: 800 }}>₹{s.amount?.toLocaleString()}</td>
+                          <td>
+                            {s.paymentMethod === 'cash' ? (
+                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245, 197, 66, 0.15)', color: '#F5C542', border: '1px solid rgba(245, 197, 66, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash</span>
+                            ) : (
+                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124, 92, 250, 0.15)', color: '#7C5CFA', border: '1px solid rgba(124, 92, 250, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
+                            )}
+                          </td>
+                          <td>{statusBadge(s.status)}</td>
+                          <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
+                          <td>
+                            <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
       </div>
 
       {showSell && (
@@ -409,43 +458,44 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
       )}
 
       {viewSale && (
-        <div className="pr-modal-overlay">
-          <div className="pr-modal">
-            <div className="pr-modal-head">
-              <h3>Ticket Details</h3>
-              <button className="pr-modal-close" onClick={() => setViewSale(null)}>✕</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setViewSale(null)}>
+          <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: 0, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid var(--line)', background: 'var(--panel-2)' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Ticket Details</h3>
+              <button onClick={() => setViewSale(null)} style={{ background: 'none', border: 'none', color: 'var(--ink-faint)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
-            <div className="pr-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
+            
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Buyer Information</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.05em' }}>Buyer Information</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', background: 'var(--pr-primary)', color: 'white', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.2rem' }}>
+                  <div style={{ width: '40px', height: '40px', background: 'var(--panel-3)', color: 'var(--ink)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.2rem', border: '1px solid var(--line)' }}>
                     {viewSale.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
                     <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{viewSale.name}</div>
-                    <div style={{ color: 'var(--pr-sub)', fontSize: '0.85rem' }}>{viewSale.email} • {viewSale.phone}</div>
+                    <div style={{ color: 'var(--ink-soft)', fontSize: '0.85rem' }}>{viewSale.email} • {viewSale.phone}</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Ticket Details</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.05em' }}>Ticket Details</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>EVENT</div>
+                  <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>EVENT</div>
                     <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'FRESHERS TAKEOVER'}</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>TICKET TYPE</div>
+                  <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>TICKET TYPE</div>
                     <div style={{ fontWeight: 600, marginTop: '2px', textTransform: 'capitalize' }}>{viewSale.gender} Pass</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>QUANTITY</div>
+                  <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>QUANTITY</div>
                     <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.quantity || 1} pass(es)</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>STATUS</div>
+                  <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>STATUS</div>
                     <div style={{ fontWeight: 600, marginTop: '2px' }}>{statusBadge(viewSale.status)}</div>
                   </div>
                 </div>
@@ -453,10 +503,10 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
 
               {viewSale.ticketId && (
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <a href={`/api/ticket/${viewSale.ticketId}/download`} target="_blank" rel="noreferrer" className="pr-btn pr-btn-primary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
+                  <a href={`/api/ticket/${viewSale.ticketId}/download`} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     Download PDF
                   </a>
-                  <button className="pr-btn pr-btn-ghost" style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)' }} onClick={async (e) => {
+                  <button className="btn btn-ghost" style={{ flex: 1, border: '1px solid var(--line)' }} onClick={async (e) => {
                     const btn = e.currentTarget
                     const orig = btn.innerText
                     btn.innerText = 'Sending...'
@@ -474,15 +524,15 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
               )}
 
               <div>
-                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Payment Breakdown</div>
-                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.05em' }}>Payment Breakdown</div>
+                <div style={{ background: 'var(--panel-2)', borderRadius: '12px', padding: '16px', border: '1px solid var(--line)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-                    <span style={{ color: 'var(--pr-sub)' }}>Gateway</span>
-                    <span>{viewSale.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'} ({viewSale.paymentId || '—'})</span>
+                    <span style={{ color: 'var(--ink-soft)' }}>Gateway</span>
+                    <span style={{ fontWeight: 600 }}>{viewSale.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'} ({viewSale.paymentId || '—'})</span>
                   </div>
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.1rem' }}>
+                  <div style={{ borderTop: '1px solid var(--line)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.1rem' }}>
                     <span>Total Paid</span>
-                    <span style={{ color: 'var(--pr-primary)' }}>₹{viewSale.amount?.toLocaleString()}</span>
+                    <span style={{ color: 'var(--accent)' }}>₹{viewSale.amount?.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -496,6 +546,16 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
 
 // ==================== ROOT ====================
 export default function PRApp() {
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('theme')
+    return saved ? saved === 'dark' : true
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+  }, [dark])
+
   const [prUser, setPrUser] = useState<PRUser | null>(() => {
     try {
       const saved = sessionStorage.getItem('pr_user')
@@ -509,5 +569,5 @@ export default function PRApp() {
   }
 
   if (!prUser) return <LoginPage onLogin={setPrUser} />
-  return <PRDashboard prUser={prUser} onLogout={handleLogout} />
+  return <PRDashboard prUser={prUser} onLogout={handleLogout} dark={dark} setDark={setDark} />
 }
