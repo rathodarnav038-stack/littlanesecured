@@ -1,0 +1,462 @@
+/* ====================== PR PARTNER PORTAL STYLES ====================== */
+
+/* Reset & base */
+.pr-login-bg,
+.pr-dashboard {
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  background: #0A0A0F;
+  color: #fff;
+}
+
+/* ---- LOGIN PAGE ---- */
+.pr-login-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.18) 0%, #0A0A0F 65%);
+}
+
+.pr-login-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+.pr-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pr-logo-text {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.pr-logo-dot {
+  color: #A855F7;
+  font-size: 0.8rem;
+}
+
+.pr-logo-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #A855F7;
+}
+
+.pr-login-hint {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0 0 28px;
+}
+
+.pr-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---- FIELD ---- */
+.pr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.pr-field label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+
+.pr-field input,
+.pr-field select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.875rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.pr-field input:focus,
+.pr-field select:focus {
+  border-color: #A855F7;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+}
+
+.pr-field select option {
+  background: #1A1A2E;
+  color: #fff;
+}
+
+/* ---- BUTTONS ---- */
+.pr-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pr-btn-primary {
+  background: #A855F7;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(168,85,247,0.3);
+}
+
+.pr-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(168,85,247,0.45);
+}
+
+.pr-btn-primary:active {
+  transform: translateY(0);
+}
+
+.pr-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pr-btn-ghost {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+}
+
+.pr-btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.pr-btn-sm {
+  padding: 7px 14px;
+  font-size: 0.78rem;
+}
+
+/* ---- ERROR ---- */
+.pr-error {
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ---- DASHBOARD HEADER ---- */
+.pr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pr-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pr-header-logo {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.pr-header-logo span {
+  color: #A855F7;
+}
+
+.pr-header-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.25);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.pr-header-right {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---- KPI ROW ---- */
+.pr-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px 28px;
+}
+
+@media (max-width: 768px) {
+  .pr-kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .pr-kpi-row {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .pr-header {
+    padding: 14px 16px;
+  }
+  .pr-header-right {
+    gap: 8px;
+  }
+}
+
+.pr-kpi {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.pr-kpi-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+.pr-kpi-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pr-kpi-purple .pr-kpi-value { color: #c084fc; }
+.pr-kpi-green .pr-kpi-value  { color: #34d399; }
+.pr-kpi-yellow .pr-kpi-value { color: #fbbf24; }
+.pr-kpi-teal .pr-kpi-value   { color: #22d3ee; }
+
+/* ---- TABLE CARD ---- */
+.pr-table-card {
+  margin: 0 28px 28px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .pr-table-card {
+    margin: 0 16px 16px;
+  }
+}
+
+.pr-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.pr-table-scroll {
+  overflow-x: auto;
+}
+
+.pr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.pr-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+}
+
+.pr-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: middle;
+  color: rgba(255,255,255,0.85);
+}
+
+.pr-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pr-table tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+.pr-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: rgba(255,255,255,0.35);
+  font-size: 0.88rem;
+}
+
+/* ---- BADGES ---- */
+.pr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pr-badge-green  { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+.pr-badge-yellow { background: rgba(251,191,36,0.15);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.pr-badge-purple { background: rgba(168,85,247,0.15);  color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+.pr-badge-gray   { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
+
+/* ---- MODAL ---- */
+.pr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pr-modal {
+  background: #141420;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  width: 100%;
+  max-width: 460px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+}
+
+.pr-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.pr-modal-close {
+  background: rgba(255,255,255,0.07);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pr-modal-close:hover {
+  background: rgba(239,68,68,0.2);
+  color: #fca5a5;
+}
+
+.pr-modal-form {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pr-modal-result {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pr-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pr-amount-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(168,85,247,0.1);
+  border: 1px solid rgba(168,85,247,0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.pr-amount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #c084fc;
+}
+
+.pr-cash-notice {
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: #fbbf24;
+  font-weight: 600;
+}

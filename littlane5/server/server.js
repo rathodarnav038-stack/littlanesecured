@@ -58,6 +58,10 @@ app.use('/assets', express.static(path.join(_distDir, 'assets')));
 app.get('/tickets', (req, res) => res.sendFile(distIndexHtml));
 app.get('/tickets/:splat', (req, res) => res.sendFile(distIndexHtml));
 
+// Partner portal
+app.get('/pr', (req, res) => res.sendFile(distIndexHtml));
+app.get('/pr/:splat', (req, res) => res.sendFile(distIndexHtml));
+
 // Admin dashboard — serve the React build
 app.get('/admin', (req, res) => res.sendFile(distIndexHtml));
 app.get('/dashboard', (req, res) => res.sendFile(distIndexHtml));
@@ -790,6 +794,186 @@ app.get('/api/test-email', async (req, res) => {
 
 // ==================== HEALTH ====================
 app.get('/api/health', (req, res) => res.json({ success: true, event: EVENT.name, testMode: TEST_MODE }));
+
+// ==================== PR PARTNER PORTAL ROUTES ====================
+
+// PR user credentials (server-side auth)
+const PR_USERS = [
+    { id: 'pr1', username: 'partner1', password: 'ftpr@001', displayName: 'Partner One' },
+    { id: 'pr2', username: 'partner2', password: 'ftpr@002', displayName: 'Partner Two' },
+    { id: 'pr3', username: 'partner3', password: 'ftpr@003', displayName: 'Partner Three' },
+    { id: 'pr4', username: 'partner4', password: 'ftpr@004', displayName: 'Partner Four' },
+    { id: 'pr5', username: 'partner5', password: 'ftpr@005', displayName: 'Partner Five' },
+];
+
+// GET /api/pr/sales?prUserId=xxx — fetch only this partner's tickets
+app.get('/api/pr/sales', async (req, res) => {
+    const { prUserId } = req.query;
+    if (!prUserId) return res.status(400).json({ success: false, message: 'prUserId required' });
+    try {
+        const all = await db.getAll();
+        const sales = all.filter(s => s.prUserId === prUserId);
+        res.json({ success: true, sales });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// POST /api/pr/create-order — PR partner initiates a Razorpay payment for a customer
+app.post('/api/pr/create-order', async (req, res) => {
+    const { name, email, phone, gender, quantity, prUserId } = req.body || {};
+    if (!name || !email || !phone || !gender || !prUserId)
+        return res.status(400).json({ success: false, message: 'Missing required fields.' });
+
+    const computed = computeAmount(gender, quantity);
+    if (!computed) return res.status(400).json({ success: false, message: 'Invalid ticket type.' });
+    const { amount, qty } = computed;
+
+    try {
+        let orderId, currency = 'INR';
+        if (TEST_MODE) {
+            orderId = `order_pr_test_${crypto.randomBytes(8).toString('hex')}`;
+        } else {
+            const order = await razorpay.orders.create({
+                amount: amount * 100,
+                currency: 'INR',
+                receipt: `pr_${Date.now()}`,
+            });
+            orderId = order.id;
+        }
+
+        const ticketId = generateTicketId();
+        await db.createSaleRecord({
+            orderId,
+            event: EVENT.name,
+            name, email, phone, gender,
+            quantity: qty,
+            amount,
+            currency,
+            status: 'created',
+            paymentId: null,
+            ticketId,
+            emailStatus: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            prUserId,
+            paymentMethod: 'razorpay',
+        });
+
+        res.json({ success: true, orderId, amount, currency, keyId: RZP_KEY_ID || 'test_key' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// POST /api/pr/cash-request — PR partner submits a cash sale for admin approval
+app.post('/api/pr/cash-request', async (req, res) => {
+    const { name, email, phone, gender, quantity, prUserId, prName } = req.body || {};
+    if (!name || !email || !phone || !gender || !prUserId)
+        return res.status(400).json({ success: false, message: 'Missing required fields.' });
+
+    const computed = computeAmount(gender, quantity);
+    if (!computed) return res.status(400).json({ success: false, message: 'Invalid ticket type.' });
+    const { amount, qty } = computed;
+
+    try {
+        const orderId = `order_cash_${crypto.randomBytes(8).toString('hex')}`;
+        const ticketId = generateTicketId();
+
+        await db.createSaleRecord({
+            orderId,
+            event: EVENT.name,
+            name, email, phone, gender,
+            quantity: qty,
+            amount,
+            currency: 'INR',
+            status: 'pr_cash_pending',
+            paymentId: 'cash_pending',
+            ticketId,
+            emailStatus: 'pending',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            prUserId,
+            prName: prName || prUserId,
+            paymentMethod: 'cash',
+        });
+
+        res.json({ success: true, orderId, message: 'Cash sale submitted for approval.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// GET /api/admin/pr-approvals — admin sees all pending cash approvals
+app.get('/api/admin/pr-approvals', requireAdmin, async (req, res) => {
+    try {
+        const all = await db.getAll();
+        const pending = all.filter(s => s.status === 'pr_cash_pending');
+        res.json({ success: true, pending });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// POST /api/admin/pr-approve — admin approves a cash sale → ticket generated and emailed
+app.post('/api/admin/pr-approve', requireAdmin, async (req, res) => {
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ success: false, message: 'orderId required' });
+
+    const sale = await db.getByOrderId(orderId);
+    if (!sale) return res.status(404).json({ success: false, message: 'Sale not found' });
+    if (sale.status !== 'pr_cash_pending')
+        return res.status(400).json({ success: false, message: 'Sale is not pending approval' });
+
+    // Mark paid
+    await db.updateSaleRecord(orderId, {
+        status: 'paid',
+        paymentId: `cash_approved_${Date.now()}`,
+        paidAt: new Date().toISOString(),
+    });
+
+    // Generate ticket + send email (same flow as normal payment)
+    try {
+        const tType = sale.gender === 'male' ? 'Male Pass' : 'Female Pass';
+        const pdfPath = await buildTicketPdf({
+            ticketId: sale.ticketId,
+            name: sale.name,
+            email: sale.email,
+            gender: tType,
+            quantity: sale.quantity || 1,
+            amount: sale.amount || 0,
+            createdAt: sale.createdAt || new Date().toISOString(),
+        });
+
+        await db.updateSaleRecord(orderId, { status: 'ticket_generated', generatedAt: new Date().toISOString() });
+
+        const downloadUrl = `${BASE_URL}/api/ticket/${sale.ticketId}/download`;
+        const result = await sendTicketEmail({ to: sale.email, name: sale.name, ticketId: sale.ticketId, pdfPath, downloadUrl });
+
+        await db.updateSaleRecord(orderId, {
+            emailStatus: result.success ? 'sent' : 'failed',
+            emailError: result.success ? null : result.error,
+            status: result.success ? 'emailed' : 'email_failed',
+        });
+
+        res.json({ success: true, message: result.success ? 'Approved and ticket emailed!' : 'Approved but email failed.' });
+    } catch (err) {
+        await db.updateSaleRecord(orderId, { status: 'ticket_generation_failed', errorLog: [err.message] });
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// POST /api/admin/pr-reject — admin rejects a cash sale
+app.post('/api/admin/pr-reject', requireAdmin, async (req, res) => {
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ success: false, message: 'orderId required' });
+    try {
+        await db.updateSaleRecord(orderId, { status: 'pr_cash_rejected' });
+        res.json({ success: true, message: 'Sale rejected.' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 
 // All other routes — serve original Littlane index.html at root
 app.get('/{*splat}', (req, res) => {

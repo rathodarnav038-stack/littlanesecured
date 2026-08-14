@@ -29,7 +29,10 @@ const SaleSchema = new mongoose.Schema({
     generatedAt: { type: String },
     scannedBy: { type: String },
     scannedAt: { type: String },
-    showInPres: { type: Boolean, default: false }
+    showInPres: { type: Boolean, default: false },
+    prUserId: { type: String },
+    prName: { type: String },
+    paymentMethod: { type: String },
 });
 
 const Sale = mongoose.model('Sale', SaleSchema);
