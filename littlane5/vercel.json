@@ -11,6 +11,8 @@
     { "src": "/dashhboard/(.*)", "dest": "/app/index.html" },
     { "src": "/tickets", "dest": "/app/index.html" },
     { "src": "/tickets/(.*)", "dest": "/app/index.html" },
+    { "src": "/pr", "dest": "/app/index.html" },
+    { "src": "/pr/(.*)", "dest": "/app/index.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ]
 }
