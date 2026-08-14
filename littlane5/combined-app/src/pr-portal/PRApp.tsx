@@ -304,150 +304,135 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
   return (
     <div className={`app-canvas ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
-      <div className="main-content">
-        {/* Header Topbar */}
-        <header className="topbar">
-          <div className="tb-profile">
-            <div className="tb-avatar-sm" style={{ background: 'var(--accent)', color: '#fff' }}>
-              {prUser.displayName.charAt(0).toUpperCase()}
-            </div>
-            <div className="who">
-              <div className="name">
-                {prUser.displayName} <span className="badge-pro">PR</span>
-              </div>
-              <div className="handle">Partner Dashboard</div>
-            </div>
+      {/* Header Topbar */}
+      <header className="topbar">
+        <div className="tb-profile">
+          <div className="tb-avatar-sm" style={{ background: 'var(--accent)', color: '#fff' }}>
+            {prUser.displayName.charAt(0).toUpperCase()}
           </div>
-
-          <div style={{ flex: 1 }} />
-
-          <div className="topbar-actions">
-            <button
-              onClick={() => setDark(!dark)}
-              className="tb-icon-btn"
-              title="Toggle Light/Dark Theme"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                {dark ? 'light_mode' : 'dark_mode'}
-              </span>
-            </button>
-            <div
-              className="badge badge-green"
-              style={{ padding: '6px 12px', fontSize: '11px' }}
-            >
-              <span className="badge-dot" />
-              LIVE MODE
+          <div className="who">
+            <div className="name">
+              {prUser.displayName} <span className="badge-pro">PR</span>
             </div>
-            <button className="btn btn-ghost" onClick={onLogout}>
-              Sign Out
-            </button>
-            <button className="btn btn-primary" onClick={() => setShowSell(true)}>
-              + Sell Ticket
-            </button>
-          </div>
-        </header>
-
-        <div className="content-pad scroll" style={{ flex: 1 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
-            
-            {/* KPI tiles */}
-            <div className="kpi-row">
-              <div className="tile tile-purple">
-                <div className="tile-label">TICKETS SOLD</div>
-                <div className="tile-value">{totalSold}</div>
-                <div className="tile-sub">Total pass orders generated</div>
-                <div className="tile-delta"><span>↑</span> {totalSold} total</div>
-              </div>
-              <div className="tile tile-green">
-                <div className="tile-label">REVENUE COLLECTED</div>
-                <div className="tile-value">₹{totalRevenue.toLocaleString()}</div>
-                <div className="tile-sub">Across all confirmed sales</div>
-                <div className="tile-delta"><span>✓</span> Verified sales</div>
-              </div>
-              <div className="tile tile-orange">
-                <div className="tile-label">PENDING APPROVAL</div>
-                <div className="tile-value">{pending}</div>
-                <div className="tile-sub">Cash sales awaiting admin action</div>
-                <div className="tile-delta"><span>⏳</span> Live status</div>
-              </div>
-              <div className="tile tile-teal">
-                <div className="tile-label">CONFIRMED TICKETS</div>
-                <div className="tile-value">{confirmed}</div>
-                <div className="tile-sub">Tickets sent to attendees</div>
-                <div className="tile-delta"><span>✓</span> Successful deliveries</div>
-              </div>
-            </div>
-
-            {/* Sales table */}
-            <div className="card table-card">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button className="btn btn-ghost btn-sm" onClick={fetchSales}>↻ Refresh</button>
-                </div>
-              </div>
-              
-              {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>Loading…</div>
-              ) : sales.length === 0 ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
-                  No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
-                </div>
-              ) : (
-                <div className="table-scroll scroll">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Attendee</th>
-                        <th>Pass Type</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Ticket ID</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sales.map(s => (
-                        <tr key={s.orderId}>
-                          <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
-                          <td>
-                            <div className="cell-main">
-                              <div className="cell-thumb" style={{ background: 'var(--panel-3)' }}>{s.name.charAt(0)}</div>
-                              <div>
-                                <div className="cell-title">{s.name}</div>
-                                <div className="cell-sub">{s.email}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td style={{ textTransform: 'capitalize', fontWeight: 600 }}>{s.gender} Pass</td>
-                          <td style={{ fontWeight: 800 }}>₹{s.amount?.toLocaleString()}</td>
-                          <td>
-                            {s.paymentMethod === 'cash' ? (
-                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245, 197, 66, 0.15)', color: '#F5C542', border: '1px solid rgba(245, 197, 66, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash</span>
-                            ) : (
-                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124, 92, 250, 0.15)', color: '#7C5CFA', border: '1px solid rgba(124, 92, 250, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
-                            )}
-                          </td>
-                          <td>{statusBadge(s.status)}</td>
-                          <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
-                          <td>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>
-                              View
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-
+            <div className="handle">Partner Dashboard</div>
           </div>
         </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div className="topbar-actions">
+          <button
+            onClick={() => setDark(!dark)}
+            className="tb-icon-btn"
+            title="Toggle Light/Dark Theme"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+              {dark ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+          <div className="badge badge-green" style={{ padding: '6px 12px', fontSize: '11px' }}>
+            <span className="badge-dot" />
+            LIVE MODE
+          </div>
+          <button className="btn btn-ghost" onClick={onLogout}>Sign Out</button>
+          <button className="btn btn-primary" onClick={() => setShowSell(true)}>+ Sell Ticket</button>
+        </div>
+      </header>
+
+      {/* Main scrollable content */}
+      <div className="content">
+        {/* KPI tiles */}
+        <div className="kpi-row">
+          <div className="tile tile-violet">
+            <div className="tile-label">TICKETS SOLD</div>
+            <div className="tile-value">{totalSold}</div>
+            <div className="tile-sub">Total pass orders generated</div>
+            <div className="tile-delta"><span>↑</span> {totalSold} total</div>
+          </div>
+          <div className="tile tile-teal">
+            <div className="tile-label">REVENUE COLLECTED</div>
+            <div className="tile-value">₹{totalRevenue.toLocaleString()}</div>
+            <div className="tile-sub">Across all confirmed sales</div>
+            <div className="tile-delta"><span>✓</span> Verified sales</div>
+          </div>
+          <div className="tile tile-orange">
+            <div className="tile-label">PENDING APPROVAL</div>
+            <div className="tile-value">{pending}</div>
+            <div className="tile-sub">Cash sales awaiting admin action</div>
+            <div className="tile-delta"><span>⏳</span> Live status</div>
+          </div>
+          <div className="tile tile-gold">
+            <div className="tile-label">CONFIRMED TICKETS</div>
+            <div className="tile-value">{confirmed}</div>
+            <div className="tile-sub">Tickets sent to attendees</div>
+            <div className="tile-delta"><span>✓</span> Successful deliveries</div>
+          </div>
+        </div>
+
+        {/* Sales table */}
+        <div className="card table-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)' }}>
+            <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
+            <button className="btn btn-ghost btn-sm" onClick={fetchSales}>↻ Refresh</button>
+          </div>
+          
+          {loading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>Loading…</div>
+          ) : sales.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
+              No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
+            </div>
+          ) : (
+            <div className="table-scroll scroll">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Attendee</th>
+                    <th>Pass Type</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Ticket ID</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sales.map(s => (
+                    <tr key={s.orderId}>
+                      <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                      <td>
+                        <div className="cell-main">
+                          <div className="cell-thumb">{s.name.charAt(0)}</div>
+                          <div>
+                            <div className="cell-title">{s.name}</div>
+                            <div className="cell-sub">{s.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ textTransform: 'capitalize', fontWeight: 600 }}>{s.gender} Pass</td>
+                      <td style={{ fontWeight: 800 }}>₹{s.amount?.toLocaleString()}</td>
+                      <td>
+                        {s.paymentMethod === 'cash' ? (
+                          <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245,197,66,0.15)', color: '#F5C542', border: '1px solid rgba(245,197,66,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash</span>
+                        ) : (
+                          <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124,92,250,0.15)', color: '#7C5CFA', border: '1px solid rgba(124,92,250,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
+                        )}
+                      </td>
+                      <td>{statusBadge(s.status)}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
+                      <td>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
+
 
       {showSell && (
         <SellTicketModal
