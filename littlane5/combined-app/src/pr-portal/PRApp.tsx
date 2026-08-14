@@ -403,104 +403,103 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
             </div>
           </div>
           
-          {loading ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>Loading…</div>
-          ) : sales.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
-              No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
-            </div>
-          ) : (() => {
+          {(() => {
+            if (loading) return (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>Loading…</div>
+            );
+            if (sales.length === 0) return (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
+                No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
+              </div>
+            );
             const q = searchQuery.toLowerCase();
             const filtered = sales.filter(s => {
               const matchSearch = !q || s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
               const matchPayment = paymentFilter === 'all' || s.paymentMethod === paymentFilter;
               return matchSearch && matchPayment;
             });
-            return filtered.length === 0 ? (
+            if (filtered.length === 0) return (
               <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
                 No results match your filters.
               </div>
-            ) : (
-            <div className="table-scroll scroll">
-              <table className="table pr-table-desktop">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Attendee</th>
-                    <th>Pass Type</th>
-                    <th>Amount</th>
-                    <th>Payment</th>
-                    <th>Status</th>
-                    <th>Ticket ID</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
+            );
+            return (
+              <>
+                {/* Desktop table – hidden on mobile via CSS */}
+                <div className="table-scroll scroll pr-table-desktop">
+                  <table className="table">
+                    <thead><tr>
+                      <th>Date</th><th>Attendee</th><th>Pass Type</th><th>Amount</th>
+                      <th>Payment</th><th>Status</th><th>Ticket ID</th><th>Action</th>
+                    </tr></thead>
+                    <tbody>
+                      {filtered.map(s => (
+                        <tr key={s.orderId}>
+                          <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                          <td>
+                            <div className="cell-main">
+                              <div className="cell-thumb">{s.name.charAt(0)}</div>
+                              <div>
+                                <div className="cell-title">{s.name}</div>
+                                <div className="cell-sub">{s.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ textTransform: 'capitalize', fontWeight: 600 }}>{s.gender} Pass</td>
+                          <td style={{ fontWeight: 800 }}>₹{s.amount?.toLocaleString()}</td>
+                          <td>
+                            {s.paymentMethod === 'cash' ? (
+                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245,197,66,0.15)', color: '#F5C542', border: '1px solid rgba(245,197,66,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash</span>
+                            ) : (
+                              <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124,92,250,0.15)', color: '#7C5CFA', border: '1px solid rgba(124,92,250,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
+                            )}
+                          </td>
+                          <td>{statusBadge(s.status)}</td>
+                          <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
+                          <td><button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>View</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards – shown only on mobile via CSS */}
+                <div className="pr-cards-mobile">
                   {filtered.map(s => (
-                    <tr key={s.orderId}>
-                      <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
-                      <td>
-                        <div className="cell-main">
-                          <div className="cell-thumb">{s.name.charAt(0)}</div>
-                          <div>
-                            <div className="cell-title">{s.name}</div>
-                            <div className="cell-sub">{s.email}</div>
-                          </div>
+                    <div key={s.orderId} className="pr-sale-card">
+                      <div className="pr-sale-card-header">
+                        <div className="pr-sale-card-avatar">{s.name.charAt(0)}</div>
+                        <div className="pr-sale-card-info">
+                          <div className="pr-sale-card-name">{s.name}</div>
+                          <div className="pr-sale-card-email">{s.email}</div>
                         </div>
-                      </td>
-                      <td style={{ textTransform: 'capitalize', fontWeight: 600 }}>{s.gender} Pass</td>
-                      <td style={{ fontWeight: 800 }}>₹{s.amount?.toLocaleString()}</td>
-                      <td>
-                        {s.paymentMethod === 'cash' ? (
-                          <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245,197,66,0.15)', color: '#F5C542', border: '1px solid rgba(245,197,66,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash</span>
-                        ) : (
-                          <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124,92,250,0.15)', color: '#7C5CFA', border: '1px solid rgba(124,92,250,0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
-                        )}
-                      </td>
-                      <td>{statusBadge(s.status)}</td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
-                      <td>
+                        <div style={{ marginLeft: 'auto' }}>{statusBadge(s.status)}</div>
+                      </div>
+                      <div className="pr-sale-card-meta">
+                        <div className="pr-sale-card-chip">
+                          <div className="pr-sale-card-chip-label">Pass</div>
+                          <div className="pr-sale-card-chip-value" style={{ textTransform: 'capitalize' }}>{s.gender}</div>
+                        </div>
+                        <div className="pr-sale-card-chip">
+                          <div className="pr-sale-card-chip-label">Amount</div>
+                          <div className="pr-sale-card-chip-value">₹{s.amount?.toLocaleString()}</div>
+                        </div>
+                        <div className="pr-sale-card-chip">
+                          <div className="pr-sale-card-chip-label">Payment</div>
+                          <div className="pr-sale-card-chip-value">{s.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'}</div>
+                        </div>
+                      </div>
+                      <div className="pr-sale-card-footer">
                         <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>View</button>
-                      </td>
-                    </tr>
+                        <div className="pr-sale-card-id">{s.ticketId || '—'}</div>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          );
+                </div>
+              </>
+            );
           })()}
-          {/* Mobile cards */}
-          <div className="pr-cards-mobile">
-            {filtered.map(s => (
-              <div key={s.orderId} className="pr-sale-card">
-                <div className="pr-sale-card-header">
-                  <div className="pr-sale-card-avatar">{s.name.charAt(0)}</div>
-                  <div className="pr-sale-card-info">
-                    <div className="pr-sale-card-name" title={s.name}>{s.name}</div>
-                    <div className="pr-sale-card-email">{s.email}</div>
-                  </div>
-                </div>
-                <div className="pr-sale-card-meta">
-                  <div className="pr-sale-card-chip">
-                    <div className="pr-sale-card-chip-label">Pass</div>
-                    <div className="pr-sale-card-chip-value" title={s.gender}>{s.gender} Pass</div>
-                  </div>
-                  <div className="pr-sale-card-chip">
-                    <div className="pr-sale-card-chip-label">Amt</div>
-                    <div className="pr-sale-card-chip-value">₹{s.amount?.toLocaleString()}</div>
-                  </div>
-                  <div className="pr-sale-card-chip">
-                    <div className="pr-sale-card-chip-label">Pay</div>
-                    <div className="pr-sale-card-chip-value">{s.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'}</div>
-                  </div>
-                </div>
-                <div className="pr-sale-card-footer">
-                  <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>View</button>
-                  <div className="pr-sale-card-id">{s.ticketId || '—'}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+
         </div>
       </div>
 
