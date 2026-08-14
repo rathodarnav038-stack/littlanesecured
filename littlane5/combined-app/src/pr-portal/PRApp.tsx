@@ -148,11 +148,11 @@ function SellTicketModal({
           prefill: { name, email, contact: phone },
           theme: { color: '#A855F7' },
           handler: async (response: any) => {
-            // Step 3: Verify payment
             const verRes = await fetch(`${API}/api/verify-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                orderId: data.orderId,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
