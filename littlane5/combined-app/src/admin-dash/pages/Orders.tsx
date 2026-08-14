@@ -318,6 +318,9 @@ export default function Orders({
           ticketId: s.ticketId || '',
           errorLog: s.errorLog || [],
           showInPres: s.showInPres || false,
+          prUserId: s.prUserId,
+          prName: s.prName,
+          paymentMethod: s.paymentMethod,
         }
       }),
     [sales]
@@ -509,6 +512,12 @@ export default function Orders({
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
                               {o.gateway === 'Manual' ? (
                                 <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(245, 197, 66, 0.15)', color: '#F5C542', border: '1px solid rgba(245, 197, 66, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manual</span>
+                              ) : o.prUserId ? (
+                                o.paymentMethod === 'cash' ? (
+                                  <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cash by {o.prName || o.prUserId} ({o.prUserId})</span>
+                                ) : (
+                                  <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124, 92, 250, 0.15)', color: '#7C5CFA', border: '1px solid rgba(124, 92, 250, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay by {o.prName || o.prUserId} ({o.prUserId})</span>
+                                )
                               ) : (
                                 <span style={{ fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(124, 92, 250, 0.15)', color: '#7C5CFA', border: '1px solid rgba(124, 92, 250, 0.25)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Razorpay</span>
                               )}
