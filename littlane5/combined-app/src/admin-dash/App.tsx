@@ -522,7 +522,7 @@ export default function App({ isPresentation = false }: AppProps) {
       case 'admins':
         return <Settings sales={sales} adminKey={adminKey} testMode={testMode} />
       case 'pr-approvals':
-        return <PRApprovals adminKey={adminKey} isPresentation={isPresentation} />
+        return <PRApprovals adminKey={adminKey} isPresentation={isPresentation} sales={sales} />
       default:
         return (
           <Dashboard
