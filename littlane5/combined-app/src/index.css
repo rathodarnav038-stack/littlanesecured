@@ -1461,7 +1461,22 @@ html, body {
     height: 56px;
     gap: 6px;
   }
-  .pr-portal .tb-profile .who { display: none; }
+  .pr-portal .tb-profile .who {
+    display: block !important;
+  }
+  .pr-portal .tb-profile .who .name {
+    font-size: 11px !important;
+  }
+  .pr-portal .tb-profile .who .handle {
+    font-size: 9px !important;
+  }
+  .pr-portal .tb-profile .who .badge-pro {
+    padding: 1px 3px !important;
+    font-size: 8px !important;
+  }
+  .pr-portal .tb-profile {
+    gap: 6px !important;
+  }
   .pr-portal .tb-avatar-sm { width: 32px; height: 32px; font-size: 13px; }
   .pr-portal .topbar-actions { gap: 6px; }
   .pr-portal .topbar-actions .badge { display: none; }
