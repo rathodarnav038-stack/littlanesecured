@@ -264,6 +264,8 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
   const [loading, setLoading] = useState(true)
   const [showSell, setShowSell] = useState(false)
   const [viewSale, setViewSale] = useState<any>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'cash' | 'razorpay'>('all')
 
   const fetchSales = useCallback(async () => {
     try {
@@ -334,7 +336,9 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
             <span className="badge-dot" />
             LIVE MODE
           </div>
-          <button className="btn btn-ghost" onClick={onLogout}>Sign Out</button>
+          <button className="tb-icon-btn" onClick={onLogout} title="Sign Out" style={{ transition: 'all .2s' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>logout</span>
+          </button>
           <button className="btn btn-primary" onClick={() => setShowSell(true)}>+ Sell Ticket</button>
         </div>
       </header>
@@ -371,9 +375,32 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
         {/* Sales table */}
         <div className="card table-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
-            <button className="btn btn-ghost btn-sm" onClick={fetchSales}>↻ Refresh</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', fontSize: '15px', color: 'var(--ink-faint)', pointerEvents: 'none' }}>search</span>
+                <input
+                  type="text"
+                  placeholder="Search name or email…"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{ background: 'var(--panel-2)', border: '1px solid var(--line)', borderRadius: '8px', padding: '7px 12px 7px 32px', fontSize: '0.8rem', color: 'var(--ink)', outline: 'none', width: '200px', transition: 'border .2s' }}
+                />
+              </div>
+              <select
+                value={paymentFilter}
+                onChange={e => setPaymentFilter(e.target.value as any)}
+                style={{ background: 'var(--panel-2)', border: '1px solid var(--line)', borderRadius: '8px', padding: '7px 12px', fontSize: '0.8rem', color: 'var(--ink)', outline: 'none', cursor: 'pointer', appearance: 'auto' }}
+              >
+                <option value="all">All Payments</option>
+                <option value="cash">Cash Only</option>
+                <option value="razorpay">Razorpay Only</option>
+              </select>
+              <button className="tb-icon-btn" onClick={fetchSales} title="Refresh" style={{ transition: 'all .2s' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>refresh</span>
+              </button>
+            </div>
           </div>
           
           {loading ? (
@@ -382,7 +409,18 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
               No tickets sold yet. Click <strong>+ Sell Ticket</strong> to start!
             </div>
-          ) : (
+          ) : (() => {
+            const q = searchQuery.toLowerCase();
+            const filtered = sales.filter(s => {
+              const matchSearch = !q || s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+              const matchPayment = paymentFilter === 'all' || s.paymentMethod === paymentFilter;
+              return matchSearch && matchPayment;
+            });
+            return filtered.length === 0 ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-faint)' }}>
+                No results match your filters.
+              </div>
+            ) : (
             <div className="table-scroll scroll">
               <table className="table">
                 <thead>
@@ -398,7 +436,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
                   </tr>
                 </thead>
                 <tbody>
-                  {sales.map(s => (
+                  {filtered.map(s => (
                     <tr key={s.orderId}>
                       <td style={{ fontSize: '0.8rem' }}>{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
                       <td>
@@ -429,7 +467,8 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
                 </tbody>
               </table>
             </div>
-          )}
+          );
+          })()}
         </div>
       </div>
 
