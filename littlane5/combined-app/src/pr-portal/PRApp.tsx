@@ -265,9 +265,10 @@ function SellTicketModal({
 
 // ==================== PR DASHBOARD ====================
 function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => void }) {
-  const [sales, setSales] = useState<Sale[]>([])
+  const [sales, setSales] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showSell, setShowSell] = useState(false)
+  const [viewSale, setViewSale] = useState<any>(null)
 
   const fetchSales = useCallback(async () => {
     try {
@@ -366,6 +367,7 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
                   <th>Payment</th>
                   <th>Status</th>
                   <th>Ticket ID</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -385,6 +387,11 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
                     </td>
                     <td>{statusBadge(s.status)}</td>
                     <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', opacity: 0.7 }}>{s.ticketId || '—'}</td>
+                    <td>
+                      <button className="pr-btn pr-btn-ghost pr-btn-sm" onClick={() => setViewSale(s)}>
+                        View
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -399,6 +406,89 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
           onClose={() => setShowSell(false)}
           onSuccess={() => { setShowSell(false); fetchSales() }}
         />
+      )}
+
+      {viewSale && (
+        <div className="pr-modal-overlay">
+          <div className="pr-modal">
+            <div className="pr-modal-head">
+              <h3>Ticket Details</h3>
+              <button className="pr-modal-close" onClick={() => setViewSale(null)}>✕</button>
+            </div>
+            <div className="pr-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Buyer Information</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', background: 'var(--pr-primary)', color: 'white', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.2rem' }}>
+                    {viewSale.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{viewSale.name}</div>
+                    <div style={{ color: 'var(--pr-sub)', fontSize: '0.85rem' }}>{viewSale.email} • {viewSale.phone}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Ticket Details</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>EVENT</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'FRESHERS TAKEOVER'}</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>TICKET TYPE</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px', textTransform: 'capitalize' }}>{viewSale.gender} Pass</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>QUANTITY</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.quantity || 1} pass(es)</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--pr-sub)' }}>STATUS</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{statusBadge(viewSale.status)}</div>
+                  </div>
+                </div>
+              </div>
+
+              {viewSale.ticketId && (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <a href={`/api/ticket/${viewSale.ticketId}/download`} target="_blank" rel="noreferrer" className="pr-btn pr-btn-primary" style={{ flex: 1, textDecoration: 'none', textAlign: 'center' }}>
+                    Download PDF
+                  </a>
+                  <button className="pr-btn pr-btn-ghost" style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)' }} onClick={async (e) => {
+                    const btn = e.currentTarget
+                    const orig = btn.innerText
+                    btn.innerText = 'Sending...'
+                    try {
+                      await fetch(`${API}/api/ticket/${viewSale.ticketId}/resend`, { method: 'POST' })
+                      btn.innerText = 'Sent!'
+                    } catch {
+                      btn.innerText = 'Error'
+                    }
+                    setTimeout(() => btn.innerText = orig, 2000)
+                  }}>
+                    Resend Email
+                  </button>
+                </div>
+              )}
+
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--pr-sub)', textTransform: 'uppercase', marginBottom: '8px' }}>Payment Breakdown</div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+                    <span style={{ color: 'var(--pr-sub)' }}>Gateway</span>
+                    <span>{viewSale.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'} ({viewSale.paymentId || '—'})</span>
+                  </div>
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.1rem' }}>
+                    <span>Total Paid</span>
+                    <span style={{ color: 'var(--pr-primary)' }}>₹{viewSale.amount?.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
