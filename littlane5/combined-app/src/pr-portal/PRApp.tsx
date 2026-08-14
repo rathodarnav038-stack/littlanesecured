@@ -376,7 +376,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
         {/* Sales table */}
         <div className="card table-card">
           <div className="pr-filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '10px' }}>
-            <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
+            <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--ink)' }}>Your Ticket Sales</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', fontSize: '15px', color: 'var(--ink-faint)', pointerEvents: 'none' }}>search</span>

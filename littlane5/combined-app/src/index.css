@@ -1522,3 +1522,22 @@ html, body {
   .pr-portal .pr-cards-mobile { display: none !important; }
   .pr-portal .pr-table-desktop { display: block; }
 }
+/* Light‑mode fixes for PR portal */
+.theme-light .pr-portal .table thead th {
+  color: #475569; /* slate‑600 */
+}
+.theme-light .pr-portal .table tbody td {
+  color: #0F172A; /* slate‑900 */
+}
+.theme-light .pr-portal .cell-title {
+  color: #0F172A;
+}
+.theme-light .pr-portal .cell-sub {
+  color: #475569;
+}
+.theme-light .pr-portal .pr-sale-card-chip-label {
+  color: #64748B; /* slate‑500 */
+}
+.theme-light .pr-portal .pr-sale-card-id {
+  color: #94A3B8; /* slate‑400 */
+}
