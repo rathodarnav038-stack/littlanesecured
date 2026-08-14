@@ -375,31 +375,31 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
         {/* Sales table */}
         <div className="card table-card">
-          <div className="pr-filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '10px' }}>
-            <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--ink)' }}>Your Ticket Sales</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <span className="material-symbols-outlined" style={{ position: 'absolute', left: '10px', fontSize: '15px', color: 'var(--ink-faint)', pointerEvents: 'none' }}>search</span>
+          <div className="pr-filter-bar">
+            <span className="pr-filter-title">Your Ticket Sales</span>
+            <div className="pr-filter-actions">
+              <div className="pr-search-wrap">
+                <span className="material-symbols-outlined search-icon">search</span>
                 <input
                   type="text"
                   placeholder="Search name or email…"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  style={{ background: 'var(--panel-2)', border: '1px solid var(--line)', borderRadius: '8px', padding: '7px 12px 7px 32px', fontSize: '0.8rem', color: 'var(--ink)', outline: 'none', width: '200px', transition: 'border .2s' }}
                 />
               </div>
-              <select
-                value={paymentFilter}
-                onChange={e => setPaymentFilter(e.target.value as any)}
-                style={{ background: 'var(--panel-2)', border: '1px solid var(--line)', borderRadius: '8px', padding: '7px 12px', fontSize: '0.8rem', color: 'var(--ink)', outline: 'none', cursor: 'pointer', appearance: 'auto' }}
-              >
-                <option value="all">All Payments</option>
-                <option value="cash">Cash Only</option>
-                <option value="razorpay">Razorpay Only</option>
-              </select>
-              <button className="tb-icon-btn" onClick={fetchSales} title="Refresh" style={{ transition: 'all .2s' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>refresh</span>
-              </button>
+              <div className="pr-filter-controls">
+                <select
+                  value={paymentFilter}
+                  onChange={e => setPaymentFilter(e.target.value as any)}
+                >
+                  <option value="all">All Payments</option>
+                  <option value="cash">Cash Only</option>
+                  <option value="razorpay">Razorpay Only</option>
+                </select>
+                <button className="tb-icon-btn refresh-btn" onClick={fetchSales} title="Refresh">
+                  <span className="material-symbols-outlined">refresh</span>
+                </button>
+              </div>
             </div>
           </div>
           
