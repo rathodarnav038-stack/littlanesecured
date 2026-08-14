@@ -1451,3 +1451,74 @@ html, body {
   scrollbar-color: var(--panel-3) transparent;
 }
 
+/* ── PR PORTAL · MOBILE-FIRST RESPONSIVE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .pr-portal .topbar {
+    padding: 0 12px;
+    height: 56px;
+    gap: 6px;
+  }
+  .pr-portal .tb-profile .who { display: none; }
+  .pr-portal .tb-avatar-sm { width: 32px; height: 32px; font-size: 13px; }
+  .pr-portal .topbar-actions { gap: 6px; }
+  .pr-portal .topbar-actions .badge { display: none; }
+  .pr-portal .tb-icon-btn { width: 32px; height: 32px; }
+  .pr-portal .btn-primary { padding: 6px 12px !important; font-size: 0.75rem !important; }
+
+  .pr-portal .content {
+    padding: 12px;
+    padding-top: calc(56px + 12px);
+    gap: 12px;
+  }
+
+  .pr-portal .kpi-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .pr-portal .kpi-row .tile {
+    min-height: 90px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+  .pr-portal .kpi-row .tile-label { font-size: 8px; letter-spacing: 0.08em; }
+  .pr-portal .kpi-row .tile-value { font-size: 1.4rem; }
+  .pr-portal .kpi-row .tile-sub { display: none; }
+  .pr-portal .kpi-row .tile-delta { font-size: 9px; padding: 2px 6px; }
+
+  .pr-portal .card.table-card { border-radius: 14px; }
+
+  .pr-portal .pr-filter-bar { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; padding: 12px !important; }
+  .pr-portal .pr-filter-bar .pr-filter-controls { flex-direction: row !important; gap: 6px; }
+  .pr-portal .pr-filter-bar .pr-search-wrap { width: 100% !important; }
+  .pr-portal .pr-filter-bar .pr-search-wrap input { width: 100% !important; }
+
+  .pr-portal .pr-table-desktop { display: none !important; }
+  .pr-portal .pr-cards-mobile { display: flex !important; }
+
+  .pr-portal .pr-cards-mobile { flex-direction: column; gap: 10px; padding: 12px; }
+  .pr-portal .pr-sale-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.15s, box-shadow 0.15s; }
+  .pr-portal .pr-sale-card:active { transform: scale(0.98); }
+  .pr-portal .pr-sale-card-header { display: flex; align-items: center; gap: 10px; }
+  .pr-portal .pr-sale-card-avatar { width: 38px; height: 38px; border-radius: 10px; background: var(--panel-3); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: var(--ink); flex-shrink: 0; }
+  .pr-portal .pr-sale-card-info { flex: 1; min-width: 0; }
+  .pr-portal .pr-sale-card-name { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pr-portal .pr-sale-card-email { font-size: 0.75rem; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pr-portal .pr-sale-card-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .pr-portal .pr-sale-card-chip { background: var(--panel-3); border-radius: 8px; padding: 8px; text-align: center; }
+  .pr-portal .pr-sale-card-chip-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); margin-bottom: 2px; }
+  .pr-portal .pr-sale-card-chip-value { font-weight: 700; font-size: 0.8rem; }
+  .pr-portal .pr-sale-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pr-portal .pr-sale-card-footer .btn { font-size: 0.75rem; padding: 6px 14px; }
+  .pr-portal .pr-sale-card-id { font-family: monospace; font-size: 0.7rem; color: var(--ink-faint); }
+
+  .pr-portal .pr-modal-overlay { padding: 0 !important; align-items: flex-end !important; }
+  .pr-portal .pr-modal-overlay > .card { max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important; max-height: 92vh; overflow-y: auto; }
+
+  .pr-portal .card { margin: 12px; }
+}
+
+@media (min-width: 641px) {
+  .pr-portal .pr-cards-mobile { display: none !important; }
+  .pr-portal .pr-table-desktop { display: block; }
+}

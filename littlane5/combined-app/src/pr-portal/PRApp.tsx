@@ -192,7 +192,7 @@ function SellTicketModal({
 
   if (step === 'done' || step === 'pending') {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
+      <div className="pr-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
         <div className="card" onClick={e => e.stopPropagation()} style={{ width: '400px', textAlign: 'center', padding: '32px' }}>
           <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>{message}</p>
           <button className="btn btn-primary" style={{ marginTop: 24, width: '100%' }} onClick={onClose}>Done</button>
@@ -305,7 +305,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
   }
 
   return (
-    <div className={`app-canvas ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
+    <div className={`app-canvas pr-portal ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
       {/* Header Topbar */}
       <header className="topbar">
         <div className="tb-profile">
@@ -375,7 +375,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
         {/* Sales table */}
         <div className="card table-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '10px' }}>
+          <div className="pr-filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '10px' }}>
             <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Your Ticket Sales</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -422,7 +422,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
               </div>
             ) : (
             <div className="table-scroll scroll">
-              <table className="table">
+              <table className="table pr-table-desktop">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -469,6 +469,38 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
             </div>
           );
           })()}
+          {/* Mobile cards */}
+          <div className="pr-cards-mobile">
+            {filtered.map(s => (
+              <div key={s.orderId} className="pr-sale-card">
+                <div className="pr-sale-card-header">
+                  <div className="pr-sale-card-avatar">{s.name.charAt(0)}</div>
+                  <div className="pr-sale-card-info">
+                    <div className="pr-sale-card-name" title={s.name}>{s.name}</div>
+                    <div className="pr-sale-card-email">{s.email}</div>
+                  </div>
+                </div>
+                <div className="pr-sale-card-meta">
+                  <div className="pr-sale-card-chip">
+                    <div className="pr-sale-card-chip-label">Pass</div>
+                    <div className="pr-sale-card-chip-value" title={s.gender}>{s.gender} Pass</div>
+                  </div>
+                  <div className="pr-sale-card-chip">
+                    <div className="pr-sale-card-chip-label">Amt</div>
+                    <div className="pr-sale-card-chip-value">₹{s.amount?.toLocaleString()}</div>
+                  </div>
+                  <div className="pr-sale-card-chip">
+                    <div className="pr-sale-card-chip-label">Pay</div>
+                    <div className="pr-sale-card-chip-value">{s.paymentMethod === 'cash' ? 'Cash' : 'Razorpay'}</div>
+                  </div>
+                </div>
+                <div className="pr-sale-card-footer">
+                  <button className="btn btn-ghost btn-sm" onClick={() => setViewSale(s)}>View</button>
+                  <div className="pr-sale-card-id">{s.ticketId || '—'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -482,7 +514,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
       )}
 
       {viewSale && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setViewSale(null)}>
+        <div className="pr-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setViewSale(null)}>
           <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: 0, overflow: 'hidden' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid var(--line)', background: 'var(--panel-2)' }}>
               <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Ticket Details</h3>
