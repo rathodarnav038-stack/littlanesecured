@@ -301,6 +301,8 @@ function PRDashboard({ prUser, onLogout }: { prUser: PRUser; onLogout: () => voi
       return <span className="pr-badge pr-badge-yellow">⏳ Pending</span>
     if (status === 'paid')
       return <span className="pr-badge pr-badge-green">✓ Paid</span>
+    if (status === 'created')
+      return <span className="pr-badge pr-badge-gray">Pending Payment</span>
     return <span className="pr-badge pr-badge-gray">{status}</span>
   }
 
