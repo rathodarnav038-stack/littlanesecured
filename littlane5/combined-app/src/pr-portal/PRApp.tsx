@@ -303,7 +303,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
   }
 
   return (
-    <div className={`app-canvas ${dark ? '' : 'theme-light'}`}>
+    <div className={`app-canvas ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
       <div className="main-content">
         {/* Header Topbar */}
         <header className="topbar">
