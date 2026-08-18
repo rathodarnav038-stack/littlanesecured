@@ -10,6 +10,7 @@ interface SettingsProps {
 export default function Settings({ adminKey }: SettingsProps) {
   const [tab, setTab] = useState<SettingsTab>('profile')
   const [wiping, setWiping] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   // Notification toggle states
   const [notifs, setNotifs] = useState({
@@ -24,27 +25,52 @@ export default function Settings({ adminKey }: SettingsProps) {
     setNotifs((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  const handleWipe = async () => {
-    if (
-      !window.confirm(
-        'WARNING: This will permanently delete all ticket sales and reset revenue stats to ₹0. Are you sure?'
-      )
-    ) {
-      return
+  const exportCustomers = async () => {
+    setExporting(true)
+    try {
+      const res = await fetch(`/api/admin/export-customers?key=${adminKey}`)
+      if (!res.ok) throw new Error('Export failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `littlane-customers-${new Date().toISOString().slice(0, 10)}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      alert('Could not export customer data.')
+    } finally {
+      setExporting(false)
     }
+  }
+
+  const handleWipe = async () => {
+    if (!window.confirm('⚠️ RESET REVENUE\n\nThis will permanently expire all tickets and reset revenue to ₹0.\n\nAre you sure?')) return
+    if (!window.confirm('Second confirmation: Wipe ALL sales data now?')) return
+    // Auto-export customer data first
+    try {
+      const res = await fetch(`/api/admin/export-customers?key=${adminKey}`)
+      if (res.ok) {
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `littlane-customers-BACKUP-${new Date().toISOString().slice(0, 10)}.csv`
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+    } catch { /* non-blocking */ }
     setWiping(true)
     try {
-      const res = await fetch(`/api/admin/danger-wipe-test-data?key=${adminKey}`, {
-        method: 'POST',
-      })
+      const res = await fetch(`/api/admin/danger-wipe-test-data?key=${adminKey}`, { method: 'POST' })
       const data = await res.json()
       if (data.success) {
-        alert(data.message)
+        alert(`✅ ${data.message}`)
         window.location.reload()
       } else {
         alert('Wipe failed: ' + data.message)
       }
-    } catch (err) {
+    } catch {
       alert('Error executing wipe command.')
     } finally {
       setWiping(false)
@@ -285,48 +311,80 @@ export default function Settings({ adminKey }: SettingsProps) {
       )}
 
       {tab === 'roles' && (
-        <div className="card">
-          <div className="card-head">
-            <h3>Reset Revenue & Start Fresh</h3>
-            <div className="muted-sm">Clear all sales data and begin a new event cycle from ₹0</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+          {/* Export Customer Data */}
+          <div className="card">
+            <div className="card-head">
+              <h3>Export Customer Data</h3>
+              <div className="muted-sm">Download all customer records as a CSV spreadsheet</div>
+            </div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--ink-soft)', lineHeight: 1.6, marginBottom: '16px' }}>
+              Includes: Name, Email, Phone, Event, Ticket ID, Pass Type, Amount, Payment Method, Status, Date.
+              Export this before resetting to keep your customer records safe.
+            </div>
+            <button
+              onClick={exportCustomers}
+              disabled={exporting}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '11px 22px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(99,179,237,0.4)',
+                backgroundColor: 'rgba(99,179,237,0.1)',
+                color: '#63b3ed',
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: exporting ? 'not-allowed' : 'pointer',
+                opacity: exporting ? 0.6 : 1,
+                transition: 'all .2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '17px' }}>download</span>
+              {exporting ? 'Exporting...' : 'Download Customer CSV'}
+            </button>
           </div>
 
-          <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: '28px', lineHeight: 1 }}>⚠️</div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f87171', marginBottom: '6px' }}>
-                  This will permanently delete ALL ticket sales
-                </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--ink-soft)', lineHeight: 1.6 }}>
-                  All orders, revenue, QR scans, email logs and ticket records will be wiped.
-                  Revenue counters will reset to ₹0. This action <strong>cannot be undone</strong>.
-                  Use this only when starting a completely new event.
+          {/* Reset Revenue */}
+          <div className="card">
+            <div className="card-head">
+              <h3>Reset Revenue & Start Fresh</h3>
+              <div className="muted-sm">Clear all sales data and begin a new event cycle from ₹0</div>
+            </div>
+            <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '14px', padding: '18px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ fontSize: '26px', lineHeight: 1 }}>⚠️</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#f87171', marginBottom: '5px' }}>Permanently deletes ALL ticket sales</div>
+                  <div style={{ fontSize: '0.81rem', color: 'var(--ink-soft)', lineHeight: 1.6 }}>
+                    All orders, revenue, QR scans and ticket records will be wiped. Existing QR codes will be <strong>expired</strong> and rejected at the gate.
+                    Revenue resets to ₹0. <strong>Customer CSV is auto-downloaded first as a backup.</strong>
+                  </div>
                 </div>
               </div>
             </div>
+            <button
+              onClick={handleWipe}
+              disabled={wiping}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '12px 24px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(239,68,68,0.4)',
+                backgroundColor: wiping ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.15)',
+                color: '#f87171',
+                fontWeight: 800,
+                fontSize: '13.5px',
+                cursor: wiping ? 'not-allowed' : 'pointer',
+                opacity: wiping ? 0.6 : 1,
+                transition: 'all .2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>restart_alt</span>
+              {wiping ? 'Resetting...' : 'Reset Revenue & Start Fresh from ₹0'}
+            </button>
           </div>
 
-          <button
-            onClick={handleWipe}
-            disabled={wiping}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '12px 24px',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid rgba(239,68,68,0.4)',
-              backgroundColor: wiping ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.15)',
-              color: '#f87171',
-              fontWeight: 800,
-              fontSize: '13.5px',
-              cursor: wiping ? 'not-allowed' : 'pointer',
-              opacity: wiping ? 0.6 : 1,
-              transition: 'all .2s',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>restart_alt</span>
-            {wiping ? 'Resetting...' : 'Reset Revenue & Start Fresh from ₹0'}
-          </button>
         </div>
       )}
     </div>

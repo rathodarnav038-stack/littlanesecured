@@ -628,6 +628,40 @@ app.post('/api/admin/generate-ticket', async (req, res) => {
     }
 });
 
+// ==================== 6B-EXPORT. EXPORT ALL CUSTOMER DATA AS CSV ====================
+app.get('/api/admin/export-customers', async (req, res) => {
+    const clientKey = req.query.key || req.headers['x-admin-key'];
+    if (!clientKey || clientKey !== ADMIN_KEY) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    try {
+        const mongoose = require('mongoose');
+        const sales = await mongoose.connection.db.collection('sales').find({}).toArray();
+        const header = ['Name','Email','Phone','Event','Ticket ID','Pass Type','Amount','Payment Method','Status','Date'];
+        const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+        const rows = sales.map(s => [
+            escape(s.name),
+            escape(s.email),
+            escape(s.phone || ''),
+            escape(s.event || ''),
+            escape(s.ticketId || ''),
+            escape(s.gender || s.ticketType || ''),
+            escape(s.amount || ''),
+            escape(s.paymentMethod || ''),
+            escape(s.status || ''),
+            escape(s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '')
+        ].join(','));
+        const csv = [header.join(','), ...rows].join('\r\n');
+        const filename = `littlane-customers-${new Date().toISOString().slice(0,10)}.csv`;
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(csv);
+    } catch (err) {
+        console.error('[EXPORT ERROR]', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ==================== 6B. SECURE DATA WIPE (ADMIN ONLY) ====================
 app.post('/api/admin/danger-wipe-test-data', async (req, res) => {
     const clientKey = req.query.key || req.headers['x-admin-key'];
