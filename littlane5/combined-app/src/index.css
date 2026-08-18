@@ -1454,8 +1454,132 @@ html, body {
   scrollbar-color: var(--panel-3) transparent;
 }
 
-/* ── PR PORTAL · MOBILE-FIRST RESPONSIVE (≤ 640px) ── */
-@media (max-width: 640px) {
+/* ── Material Symbols Global Font-Family Guard ─────────────────────── */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── PR Portal Global Layout & Styling (Desktop/Tablet Defaults) ─────── */
+.pr-portal .pr-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+  gap: 16px;
+}
+
+.pr-portal .pr-filter-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.pr-portal .pr-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pr-portal .pr-search-wrap {
+  position: relative;
+  width: 240px;
+}
+
+.pr-portal .pr-search-wrap input {
+  width: 100%;
+  height: 38px;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px 0 34px;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.pr-portal .pr-search-wrap input:focus {
+  border-color: var(--accent);
+}
+
+.pr-portal .pr-search-wrap .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px !important;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+.pr-portal .pr-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pr-portal .pr-filter-controls select {
+  height: 38px;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 28px 0 12px;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  transition: all 0.2s;
+}
+
+.theme-light .pr-portal .pr-filter-controls select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(15,23,42,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.pr-portal .pr-filter-controls select:focus {
+  border-color: var(--accent);
+}
+
+.pr-portal .pr-filter-controls .refresh-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pr-portal .pr-filter-controls .refresh-btn:hover {
+  background: var(--panel-2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── PR PORTAL · RESPONSIVE ADAPTATION (≤ 768px) ────────────────────────── */
+@media (max-width: 768px) {
   .pr-portal .topbar {
     padding: 0 12px;
     height: 56px;
@@ -1489,15 +1613,19 @@ html, body {
     gap: 12px;
   }
 
+  /* Grid of 2x2 for tiles on small screens */
   .pr-portal .kpi-row {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    flex-wrap: wrap !important;
   }
   .pr-portal .kpi-row .tile {
     min-height: 90px;
     padding: 14px;
     border-radius: 14px;
+    flex: none !important;
+    min-width: 0 !important;
   }
   .pr-portal .kpi-row .tile-label { font-size: 8px; letter-spacing: 0.08em; }
   .pr-portal .kpi-row .tile-value { font-size: 1.4rem; }
@@ -1529,20 +1657,7 @@ html, body {
   .pr-portal .pr-search-wrap input {
     width: 100% !important;
     height: 42px !important;
-    background: var(--panel-2) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 10px !important;
     padding: 0 12px 0 36px !important;
-    font-size: 0.85rem !important;
-    color: var(--ink) !important;
-  }
-  .pr-portal .pr-search-wrap .search-icon {
-    position: absolute !important;
-    left: 10px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    font-size: 16px !important;
-    color: var(--ink-faint) !important;
   }
   .pr-portal .pr-filter-controls {
     display: flex !important;
@@ -1552,21 +1667,11 @@ html, body {
   .pr-portal .pr-filter-controls select {
     flex: 1 !important;
     height: 42px !important;
-    background: var(--panel-2) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: 10px !important;
     padding: 0 12px !important;
-    font-size: 0.85rem !important;
-    color: var(--ink) !important;
-    appearance: none !important;
   }
   .pr-portal .pr-filter-controls .refresh-btn {
     width: 42px !important;
     height: 42px !important;
-    border-radius: 10px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   .pr-portal .pr-table-desktop { display: none !important; }
@@ -1594,7 +1699,7 @@ html, body {
   .pr-portal .card { margin: 12px; }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 769px) {
   .pr-portal .pr-cards-mobile { display: none !important; }
   .pr-portal .pr-table-desktop { display: block; }
 }
