@@ -671,6 +671,44 @@ app.post('/api/admin/cancel-ticket', async (req, res) => {
     }
 });
 
+// ==================== 6D. BULK CANCEL BY EVENT (ADMIN ONLY) ====================
+app.post('/api/admin/bulk-cancel-event', async (req, res) => {
+    const clientKey = req.query.key || req.headers['x-admin-key'];
+    if (!clientKey || clientKey !== ADMIN_KEY) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    const { eventName } = req.body || {};
+    if (!eventName) {
+        return res.status(400).json({ success: false, message: 'eventName is required' });
+    }
+    try {
+        const mongoose = require('mongoose');
+        const regex = new RegExp(eventName, 'i');
+        const result = await mongoose.connection.db.collection('sales').updateMany(
+            {
+                event: { $regex: regex },
+                status: { $in: ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'] }
+            },
+            {
+                $set: {
+                    status: 'cancelled',
+                    scannedAt: 'Cancelled by Admin — Event Expired',
+                    scannedBy: 'Admin',
+                    updatedAt: new Date().toISOString()
+                }
+            }
+        );
+        res.json({
+            success: true,
+            cancelled: result.modifiedCount,
+            message: `${result.modifiedCount} ticket(s) for "${eventName}" cancelled and expired.`
+        });
+    } catch (err) {
+        console.error('[BULK CANCEL ERROR]', err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // ==================== 7. SCAN TICKET ====================
 app.post('/api/scan-ticket', async (req, res) => {
     const { ticketId, scannedBy } = req.body || {};
