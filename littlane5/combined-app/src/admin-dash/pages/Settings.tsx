@@ -287,27 +287,45 @@ export default function Settings({ adminKey }: SettingsProps) {
       {tab === 'roles' && (
         <div className="card">
           <div className="card-head">
-            <h3>Danger Zone & Data Reset</h3>
+            <h3>Reset Revenue & Start Fresh</h3>
+            <div className="muted-sm">Clear all sales data and begin a new event cycle from ₹0</div>
           </div>
-          <p style={{ fontSize: '12px', color: 'var(--red)', marginBottom: '16px' }}>
-            Wiping test data permanently removes mock bookings and resets financial statistics.
-          </p>
+
+          <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '14px', padding: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+              <div style={{ fontSize: '28px', lineHeight: 1 }}>⚠️</div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f87171', marginBottom: '6px' }}>
+                  This will permanently delete ALL ticket sales
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--ink-soft)', lineHeight: 1.6 }}>
+                  All orders, revenue, QR scans, email logs and ticket records will be wiped.
+                  Revenue counters will reset to ₹0. This action <strong>cannot be undone</strong>.
+                  Use this only when starting a completely new event.
+                </div>
+              </div>
+            </div>
+          </div>
+
           <button
             onClick={handleWipe}
             disabled={wiping}
             style={{
-              padding: '10px 18px',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '12px 24px',
               borderRadius: 'var(--radius-md)',
-              border: 'none',
-              backgroundColor: 'var(--red)',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: '12.5px',
+              border: '1px solid rgba(239,68,68,0.4)',
+              backgroundColor: wiping ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.15)',
+              color: '#f87171',
+              fontWeight: 800,
+              fontSize: '13.5px',
               cursor: wiping ? 'not-allowed' : 'pointer',
               opacity: wiping ? 0.6 : 1,
+              transition: 'all .2s',
             }}
           >
-            {wiping ? 'Wiping...' : '⚠️ Danger Wipe Test Data'}
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>restart_alt</span>
+            {wiping ? 'Resetting...' : 'Reset Revenue & Start Fresh from ₹0'}
           </button>
         </div>
       )}

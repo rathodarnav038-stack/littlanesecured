@@ -377,25 +377,6 @@ export default function App({ isPresentation = false }: AppProps) {
     }
   }
 
-  const handleResetRevenue = async () => {
-    if (!window.confirm(
-      '⚠️ RESET REVENUE\n\nThis will permanently delete ALL ticket sales and reset revenue to ₹0.\n\nThis action cannot be undone. Are you sure?'
-    )) return
-    if (!window.confirm('Second confirmation: Permanently wipe ALL sales data right now?')) return
-    try {
-      const res = await fetch(`/api/admin/danger-wipe-test-data?key=${adminKey}`, { method: 'POST' })
-      const data = await res.json()
-      if (data.success) {
-        alert('✅ Revenue reset. Starting fresh from ₹0.')
-        fetchSales(adminKey)
-      } else {
-        alert('Reset failed: ' + data.message)
-      }
-    } catch {
-      alert('Network error during reset.')
-    }
-  }
-
   // Auth checking screen
   if (authChecking && adminKey) {
     return (
@@ -496,7 +477,6 @@ export default function App({ isPresentation = false }: AppProps) {
             summary={summary}
             testMode={testMode}
             onManualGenerate={() => setShowManualModal(true)}
-            onResetRevenue={handleResetRevenue}
           />
         )
       case 'orders':
@@ -550,7 +530,6 @@ export default function App({ isPresentation = false }: AppProps) {
             summary={summary}
             testMode={testMode}
             onManualGenerate={() => setShowManualModal(true)}
-            onResetRevenue={handleResetRevenue}
           />
         )
     }
