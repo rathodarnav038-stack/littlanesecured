@@ -220,7 +220,7 @@ export default function App({ isPresentation = false }: AppProps) {
       }
       const fetchedSales = data.sales || []
       const filteredSales = isPresentation
-        ? fetchedSales.filter((s: any) => s.showInPres)
+        ? fetchedSales.filter((s: any) => s.showInPres || !!s.prUserId)
         : fetchedSales
 
       let activeSummary = data.summary

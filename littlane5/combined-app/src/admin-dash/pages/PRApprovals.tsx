@@ -28,7 +28,6 @@ export default function PRApprovals({ adminKey, isPresentation = false, sales = 
   }, [sales])
 
   async function handleApprove(orderId: string) {
-    if (isPresentation) return
     setActionId(orderId)
     try {
       const res = await fetch('/api/admin/pr-approve', {
@@ -50,7 +49,6 @@ export default function PRApprovals({ adminKey, isPresentation = false, sales = 
   }
 
   async function handleReject(orderId: string) {
-    if (isPresentation) return
     if (!window.confirm('Reject this cash sale?')) return
     setActionId(orderId)
     try {
@@ -180,36 +178,32 @@ export default function PRApprovals({ adminKey, isPresentation = false, sales = 
                         {new Date(s.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       </td>
                       <td>
-                        {isPresentation ? (
-                          <span style={{ opacity: 0.4, fontSize: '0.78rem' }}>Admin only</span>
-                        ) : (
-                          <div style={{ display: 'flex', gap: 8 }}>
-                            <button
-                              onClick={() => handleApprove(s.orderId)}
-                              disabled={actionId === s.orderId}
-                              style={{
-                                background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)',
-                                color: '#4ade80', borderRadius: 8, padding: '6px 14px',
-                                fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
-                                opacity: actionId === s.orderId ? 0.5 : 1,
-                              }}
-                            >
-                              {actionId === s.orderId ? '…' : '✓ Approve'}
-                            </button>
-                            <button
-                              onClick={() => handleReject(s.orderId)}
-                              disabled={actionId === s.orderId}
-                              style={{
-                                background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
-                                color: '#fca5a5', borderRadius: 8, padding: '6px 14px',
-                                fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
-                                opacity: actionId === s.orderId ? 0.5 : 1,
-                              }}
-                            >
-                              ✕ Reject
-                            </button>
-                          </div>
-                        )}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button
+                            onClick={() => handleApprove(s.orderId)}
+                            disabled={actionId === s.orderId}
+                            style={{
+                              background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)',
+                              color: '#4ade80', borderRadius: 8, padding: '6px 14px',
+                              fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
+                              opacity: actionId === s.orderId ? 0.5 : 1,
+                            }}
+                          >
+                            {actionId === s.orderId ? '…' : '✓ Approve'}
+                          </button>
+                          <button
+                            onClick={() => handleReject(s.orderId)}
+                            disabled={actionId === s.orderId}
+                            style={{
+                              background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
+                              color: '#fca5a5', borderRadius: 8, padding: '6px 14px',
+                              fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
+                              opacity: actionId === s.orderId ? 0.5 : 1,
+                            }}
+                          >
+                            ✕ Reject
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
