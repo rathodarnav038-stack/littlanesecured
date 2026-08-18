@@ -8,9 +8,10 @@ interface DashboardProps {
   summary: any
   testMode: boolean
   onManualGenerate: () => void
+  onResetRevenue?: () => void
 }
 
-export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate }: DashboardProps) {
+export default function Dashboard({ sales = [], summary = {}, testMode, onManualGenerate, onResetRevenue }: DashboardProps) {
   const [period, setPeriod] = useState<'today' | '7d' | '30d'>('7d')
   const [chartMode, setChartMode] = useState<'actual' | 'forecast'>('actual')
   const [popupEvent, setPopupEvent] = useState<{ name: string; top: number; left: number } | null>(null)
@@ -214,6 +215,33 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gutter)' }}>
+
+      {/* Dashboard Header Row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+        <div>
+          <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--ink)' }}>Live Dashboard</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--ink-faint)' }}>{paidSales.length} confirmed · ₹{totalRevenue.toLocaleString()} collected</div>
+        </div>
+        {onResetRevenue && (
+          <button
+            onClick={onResetRevenue}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '8px 16px', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.35)',
+              background: 'rgba(239,68,68,0.08)', color: '#f87171',
+              fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.18)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)' }}
+            title="Clear all sales data and start fresh from ₹0"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>restart_alt</span>
+            Reset Revenue
+          </button>
+        )}
+      </div>
+
       <div className="kpi-row">
         <div className="tile tile-orange">
           <div className="tile-label">REVENUE MTD</div>
