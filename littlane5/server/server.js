@@ -636,8 +636,15 @@ app.post('/api/admin/danger-wipe-test-data', async (req, res) => {
     }
     try {
         const mongoose = require('mongoose');
-        const result = await mongoose.connection.db.collection('sales').deleteMany({});
-        res.json({ success: true, message: `Successfully wiped ${result.deletedCount} test tickets and reset all revenue/ticket stats.` });
+        const col = mongoose.connection.db.collection('sales');
+        // Step 1 — expire/cancel all active tickets so existing QR codes are REJECTED at gate
+        const expireResult = await col.updateMany(
+            { status: { $in: ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned', 'pr_cash_pending'] } },
+            { $set: { status: 'cancelled', scannedAt: 'Expired — Revenue Reset by Admin', scannedBy: 'Admin', updatedAt: new Date().toISOString() } }
+        );
+        // Step 2 — delete all records to zero out revenue & stats
+        const deleteResult = await col.deleteMany({});
+        res.json({ success: true, expired: expireResult.modifiedCount, deleted: deleteResult.deletedCount, message: `${expireResult.modifiedCount} ticket(s) expired & ${deleteResult.deletedCount} record(s) wiped. Revenue reset to \u20b90.` });
     } catch (err) {
         console.error('[WIPE ERROR]', err);
         res.status(500).json({ success: false, message: err.message });
