@@ -17,11 +17,12 @@ interface Props {
   onNavigateToTickets?: () => void
 }
 
-const EVENT_META: Record<string, { gradient: string; icon: string; tagline: string; isVip?: boolean }> = {
+const EVENT_META: Record<string, { gradient: string; icon: string; tagline: string; image?: string; isVip?: boolean }> = {
   'TAKEOVER 2.0': {
     gradient: 'linear-gradient(135deg, #7C5CFA 0%, #9D7BFF 100%)',
     icon: '☕',
     tagline: 'Coffee Rave · Pune Main Event',
+    image: '/takeover2.jpeg',
   },
 }
 
@@ -99,7 +100,25 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
             alignItems: 'flex-end',
             padding: '24px',
             color: '#fff',
+            overflow: 'hidden',
           }}>
+            {meta.image && (
+              <img
+                src={meta.image}
+                alt=""
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.15,
+                  filter: 'blur(10px)',
+                  transform: 'scale(1.2)',
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
             <div style={{
               position: 'absolute', top: 0, right: 0, bottom: 0, left: 0,
               background: 'radial-gradient(ellipse at 80% -20%, rgba(255,255,255,0.25), transparent 60%)',
@@ -335,7 +354,25 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
                 alignItems: 'flex-end',
                 padding: '16px 18px',
                 color: '#fff',
+                overflow: 'hidden',
               }}>
+                {meta.image && (
+                  <img
+                    src={meta.image}
+                    alt=""
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      opacity: 0.15,
+                      filter: 'blur(10px)',
+                      transform: 'scale(1.2)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                )}
                 {/* Shimmer overlay */}
                 <div style={{
                   position: 'absolute', inset: 0,
