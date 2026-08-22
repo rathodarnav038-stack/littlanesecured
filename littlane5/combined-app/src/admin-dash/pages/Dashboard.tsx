@@ -58,10 +58,26 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       (s.ticketType || '').toLowerCase().includes('exclusive')
   )
 
+  // Takeover 2.0 (Coffee Rave)
+  const takeover2Male = paidSales.filter(
+    s =>
+      (s.event || '').toUpperCase().includes('TAKEOVER 2') &&
+      (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male'))
+  )
+  const takeover2Female = paidSales.filter(
+    s =>
+      (s.event || '').toUpperCase().includes('TAKEOVER 2') &&
+      (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female'))
+  )
+
   const maleCount = freshersMale.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const femaleCount = freshersFemale.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const auraCount = auraGenesis.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const inviteCount = ftInvite.reduce((acc, s) => acc + (s.quantity || 1), 0)
+  const t2MaleCount = takeover2Male.reduce((acc, s) => acc + (s.quantity || 1), 0)
+  const t2FemaleCount = takeover2Female.reduce((acc, s) => acc + (s.quantity || 1), 0)
+  const t2MaleRevenue = takeover2Male.reduce((acc, s) => acc + (s.amount || 0), 0)
+  const t2FemaleRevenue = takeover2Female.reduce((acc, s) => acc + (s.amount || 0), 0)
   const grandTotal = Math.max(1, totalTickets)
 
   const malePct = Math.round((maleCount / grandTotal) * 100)
@@ -601,6 +617,64 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '20px', fontWeight: 800, color: '#F5B942', fontFamily: 'monospace' }}>{inviteCount}</div>
                 <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
+              </div>
+            </div>
+
+            {/* Takeover 2.0 Male Pass */}
+            <div
+              className="card lt-hover-lift"
+              style={{
+                cursor: 'default',
+                background: 'linear-gradient(135deg, rgba(124,92,250,0.15) 0%, rgba(157,123,255,0.05) 100%)',
+                border: '1px solid rgba(124,92,250,0.3)',
+                overflow: 'hidden',
+                position: 'relative',
+                padding: 0,
+                borderRadius: 'var(--radius-md)',
+              }}
+            >
+              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.35 }} />
+              <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '15px' }}>☕</span>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#c4b5fd' }}>Takeover 2.0 — Male</h4>
+                  </div>
+                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹499 · Coffee Rave · Male Passes</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{t2MaleCount}</div>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>SOLD · ₹{t2MaleRevenue.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Takeover 2.0 Female Pass */}
+            <div
+              className="card lt-hover-lift"
+              style={{
+                cursor: 'default',
+                background: 'linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(244,63,94,0.05) 100%)',
+                border: '1px solid rgba(236,72,153,0.3)',
+                overflow: 'hidden',
+                position: 'relative',
+                padding: 0,
+                borderRadius: 'var(--radius-md)',
+              }}
+            >
+              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.35 }} />
+              <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '15px' }}>☕</span>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#f9a8d4' }}>Takeover 2.0 — Female</h4>
+                  </div>
+                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹399 · Coffee Rave · Female Passes</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#EC4899', fontFamily: 'monospace' }}>{t2FemaleCount}</div>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>SOLD · ₹{t2FemaleRevenue.toLocaleString()}</div>
+                </div>
               </div>
             </div>
           </div>

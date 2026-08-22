@@ -30,8 +30,152 @@ const PR_USERS: (PRUser & { password: string })[] = [
   { id: 'pr5', username: 'partner5', password: 'ftpr@005', displayName: 'Partner Five' },
 ]
 
-const PRICING = { female: 599, male: 699 }
+// ==================== TAKEOVER 2.0 PRICING ====================
+const PRICING = { female: 399, male: 499 }
 const API = ''
+
+// ==================== TAKEOVER 2.0 POPUP ====================
+function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () => void }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(0,0,0,0.82)',
+        backdropFilter: 'blur(8px)',
+        zIndex: 2000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        animation: 'fadeIn .3s ease',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '440px',
+          borderRadius: '24px',
+          overflow: 'hidden',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08)',
+          animation: 'slideUp .35s cubic-bezier(.22,.68,0,1.2)',
+        }}
+      >
+        {/* Flyer Image */}
+        <div style={{ position: 'relative', width: '100%' }}>
+          <img
+            src="/takeover2.jpeg"
+            alt="Takeover 2.0 — Coffee Rave"
+            style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+          />
+          {/* Dark gradient overlay at bottom of image */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%',
+            background: 'linear-gradient(to bottom, transparent, rgba(10,11,16,0.95))',
+          }} />
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute', top: '12px', right: '12px',
+              background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.15)',
+              color: '#fff', width: '32px', height: '32px', borderRadius: '50%',
+              cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backdropFilter: 'blur(6px)',
+            }}
+          >✕</button>
+        </div>
+
+        {/* Bottom panel */}
+        <div style={{
+          background: 'linear-gradient(180deg, #0A0B10 0%, #12131B 100%)',
+          padding: '20px 24px 24px',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          {/* Badge */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+            <span style={{
+              background: 'rgba(124,92,250,0.18)', color: '#A78BFA',
+              border: '1px solid rgba(124,92,250,0.35)',
+              padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em',
+            }}>☕ COFFEE RAVE</span>
+            <span style={{
+              background: 'rgba(61,220,132,0.12)', color: '#3DDC84',
+              border: '1px solid rgba(61,220,132,0.25)',
+              padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em',
+            }}>🔴 LIVE NOW</span>
+          </div>
+
+          <h2 style={{ margin: '0 0 4px', fontSize: '1.35rem', fontWeight: 900, color: '#F5F4F8', letterSpacing: '-0.02em' }}>
+            Takeover 2.0
+          </h2>
+          <p style={{ margin: '0 0 20px', fontSize: '0.88rem', color: '#9C9AAB' }}>
+            Book your pass now — limited seats available!
+          </p>
+
+          {/* Pricing */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+            <div style={{
+              background: 'rgba(124,92,250,0.08)', border: '1px solid rgba(124,92,250,0.25)',
+              borderRadius: '14px', padding: '14px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C9AAB', marginBottom: '4px', letterSpacing: '0.06em' }}>♂ MALE PASS</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#7C5CFA' }}>₹499</div>
+            </div>
+            <div style={{
+              background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.25)',
+              borderRadius: '14px', padding: '14px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C9AAB', marginBottom: '4px', letterSpacing: '0.06em' }}>♀ FEMALE PASS</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#EC4899' }}>₹399</div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => { onClose(); onSell() }}
+            style={{
+              width: '100%', padding: '14px',
+              background: 'linear-gradient(135deg, #7C5CFA 0%, #9D7BFF 100%)',
+              border: 'none', borderRadius: '12px',
+              color: '#fff', fontSize: '1rem', fontWeight: 800,
+              cursor: 'pointer', letterSpacing: '0.02em',
+              boxShadow: '0 8px 24px rgba(124,92,250,0.35)',
+              transition: 'transform .15s, box-shadow .15s',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)'
+              ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 12px 32px rgba(124,92,250,0.5)'
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = ''
+              ;(e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 24px rgba(124,92,250,0.35)'
+            }}
+          >
+            🎟 Sell a Pass
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              width: '100%', padding: '10px', marginTop: '8px',
+              background: 'none', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px', color: '#9C9AAB', fontSize: '0.85rem',
+              cursor: 'pointer', fontWeight: 600,
+            }}
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ==================== LOGIN PAGE ====================
 function LoginPage({ onLogin }: { onLogin: (user: PRUser) => void }) {
@@ -141,7 +285,7 @@ function SellTicketModal({
           amount: data.amount * 100,
           currency: data.currency,
           name: 'Littlane',
-          description: `${gender === 'male' ? 'Male' : 'Female'} Pass — Freshers Takeover`,
+          description: `${gender === 'male' ? 'Male' : 'Female'} Pass — Takeover 2.0 (Coffee Rave)`,
           order_id: data.orderId,
           prefill: { name, email, contact: phone },
           theme: { color: '#7C5CFA' },
@@ -204,10 +348,18 @@ function SellTicketModal({
   return (
     <div className="pr-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={onClose}>
       <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: 0, overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid var(--line)', background: 'var(--panel-2)' }}>
-          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Sell Ticket</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--ink-faint)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+        {/* Modal header with Takeover 2.0 branding */}
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(10,11,16,0.9) 100%)', display: 'flex', alignItems: 'flex-end', padding: '16px 20px', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#fff', letterSpacing: '-0.01em' }}>Takeover 2.0 — Coffee Rave</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Male ₹499 · Female ₹399</div>
+            </div>
+            <button onClick={onClose} style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          </div>
         </div>
+
         <form onSubmit={handleSubmit} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>ATTENDEE NAME</label>
@@ -225,8 +377,8 @@ function SellTicketModal({
             <div>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px', color: 'var(--ink-soft)' }}>PASS TYPE</label>
               <select value={gender} onChange={e => setGender(e.target.value as any)} style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }}>
-                <option value="male">Male Pass (₹{PRICING.male})</option>
-                <option value="female">Female Pass (₹{PRICING.female})</option>
+                <option value="male">♂ Male Pass (₹{PRICING.male})</option>
+                <option value="female">♀ Female Pass (₹{PRICING.female})</option>
               </select>
             </div>
             <div>
@@ -263,6 +415,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
   const [sales, setSales] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showSell, setShowSell] = useState(false)
+  const [showPopup, setShowPopup] = useState(true)
   const [viewSale, setViewSale] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'cash' | 'razorpay'>('all')
@@ -306,6 +459,14 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
   return (
     <div className={`app-canvas pr-portal ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
+      {/* Takeover 2.0 Popup */}
+      {showPopup && (
+        <TakeoverPopup
+          onClose={() => setShowPopup(false)}
+          onSell={() => { setShowPopup(false); setShowSell(true) }}
+        />
+      )}
+
       {/* Header Topbar */}
       <header className="topbar">
         <div className="tb-profile">
@@ -323,6 +484,27 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
         <div style={{ flex: 1 }} />
 
         <div className="topbar-actions">
+          {/* Takeover 2.0 banner button */}
+          <button
+            onClick={() => setShowPopup(true)}
+            style={{
+              background: 'linear-gradient(135deg, rgba(124,92,250,0.2) 0%, rgba(236,72,153,0.2) 100%)',
+              border: '1px solid rgba(124,92,250,0.4)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              color: '#c4b5fd',
+              fontSize: '11px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              letterSpacing: '0.05em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
+          >
+            ☕ TAKEOVER 2.0
+          </button>
+
           <button
             onClick={() => setDark(!dark)}
             className="tb-icon-btn"
@@ -345,6 +527,49 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
       {/* Main scrollable content */}
       <div className="content">
+        {/* Event Banner */}
+        <div style={{
+          borderRadius: '16px',
+          overflow: 'hidden',
+          marginBottom: '20px',
+          position: 'relative',
+          cursor: 'pointer',
+          border: '1px solid rgba(124,92,250,0.25)',
+        }} onClick={() => setShowPopup(true)}>
+          <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to right, rgba(10,11,16,0.85) 0%, transparent 60%)',
+            display: 'flex', alignItems: 'center', padding: '0 24px',
+          }}>
+            <div>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ background: 'rgba(124,92,250,0.25)', border: '1px solid rgba(124,92,250,0.5)', color: '#c4b5fd', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>☕ COFFEE RAVE</span>
+                <span style={{ background: 'rgba(61,220,132,0.2)', border: '1px solid rgba(61,220,132,0.4)', color: '#3DDC84', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>🔴 LIVE</span>
+              </div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>Takeover 2.0</div>
+              <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', marginTop: '2px' }}>
+                ♂ Male ₹499 &nbsp;·&nbsp; ♀ Female ₹399
+              </div>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)' }}>
+            <button
+              onClick={e => { e.stopPropagation(); setShowSell(true) }}
+              style={{
+                background: 'linear-gradient(135deg, #7C5CFA 0%, #9D7BFF 100%)',
+                border: 'none', borderRadius: '10px',
+                padding: '10px 18px', color: '#fff',
+                fontSize: '0.9rem', fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(124,92,250,0.4)',
+              }}
+            >
+              🎟 Sell Pass
+            </button>
+          </div>
+        </div>
+
         {/* KPI tiles */}
         <div className="kpi-row">
           <div className="tile tile-violet">
@@ -539,7 +764,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>EVENT</div>
-                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'FRESHERS TAKEOVER'}</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'TAKEOVER 2.0'}</div>
                   </div>
                   <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>TICKET TYPE</div>
