@@ -58,15 +58,19 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       (s.ticketType || '').toLowerCase().includes('exclusive')
   )
 
-  // Takeover 2.0 (Coffee Rave)
+  // Takeover 2.0 (Coffee Rave) — also catch old 'FRESHERS TAKEOVER' records already in DB
+  const isT2Sale = (s: any) => {
+    const ev = (s.event || '').toUpperCase()
+    return ev.includes('TAKEOVER 2') || ev.includes('FRESHERS') || ev === ''
+  }
   const takeover2Male = paidSales.filter(
     s =>
-      (s.event || '').toUpperCase().includes('TAKEOVER 2') &&
+      isT2Sale(s) &&
       (s.gender === 'male' || (s.ticketType || '').toLowerCase().includes('male'))
   )
   const takeover2Female = paidSales.filter(
     s =>
-      (s.event || '').toUpperCase().includes('TAKEOVER 2') &&
+      isT2Sale(s) &&
       (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female'))
   )
 

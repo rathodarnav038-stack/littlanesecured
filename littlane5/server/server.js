@@ -250,7 +250,7 @@ app.post('/api/verify-payment', async (req, res) => {
                 quantity: sale.quantity,
                 amount: sale.amount,
                 createdAt: generatedAt,
-                event: sale.event || 'FRESHERS TAKEOVER'
+                event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
             });
             qrBuffer = await buildQrBuffer(ticketId);
             qrDataUrl = await buildQrDataUrl(ticketId);
@@ -281,7 +281,7 @@ app.post('/api/verify-payment', async (req, res) => {
             pdfPath,
             qrBuffer,
             downloadUrl,
-            event: sale.event || 'FRESHERS TAKEOVER'
+            event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
         });
 
         if (emailResult.success) {
@@ -369,7 +369,7 @@ app.post('/api/webhook/razorpay', async (req, res) => {
                 pdfPath = await buildTicketPdf({
                     ticketId, name: sale.name, email: sale.email, gender: sale.gender,
                     quantity: sale.quantity, amount: sale.amount, createdAt: generatedAt,
-                    event: sale.event || 'FRESHERS TAKEOVER'
+                    event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
                 });
                 qrBuffer = await buildQrBuffer(ticketId);
                 qrDataUrl = await buildQrDataUrl(ticketId);
@@ -388,7 +388,7 @@ app.post('/api/webhook/razorpay', async (req, res) => {
             const emailResult = await sendTicketEmail({
                 to: sale.email, name: sale.name, ticketId, gender: sale.gender,
                 quantity: sale.quantity, amount: sale.amount, pdfPath, qrBuffer,
-                downloadUrl, event: sale.event || 'FRESHERS TAKEOVER'
+                downloadUrl, event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
             });
 
             if (emailResult.success) {

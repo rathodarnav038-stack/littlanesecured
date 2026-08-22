@@ -136,7 +136,7 @@ export default function Tickets({
       buyer: s.name,
       email: s.email,
       phone: s.phone || '—',
-      event: s.event || 'FRESHERS TAKEOVER',
+      event: (() => { const ev = (s.event || '').toUpperCase(); return ev && !ev.includes('FRESHERS') ? s.event : 'TAKEOVER 2.0' })(),
       type:
         s.gender === 'male'
           ? 'Male Pass'

@@ -48,7 +48,8 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
   })
 
   sales.forEach((s) => {
-    const isT2 = (s.event || '').toUpperCase().includes('TAKEOVER 2')
+    const ev = (s.event || '').toUpperCase()
+    const isT2 = ev.includes('TAKEOVER 2') || ev.includes('FRESHERS') || ev === ''
     if (!isT2) return
 
     const name = 'TAKEOVER 2.0'
