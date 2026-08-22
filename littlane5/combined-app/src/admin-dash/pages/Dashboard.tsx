@@ -477,7 +477,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.35 }} />
+              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.20, filter: 'blur(5px)', transform: 'scale(1.1)' }} />
               <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -506,7 +506,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.35 }} />
+              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.20, filter: 'blur(5px)', transform: 'scale(1.1)' }} />
               <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
