@@ -52,10 +52,10 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
     if (!isT2) return
 
     const name = 'TAKEOVER 2.0'
-    const isPaid = ['paid', 'scanned', 'generated', 'ticket_generated', 'emailed'].includes(s.status)
+    const isPaid = ['paid', 'scanned', 'generated', 'ticket_generated', 'emailed', 'pr_cash_pending'].includes(s.status)
     const entry = eventMap.get(name)
     if (!entry) return
-    entry.totalRevenue += isPaid ? s.amount || 0 : 0
+    entry.totalRevenue += (isPaid && s.status !== 'pr_cash_pending') ? s.amount || 0 : 0
     entry.ticketsSold += isPaid ? 1 : 0
     entry.scanned += s.scannedAt ? 1 : 0
     if (s.createdAt && (!entry.firstSale || s.createdAt < entry.firstSale)) entry.firstSale = s.createdAt

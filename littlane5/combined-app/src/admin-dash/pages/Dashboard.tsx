@@ -16,10 +16,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
   const [popupEvent, setPopupEvent] = useState<{ name: string; top: number; left: number } | null>(null)
 
   const paidSales = sales.filter(s =>
-    ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
+    ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned', 'pr_cash_pending'].includes(s.status)
   )
   const revenueSales = paidSales.filter(
-    s => !s.gender || !String(s.gender).toLowerCase().includes('exclusive')
+    s => s.status !== 'pr_cash_pending' && (!s.gender || !String(s.gender).toLowerCase().includes('exclusive'))
   )
 
   const totalRevenue = revenueSales.reduce((acc, s) => acc + (s.amount || 0), 0)
@@ -72,8 +72,8 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
   const t2MaleCount = takeover2Male.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const t2FemaleCount = takeover2Female.reduce((acc, s) => acc + (s.quantity || 1), 0)
-  const t2MaleRevenue = takeover2Male.reduce((acc, s) => acc + (s.amount || 0), 0)
-  const t2FemaleRevenue = takeover2Female.reduce((acc, s) => acc + (s.amount || 0), 0)
+  const t2MaleRevenue = takeover2Male.reduce((acc, s) => acc + (s.status === 'pr_cash_pending' ? 0 : s.amount || 0), 0)
+  const t2FemaleRevenue = takeover2Female.reduce((acc, s) => acc + (s.status === 'pr_cash_pending' ? 0 : s.amount || 0), 0)
   const grandTotal = Math.max(1, totalTickets)
 
   const t2MalePct = Math.round((t2MaleCount / grandTotal) * 100)
@@ -181,6 +181,17 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
             ? new Date(sale.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             : timeLabel,
           badge: <span className="badge badge-green"><span className="badge-dot" />Paid</span>,
+        })
+      }
+
+      if (sale.status === 'pr_cash_pending') {
+        list.push({
+          id: `pr-cash-${sale.orderId}`,
+          type: 'purchase',
+          title: `PR cash sale — ${sale.name || 'Attendee'} (${sale.prName || sale.prUserId || 'PR'})`,
+          sub: `${sale.event || 'TAKEOVER 2.0'} · ₹${sale.amount || 0} · Awaiting approval`,
+          time: timeLabel,
+          badge: <span className="badge" style={{ background: 'rgba(251,146,60,0.2)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.4)' }}><span className="badge-dot" style={{ background: '#fb923c' }} />PR Pending</span>,
         })
       }
 

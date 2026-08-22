@@ -879,11 +879,11 @@ app.get('/api/health', (req, res) => res.json({ success: true, event: EVENT.name
 
 // PR user credentials (server-side auth)
 const PR_USERS = [
-    { id: 'pr1', username: 'partner1', password: 'ftpr@001', displayName: 'Partner One' },
-    { id: 'pr2', username: 'partner2', password: 'ftpr@002', displayName: 'Partner Two' },
-    { id: 'pr3', username: 'partner3', password: 'ftpr@003', displayName: 'Partner Three' },
-    { id: 'pr4', username: 'partner4', password: 'ftpr@004', displayName: 'Partner Four' },
-    { id: 'pr5', username: 'partner5', password: 'ftpr@005', displayName: 'Partner Five' },
+    { id: 'pr1', username: 'partner1', password: 'Lit@Kira91', displayName: 'Partner One' },
+    { id: 'pr2', username: 'partner2', password: 'Cof3Rave#7', displayName: 'Partner Two' },
+    { id: 'pr3', username: 'partner3', password: 'Nox!Blnk44', displayName: 'Partner Three' },
+    { id: 'pr4', username: 'partner4', password: 'Dnc$Pun3Ly', displayName: 'Partner Four' },
+    { id: 'pr5', username: 'partner5', password: 'Wav3!Msc56', displayName: 'Partner Five' },
 ];
 
 // GET /api/pr/sales?prUserId=xxx — fetch only this partner's tickets
@@ -938,6 +938,7 @@ app.post('/api/pr/create-order', async (req, res) => {
             updatedAt: new Date().toISOString(),
             prUserId,
             paymentMethod: 'razorpay',
+            showInPres: true,  // PR tickets auto-visible on /dashhboard
         });
 
         res.json({ success: true, orderId, amount, currency, keyId: RZP_KEY_ID || 'test_key' });
@@ -976,6 +977,7 @@ app.post('/api/pr/cash-request', async (req, res) => {
             prUserId,
             prName: prName || prUserId,
             paymentMethod: 'cash',
+            showInPres: true,  // PR tickets auto-visible on /dashhboard
         });
 
         res.json({ success: true, orderId, message: 'Cash sale submitted for approval.' });
@@ -1005,11 +1007,12 @@ app.post('/api/admin/pr-approve', requireAdmin, async (req, res) => {
     if (sale.status !== 'pr_cash_pending')
         return res.status(400).json({ success: false, message: 'Sale is not pending approval' });
 
-    // Mark paid
+    // Mark paid — keep showInPres: true so it stays visible on /dashhboard
     await db.updateSaleRecord(orderId, {
         status: 'paid',
         paymentId: `cash_approved_${Date.now()}`,
         paidAt: new Date().toISOString(),
+        showInPres: true,
     });
 
     // Generate ticket + send email (same flow as normal payment)
