@@ -122,8 +122,8 @@ class TextScramble{
     }
 }
 
-/* ==================== BOOKING POPUP (FRESHERS TAKEOVER) ==================== */
-const FT_PRICING = { female: 599, male: 699 };
+/* ==================== BOOKING POPUP (TAKEOVER 2.0) ==================== */
+const FT_PRICING = { female: 399, male: 499 };
 
 class BookingPopup{
     constructor(){
@@ -146,11 +146,11 @@ class BookingPopup{
         this.flyerClose = document.getElementById('flyerClose');
         
         if (this.flyerOverlay) {
-            // Auto open the flyer after 1 second on page load
+            // Auto open the flyer after 1.5 seconds on page load
             setTimeout(() => {
                 this.flyerOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
-            }, 1000);
+            }, 1500);
 
             const closeFlyer = () => {
                 this.flyerOverlay.classList.remove('active');

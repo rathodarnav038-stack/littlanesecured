@@ -14,17 +14,18 @@ if (!fs.existsSync(TICKETS_DIR)) fs.mkdirSync(TICKETS_DIR, { recursive: true });
 const BANNER_PATH = path.join(__dirname, 'ticket-banner.png');
 const AURA_BANNER_PATH = path.join(__dirname, 'aura-ticket-banner.jpg');
 const INVITE_BANNER_PATH = path.join(__dirname, 'invite-banner.png');
+const TAKEOVER2_BANNER_PATH = path.join(__dirname, 'takeover2-banner.jpeg');
 
 const EVENT_NAME = 'FRESHERS TAKEOVER';
 
 // ---- Edit these to match your actual event details ----
 const EVENT_DETAILS = {
-    brand: 'FRESHERS TAKEOVER',
-    stage: 'Main Stage',
+    brand: 'TAKEOVER 2.0',
+    stage: 'Coffee Rave',
     admission: 'General Admission',
-    date: '05 AUG 2026',
-    time: '4:00 PM',
-    venue: 'Flo The Brewery, Hinjewadi, Pune',
+    date: 'TBA',
+    time: 'TBA',
+    venue: 'Pune',
     generatedBy: 'Littlane Events'
 };
 
@@ -76,7 +77,9 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         doc.pipe(stream);
 
         let bannerToUse = BANNER_PATH;
-        if (event && event.toUpperCase().includes('AURA') && fs.existsSync(AURA_BANNER_PATH)) {
+        if (event && event.toUpperCase().includes('TAKEOVER 2') && fs.existsSync(TAKEOVER2_BANNER_PATH)) {
+            bannerToUse = TAKEOVER2_BANNER_PATH;
+        } else if (event && event.toUpperCase().includes('AURA') && fs.existsSync(AURA_BANNER_PATH)) {
             bannerToUse = AURA_BANNER_PATH;
         } else if (gender && gender.toUpperCase().includes('EXCLUSIVE') && fs.existsSync(INVITE_BANNER_PATH)) {
             bannerToUse = INVITE_BANNER_PATH;
@@ -177,5 +180,6 @@ module.exports = {
     TICKETS_DIR,
     BANNER_PATH,
     AURA_BANNER_PATH,
-    INVITE_BANNER_PATH
+    INVITE_BANNER_PATH,
+    TAKEOVER2_BANNER_PATH
 };

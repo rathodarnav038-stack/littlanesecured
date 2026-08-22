@@ -16,8 +16,8 @@ app.use(express.json());
 // ==================== EVENT & PRICING ====================
 const EVENT = { name: EVENT_NAME };
 const PRICING = {
-    female: 599,
-    male: 699
+    female: 399,
+    male: 499
 };
 
 // ==================== RAZORPAY SETUP ====================
@@ -924,7 +924,7 @@ app.post('/api/pr/create-order', async (req, res) => {
         const ticketId = generateTicketId();
         await db.createSaleRecord({
             orderId,
-            event: EVENT.name,
+            event: 'TAKEOVER 2.0',
             name, email, phone, gender,
             quantity: qty,
             amount,
@@ -961,7 +961,7 @@ app.post('/api/pr/cash-request', async (req, res) => {
 
         await db.createSaleRecord({
             orderId,
-            event: EVENT.name,
+            event: 'TAKEOVER 2.0',
             name, email, phone, gender,
             quantity: qty,
             amount,
