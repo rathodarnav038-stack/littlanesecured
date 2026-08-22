@@ -18,39 +18,17 @@ interface Props {
 }
 
 const EVENT_META: Record<string, { gradient: string; icon: string; tagline: string; isVip?: boolean }> = {
-  'FRESHERS TAKEOVER': {
-    gradient: 'linear-gradient(135deg, #6C4CE0 0%, #3B63E8 100%)',
-    icon: '🎉',
-    tagline: 'Pune College Fest · Main Event',
-  },
-  'AURA GENESIS': {
-    gradient: 'linear-gradient(135deg, #38D9C4 0%, #3B82F6 100%)',
-    icon: '✨',
-    tagline: 'Skyline Electronic Showcase',
-  },
-  'FT LINEUP INVITE': {
-    gradient: 'linear-gradient(135deg, #F5C542 0%, #F5854D 100%)',
-    icon: '⭐',
-    tagline: 'Exclusive VIP Access · Invite Only',
-    isVip: true,
+  'TAKEOVER 2.0': {
+    gradient: 'linear-gradient(135deg, #7C5CFA 0%, #9D7BFF 100%)',
+    icon: '☕',
+    tagline: 'Coffee Rave · Pune Main Event',
   },
 }
 
 const LINEUPS: Record<string, { time: string; name: string; stage: string; status: string; badge: string }[]> = {
-  'FRESHERS TAKEOVER': [
-    { time: '8:00 PM', name: 'DJ Solace', stage: 'Main Stage · Opener', status: 'Confirmed', badge: 'green' },
-    { time: '9:30 PM', name: 'Kite & Ember', stage: 'Main Stage · Support', status: 'Confirmed', badge: 'green' },
-    { time: '11:00 PM', name: 'LitTix Headliner', stage: 'Main Stage · Headliner', status: 'VIP Invite', badge: 'amber' },
-  ],
-  'AURA GENESIS': [
-    { time: '7:00 PM', name: 'Aura Collective', stage: 'Skyline Stage · Debut', status: 'Confirmed', badge: 'green' },
-    { time: '9:00 PM', name: 'Electronic Showcase', stage: 'Skyline Stage · Main', status: 'Confirmed', badge: 'green' },
-    { time: '11:30 PM', name: 'Midnight Headliner', stage: 'Skyline Stage · Closer', status: 'Confirmed', badge: 'green' },
-  ],
-  'FT LINEUP INVITE': [
-    { time: 'All Access', name: 'Exclusive Backstage Tour', stage: 'All Stages · VIP Zone', status: 'VIP Only', badge: 'amber' },
-    { time: 'Priority', name: 'Artist Meet & Greet', stage: 'Green Room Access', status: 'Exclusive', badge: 'amber' },
-    { time: 'All Night', name: 'Priority Viewing Area', stage: 'Front Row · All Acts', status: 'Exclusive', badge: 'amber' },
+  'TAKEOVER 2.0': [
+    { time: '8:00 PM', name: 'Takeover DJ Opener', stage: 'Coffee Rave · Opener', status: 'Confirmed', badge: 'green' },
+    { time: '10:00 PM', name: 'Coffee Rave Headliner', stage: 'Coffee Rave · Headliner', status: 'Confirmed', badge: 'green' },
   ],
 }
 
@@ -69,16 +47,13 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
   })
 
   sales.forEach((s) => {
-    const isVip =
-      (s.gender || '').toLowerCase().includes('exclusive') ||
-      (s.ticketType || '').toLowerCase().includes('exclusive') ||
-      (s.ticketType || '').toLowerCase().includes('vip invite')
+    const isT2 = (s.event || '').toUpperCase().includes('TAKEOVER 2')
+    if (!isT2) return
 
-    const isAura = (s.event || '').toUpperCase().includes('AURA')
-    const name = isVip ? 'FT LINEUP INVITE' : isAura ? 'AURA GENESIS' : 'FRESHERS TAKEOVER'
-
+    const name = 'TAKEOVER 2.0'
     const isPaid = ['paid', 'scanned', 'generated', 'ticket_generated', 'emailed'].includes(s.status)
-    const entry = eventMap.get(name)!
+    const entry = eventMap.get(name)
+    if (!entry) return
     entry.totalRevenue += isPaid ? s.amount || 0 : 0
     entry.ticketsSold += isPaid ? 1 : 0
     entry.scanned += s.scannedAt ? 1 : 0
@@ -178,14 +153,9 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
               <div className="card-head">
                 <h3>👥 Ticket Buyers ({(() => {
                   const buyersList = sales.filter(s => {
-                    const isVip =
-                      (s.gender || '').toLowerCase().includes('exclusive') ||
-                      (s.ticketType || '').toLowerCase().includes('exclusive') ||
-                      (s.ticketType || '').toLowerCase().includes('vip')
-                    const isAura = (s.event || '').toUpperCase().includes('AURA')
-                    const category = isVip ? 'FT LINEUP INVITE' : isAura ? 'AURA GENESIS' : 'FRESHERS TAKEOVER'
+                    const isT2 = (s.event || '').toUpperCase().includes('TAKEOVER 2')
                     const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
-                    return isPaid && category === selectedEvent
+                    return isPaid && isT2
                   })
                   return buyersList.length
                 })()})</h3>
@@ -194,14 +164,9 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
               <div className="scroll" style={{ maxHeight: '420px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {(() => {
                   const buyersList = sales.filter(s => {
-                    const isVip =
-                      (s.gender || '').toLowerCase().includes('exclusive') ||
-                      (s.ticketType || '').toLowerCase().includes('exclusive') ||
-                      (s.ticketType || '').toLowerCase().includes('vip')
-                    const isAura = (s.event || '').toUpperCase().includes('AURA')
-                    const category = isVip ? 'FT LINEUP INVITE' : isAura ? 'AURA GENESIS' : 'FRESHERS TAKEOVER'
+                    const isT2 = (s.event || '').toUpperCase().includes('TAKEOVER 2')
                     const isPaid = ['paid', 'ticket_generated', 'emailed', 'email_failed', 'scanned'].includes(s.status)
-                    return isPaid && category === selectedEvent
+                    return isPaid && isT2
                   })
 
                   if (buyersList.length === 0) {
@@ -230,7 +195,7 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
                           width: '36px',
                           height: '36px',
                           borderRadius: '10px',
-                          background: selectedEvent === 'FRESHERS TAKEOVER' ? 'var(--grad-violet)' : selectedEvent === 'AURA GENESIS' ? 'var(--grad-teal)' : 'var(--grad-gold)',
+                          background: 'var(--grad-violet)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -312,14 +277,14 @@ export default function Events({ sales = [], onNavigateToTickets }: Props) {
       <div className="kpi-row">
         <div className="tile tile-teal">
           <div className="tile-label">LIVE EVENTS</div>
-          <div className="tile-value">3</div>
-          <div className="tile-sub">Freshers · Aura · VIP</div>
-          <div className="tile-delta"><span>🟢</span> All Live</div>
+          <div className="tile-value">1</div>
+          <div className="tile-sub">Coffee Rave</div>
+          <div className="tile-delta"><span>🟢</span> Active</div>
         </div>
         <div className="tile tile-gold">
           <div className="tile-label">TOTAL PASSES SOLD</div>
           <div className="tile-value">{totalSoldSum}</div>
-          <div className="tile-sub">Across all 3 events</div>
+          <div className="tile-sub">Takeover 2.0</div>
           <div className="tile-delta"><span>🎟</span> Active sales</div>
         </div>
         <div className="tile tile-orange">

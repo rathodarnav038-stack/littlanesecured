@@ -55,13 +55,7 @@ export default function Tickets({
   const baseTicketSales = sales.filter((s) => {
     if (!s.ticketId) return false
 
-    const isVip =
-      (s.gender || '').toLowerCase().includes('exclusive') ||
-      (s.ticketType || '').toLowerCase().includes('exclusive') ||
-      (s.ticketType || '').toLowerCase().includes('vip')
-
-    const isAura = (s.event || '').toUpperCase().includes('AURA')
-    const category = isVip ? 'ft lineup invite' : isAura ? 'aura genesis' : 'freshers takeover'
+    const category = 'takeover 2.0'
 
     if (eventFilter !== 'all' && category !== eventFilter)
       return false
@@ -229,9 +223,7 @@ export default function Tickets({
 
         <select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
           <option value="all">All events</option>
-          <option value="freshers takeover">FRESHERS TAKEOVER</option>
-          <option value="aura genesis">AURA GENESIS</option>
-          <option value="ft lineup invite">FT LINEUP INVITE</option>
+          <option value="takeover 2.0">TAKEOVER 2.0</option>
         </select>
 
         <button
