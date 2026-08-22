@@ -54,6 +54,7 @@ console.log(`React dist: ${_distDir} (exists: ${fs2.existsSync(distIndexHtml)})`
 
 // Serve static JS/CSS assets from the React build
 app.use('/assets', express.static(path.join(_distDir, 'assets')));
+app.use(express.static(_distDir)); // Serve other root-level files like takeover2.jpeg, favicon.ico
 
 app.get('/tickets', (req, res) => res.sendFile(distIndexHtml));
 app.get('/tickets/:splat', (req, res) => res.sendFile(distIndexHtml));

@@ -401,24 +401,14 @@
             <div id="bookingFormStep" style="padding:20px;">
                 <div id="b_formError" style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:10px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;margin-bottom:14px;"></div>
                 <form id="ticketBookingForm" style="display:flex;flex-direction:column;gap:13px;">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:#9C9AAB;margin-bottom:6px;letter-spacing:0.06em;">PASS TYPE</label>
-                            <select name="gender" id="b_gender" style="width:100%;background:#12131B;border:1px solid rgba(255,255,255,0.1);padding:10px 12px;border-radius:8px;color:#fff;font-size:0.9rem;">
-                                <option value="male">♂ Male — ₹499</option>
-                                <option value="female">♀ Female — ₹399</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:11px;font-weight:700;color:#9C9AAB;margin-bottom:6px;letter-spacing:0.06em;">QUANTITY</label>
-                            <select name="quantity" id="b_quantity" style="width:100%;background:#12131B;border:1px solid rgba(255,255,255,0.1);padding:10px 12px;border-radius:8px;color:#fff;font-size:0.9rem;">
-                                <option value="1">1 Pass</option>
-                                <option value="2">2 Passes</option>
-                                <option value="3">3 Passes</option>
-                                <option value="4">4 Passes</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label style="display:block;font-size:11px;font-weight:700;color:#9C9AAB;margin-bottom:6px;letter-spacing:0.06em;">PASS TYPE</label>
+                        <select name="gender" id="b_gender" style="width:100%;background:#12131B;border:1px solid rgba(255,255,255,0.1);padding:10px 12px;border-radius:8px;color:#fff;font-size:0.9rem;">
+                            <option value="male">♂ Male — ₹499</option>
+                            <option value="female">♀ Female — ₹399</option>
+                        </select>
                     </div>
+                    <input type="hidden" name="quantity" value="1">
                     <div>
                         <label style="display:block;font-size:11px;font-weight:700;color:#9C9AAB;margin-bottom:6px;letter-spacing:0.06em;">YOUR NAME</label>
                         <input type="text" name="name" placeholder="Full Name" required style="width:100%;background:#12131B;border:1px solid rgba(255,255,255,0.1);padding:10px 12px;border-radius:8px;color:#fff;font-size:0.9rem;box-sizing:border-box;">

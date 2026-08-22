@@ -199,8 +199,8 @@ export default function App({ isPresentation = false }: AppProps) {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('ft_price_male') || '699')
-  const [manualEvent, setManualEvent] = useState('FRESHERS TAKEOVER')
+  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('t2_price_male') || '499')
+  const [manualEvent, setManualEvent] = useState('TAKEOVER 2.0')
 
   const fetchSales = async (keyToUse = adminKey) => {
     if (!keyToUse) {
@@ -312,10 +312,13 @@ export default function App({ isPresentation = false }: AppProps) {
     const finalEvent = isInvite ? 'FRESHERS TAKEOVER' : manualEvent
     const finalGender = isInvite ? 'Exclusive' : (isAura ? 'aura' : manualGender)
     const finalAmount = isInvite ? 0 : manualAmount
+    const isT2 = manualEvent === 'TAKEOVER 2.0'
     const finalTicketType = isInvite
       ? 'Exclusive VIP Pass'
       : isAura
       ? 'Aura Genesis'
+      : isT2
+      ? (manualGender === 'female' ? 'Female Pass' : 'Male Pass')
       : manualGender === 'female'
       ? 'Female Pass'
       : 'Male Pass'
@@ -350,6 +353,12 @@ export default function App({ isPresentation = false }: AppProps) {
         }, 3000)
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
+        } else if (manualEvent === 'TAKEOVER 2.0') {
+          if (manualGender === 'female') {
+            setManualAmount(localStorage.getItem('t2_price_female') || '399')
+          } else {
+            setManualAmount(localStorage.getItem('t2_price_male') || '499')
+          }
         } else if (manualGender === 'female') {
           setManualAmount(localStorage.getItem('ft_price_female') || '599')
         } else {
@@ -368,7 +377,13 @@ export default function App({ isPresentation = false }: AppProps) {
 
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
-    if (manualEvent === 'FRESHERS TAKEOVER') {
+    if (manualEvent === 'TAKEOVER 2.0') {
+      if (val === 'female') {
+        setManualAmount(localStorage.getItem('t2_price_female') || '399')
+      } else {
+        setManualAmount(localStorage.getItem('t2_price_male') || '499')
+      }
+    } else if (manualEvent === 'FRESHERS TAKEOVER') {
       const saved = localStorage.getItem('ft_price_male') || '699'
       setManualAmount(saved)
     } else {
@@ -706,18 +721,11 @@ export default function App({ isPresentation = false }: AppProps) {
                   onChange={(e) => {
                     const evt = e.target.value
                     setManualEvent(evt)
-                    if (evt === 'AURA GENESIS') {
-                      setManualGender('aura')
-                      setManualAmount(localStorage.getItem('ft_price_aura') || '350')
-                    } else if (manualGender === 'aura') {
-                      setManualGender('male')
-                      setManualAmount(localStorage.getItem('ft_price_male') || '699')
-                    }
+                    setManualGender('male')
+                    setManualAmount(localStorage.getItem('t2_price_male') || '499')
                   }}
                 >
-                  <option value="FRESHERS TAKEOVER">FRESHERS TAKEOVER</option>
-                  <option value="AURA GENESIS">AURA GENESIS</option>
-                  <option value="FT LINEUP INVITE">FT LINEUP INVITE (FREE)</option>
+                  <option value="TAKEOVER 2.0">TAKEOVER 2.0</option>
                 </select>
               </div>
 
@@ -755,68 +763,31 @@ export default function App({ isPresentation = false }: AppProps) {
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: manualEvent === 'FT LINEUP INVITE' ? '1fr' : '1fr 1fr', gap: '10px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div className="field">
                   <label>PASS TYPE</label>
-                  {manualEvent === 'FT LINEUP INVITE' ? (
-                    <div
-                      style={{
-                        padding: '10px',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid #7C5CFA',
-                        backgroundColor: 'rgba(124,92,250,0.12)',
-                        color: '#7C5CFA',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                      }}
-                    >
-                      ✨ Exclusive VIP Invite (Free)
-                    </div>
-                  ) : manualEvent === 'AURA GENESIS' ? (
-                    <div
-                      style={{
-                        padding: '10px',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid #F5B942',
-                        backgroundColor: 'rgba(245,185,66,0.12)',
-                        color: '#F5B942',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                      }}
-                    >
-                      ✨ Aura Genesis Pass
-                    </div>
-                  ) : (
-                    <select
-                      value={manualGender}
-                      onChange={(e) => handleManualGenderChange(e.target.value)}
-                    >
-                      <option value="male">Freshers Male Pass (₹699)</option>
-                      <option value="female">Freshers Female Pass (₹599)</option>
-                    </select>
-                  )}
+                  <select
+                    value={manualGender}
+                    onChange={(e) => handleManualGenderChange(e.target.value)}
+                  >
+                    <option value="male">Takeover 2.0 Male Pass (₹499)</option>
+                    <option value="female">Takeover 2.0 Female Pass (₹399)</option>
+                  </select>
                 </div>
 
-                {manualEvent !== 'FT LINEUP INVITE' && (
-                  <div className="field">
-                    <label>PRICE (₹)</label>
-                    <input
-                      type="number"
-                      value={manualAmount}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setManualAmount(val)
-                        const key =
-                          manualEvent === 'AURA GENESIS'
-                            ? 'ft_price_aura'
-                            : manualGender === 'female'
-                            ? 'ft_price_female'
-                            : 'ft_price_male'
-                        localStorage.setItem(key, val)
-                      }}
-                    />
-                  </div>
-                )}
+                <div className="field">
+                  <label>PRICE (₹)</label>
+                  <input
+                    type="number"
+                    value={manualAmount}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setManualAmount(val)
+                      const key = manualGender === 'female' ? 't2_price_female' : 't2_price_male'
+                      localStorage.setItem(key, val)
+                    }}
+                  />
+                </div>
               </div>
 
               {manualSuccessMsg && (

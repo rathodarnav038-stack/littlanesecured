@@ -198,9 +198,8 @@ class BookingPopup{
         // Rate calculation logic
         const calculateRate = () => {
             const gender = document.getElementById('b_gender').value;
-            const qty = parseInt(document.getElementById('b_quantity').value) || 1;
             const rate = FT_PRICING[gender] || 0;
-            this.totalRateEl.textContent = `₹${rate * qty}`;
+            this.totalRateEl.textContent = `₹${rate}`;
         };
 
         document.getElementById('b_gender').addEventListener('change', calculateRate);

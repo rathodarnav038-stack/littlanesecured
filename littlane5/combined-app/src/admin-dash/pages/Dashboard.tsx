@@ -70,20 +70,14 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       (s.gender === 'female' || (s.ticketType || '').toLowerCase().includes('female'))
   )
 
-  const maleCount = freshersMale.reduce((acc, s) => acc + (s.quantity || 1), 0)
-  const femaleCount = freshersFemale.reduce((acc, s) => acc + (s.quantity || 1), 0)
-  const auraCount = auraGenesis.reduce((acc, s) => acc + (s.quantity || 1), 0)
-  const inviteCount = ftInvite.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const t2MaleCount = takeover2Male.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const t2FemaleCount = takeover2Female.reduce((acc, s) => acc + (s.quantity || 1), 0)
   const t2MaleRevenue = takeover2Male.reduce((acc, s) => acc + (s.amount || 0), 0)
   const t2FemaleRevenue = takeover2Female.reduce((acc, s) => acc + (s.amount || 0), 0)
   const grandTotal = Math.max(1, totalTickets)
 
-  const malePct = Math.round((maleCount / grandTotal) * 100)
-  const femalePct = Math.round((femaleCount / grandTotal) * 100)
-  const auraPct = Math.round((auraCount / grandTotal) * 100)
-  const invitePct = Math.round((inviteCount / grandTotal) * 100)
+  const t2MalePct = Math.round((t2MaleCount / grandTotal) * 100)
+  const t2FemalePct = Math.round((t2FemaleCount / grandTotal) * 100)
 
   const getChartData = () => {
     const chartData = []
@@ -438,52 +432,26 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Male Pass (₹699)</span>
-                    <span className="muted">{maleCount} ({malePct}%)</span>
+                    <span style={{ color: 'var(--ink)' }}>Takeover 2.0 Male (₹499)</span>
+                    <span className="muted">{t2MaleCount} ({t2MalePct}%)</span>
                   </div>
                   <div className="bar">
                     <div
                       className="fill"
-                      style={{ width: `${malePct}%`, background: 'var(--grad-violet)' }}
+                      style={{ width: `${t2MalePct}%`, background: 'var(--grad-violet)' }}
                     />
                   </div>
                 </div>
 
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Female Pass (₹599)</span>
-                    <span className="muted">{femaleCount} ({femalePct}%)</span>
+                    <span style={{ color: 'var(--ink)' }}>Takeover 2.0 Female (₹399)</span>
+                    <span className="muted">{t2FemaleCount} ({t2FemalePct}%)</span>
                   </div>
                   <div className="bar">
                     <div
                       className="fill"
-                      style={{ width: `${femalePct}%`, background: 'var(--grad-teal)' }}
-                    />
-                  </div>
-                </div>
-
-                <div className="tier-row">
-                  <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Aura Genesis</span>
-                    <span className="muted">{auraCount} ({auraPct}%)</span>
-                  </div>
-                  <div className="bar">
-                    <div
-                      className="fill"
-                      style={{ width: `${auraPct}%`, background: 'var(--grad-gold)' }}
-                    />
-                  </div>
-                </div>
-
-                <div className="tier-row">
-                  <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>FT Lineup VIP Invite</span>
-                    <span className="muted">{inviteCount} ({invitePct}%)</span>
-                  </div>
-                  <div className="bar">
-                    <div
-                      className="fill"
-                      style={{ width: `${invitePct}%`, background: 'var(--grad-orange)' }}
+                      style={{ width: `${t2FemalePct}%`, background: 'var(--grad-teal)' }}
                     />
                   </div>
                 </div>
@@ -496,130 +464,6 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         <div className="right-col">
           {/* Creative Event Overview Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px' }}>
-            {/* Event 1: Freshers Takeover Male */}
-            <div
-              className="card lt-hover-lift"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                setPopupEvent({ name: 'freshers male', top: rect.top + window.scrollY, left: rect.left - 520 })
-              }}
-              style={{
-                cursor: 'pointer',
-                background: 'linear-gradient(135deg, rgba(108, 76, 224, 0.12) 0%, rgba(59, 99, 232, 0.03) 100%)',
-                border: '1px solid var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 18px',
-                borderRadius: 'var(--radius-md)'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '15px' }}>🎉</span>
-                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover (Male)</h4>
-                </div>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Male Passes Sold</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{maleCount}</div>
-                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
-              </div>
-            </div>
-
-            {/* Event 2: Freshers Takeover Female */}
-            <div
-              className="card lt-hover-lift"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                setPopupEvent({ name: 'freshers female', top: rect.top + window.scrollY, left: rect.left - 520 })
-              }}
-              style={{
-                cursor: 'pointer',
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(244, 63, 94, 0.03) 100%)',
-                border: '1px solid var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 18px',
-                borderRadius: 'var(--radius-md)'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '15px' }}>👩</span>
-                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Freshers Takeover (Female)</h4>
-                </div>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Female Passes Sold</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#EC4899', fontFamily: 'monospace' }}>{femaleCount}</div>
-                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
-              </div>
-            </div>
-
-            {/* Event 3: Aura Genesis */}
-            <div
-              className="card lt-hover-lift"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                setPopupEvent({ name: 'aura genesis', top: rect.top + window.scrollY, left: rect.left - 520 })
-              }}
-              style={{
-                cursor: 'pointer',
-                background: 'linear-gradient(135deg, rgba(56, 217, 196, 0.12) 0%, rgba(59, 130, 246, 0.03) 100%)',
-                border: '1px solid var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 18px',
-                borderRadius: 'var(--radius-md)'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '15px' }}>✨</span>
-                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>Aura Genesis</h4>
-                </div>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>Electronic Skyline Showcase</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#38D9C4', fontFamily: 'monospace' }}>{auraCount}</div>
-                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
-              </div>
-            </div>
-
-            {/* Event 4: FT Lineup Invite */}
-            <div
-              className="card lt-hover-lift"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                setPopupEvent({ name: 'ft lineup invite', top: rect.top + window.scrollY, left: rect.left - 520 })
-              }}
-              style={{
-                cursor: 'pointer',
-                background: 'linear-gradient(135deg, rgba(245, 197, 66, 0.12) 0%, rgba(245, 133, 77, 0.03) 100%)',
-                border: '1px solid var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '14px 18px',
-                borderRadius: 'var(--radius-md)'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '15px' }}>⭐</span>
-                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>FT Lineup Invite</h4>
-                </div>
-                <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'var(--ink-soft)' }}>VIP Exclusive Passes</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#F5B942', fontFamily: 'monospace' }}>{inviteCount}</div>
-                <div style={{ fontSize: '9px', fontWeight: 700, color: 'var(--ink-faint)', letterSpacing: '0.05em' }}>SOLD</div>
-              </div>
-            </div>
-
             {/* Takeover 2.0 Male Pass */}
             <div
               className="card lt-hover-lift"
