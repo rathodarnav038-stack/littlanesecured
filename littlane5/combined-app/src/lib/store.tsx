@@ -15,7 +15,7 @@ function fmtIST(date: Date | string | null | undefined): string {
   return `${months[ist.getUTCMonth()]} ${ist.getUTCDate()}, ${h12}:${m} ${ampm}`
 }
 
-export type TicketType = 'General' | 'VIP' | 'Backstage' | 'Male Pass' | 'Female Pass' | 'Aura Genesis'
+export type TicketType = 'General' | 'VIP' | 'Backstage' | 'Male Pass' | 'Female Pass' | 'Couple Pass' | 'Aura Genesis'
 export type TicketStatus = 'pending' | 'scanned'
 
 export interface Ticket {
@@ -95,7 +95,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               phone: sale.phone || '',
               dateLabel: isCoeParty ? '06 OCT 2026' : fmtIST(sale.generatedAt),
               venue: isCoeParty ? 'The Mills, Pune' : 'Flo The Brewery, Pune',
-              ticketType: sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General',
+              ticketType: sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : sale.gender === 'couple' ? 'Couple Pass' : 'General',
               price: `₹${sale.amount}`,
               qty: sale.quantity || 1,
               generatedBy: 'Admin',
@@ -198,6 +198,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const mapGender = (g: string): TicketType => {
           if (g === 'male') return 'Male Pass'
           if (g === 'female') return 'Female Pass'
+          if (g === 'couple') return 'Couple Pass'
           return 'General'
         }
 

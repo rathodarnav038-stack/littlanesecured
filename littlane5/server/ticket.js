@@ -30,7 +30,7 @@ const EVENT_DETAILS = {
     generatedBy: 'Littlane Events'
 };
 
-const GENDER_LABEL = { female: 'Female Pass', male: 'Male Pass' };
+const GENDER_LABEL = { female: 'Female Pass', male: 'Male Pass', couple: 'Couple Pass' };
 
 function generateTicketId() {
     // Short, human-readable, still unique: FT-XXXXXXXX

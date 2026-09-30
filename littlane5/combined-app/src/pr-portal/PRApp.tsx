@@ -31,7 +31,7 @@ const PR_USERS: (PRUser & { password: string })[] = [
 ]
 
 // ==================== COE FRESHERS PARTY PRICING ====================
-const PRICING = { female: 449, male: 549 }
+const PRICING = { female: 449, male: 549, couple: 699 }
 const API = ''
 
 // ==================== COE FRESHERS PARTY POPUP ====================
@@ -257,7 +257,7 @@ function SellTicketModal({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [gender, setGender] = useState<'male' | 'female'>('male')
+  const [gender, setGender] = useState<'male' | 'female' | 'couple'>('male')
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cash'>('razorpay')
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState<'form' | 'pending' | 'done'>('form')
@@ -285,7 +285,7 @@ function SellTicketModal({
           amount: data.amount * 100,
           currency: data.currency,
           name: 'Littlane',
-          description: `${gender === 'male' ? 'Male' : 'Female'} Pass — COE Unofficial Freshers Party 2026`,
+          description: `${gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Couple'} Pass — COE Unofficial Freshers Party 2026`,
           order_id: data.orderId,
           prefill: { name, email, contact: phone },
           theme: { color: '#7C5CFA' },
@@ -379,6 +379,7 @@ function SellTicketModal({
               <select value={gender} onChange={e => setGender(e.target.value as any)} style={{ width: '100%', background: 'var(--panel-2)', border: '1px solid var(--line)', padding: '10px 14px', borderRadius: '8px', color: 'var(--ink)' }}>
                 <option value="male">♂ Male Pass (₹{PRICING.male})</option>
                 <option value="female">♀ Female Pass (₹{PRICING.female})</option>
+                <option value="couple">♥ Couple Pass (₹{PRICING.couple})</option>
               </select>
             </div>
             <div>

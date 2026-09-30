@@ -17,7 +17,8 @@ app.use(express.json());
 const EVENT = { name: EVENT_NAME };
 const PRICING = {
     female: 449,
-    male: 549
+    male: 549,
+    couple: 699
 };
 
 // ==================== RAZORPAY SETUP ====================
@@ -131,7 +132,7 @@ app.post('/api/create-order', async (req, res) => {
     }
     const computed = computeAmount(gender, quantity);
     if (!computed) {
-        return res.status(400).json({ success: false, message: 'Invalid ticket type. Choose Male or Female pass.' });
+        return res.status(400).json({ success: false, message: 'Invalid ticket type. Choose a Female, Male, or Couple pass.' });
     }
     const { amount, qty } = computed;
 
@@ -442,7 +443,7 @@ app.get('/api/ticket/:ticketId/download', async (req, res) => {
     if (!fs2.existsSync(filePath)) {
         try {
             console.log(`[Ticket Download] File not found for ${sale.ticketId}. Rebuilding...`);
-            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General';
+            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : sale.gender === 'couple' ? 'Couple Pass' : 'General';
             await buildTicketPdf({
                 ticketId: sale.ticketId,
                 name: sale.name,
@@ -474,7 +475,7 @@ app.post('/api/ticket/:ticketId/resend', async (req, res) => {
     if (!fs2.existsSync(pdfPath)) {
         try {
             console.log(`[Ticket Resend] File not found for ${sale.ticketId}. Rebuilding...`);
-            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General';
+            const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : sale.gender === 'couple' ? 'Couple Pass' : 'General';
             await buildTicketPdf({
                 ticketId: sale.ticketId,
                 name: sale.name,
@@ -550,7 +551,7 @@ app.post('/api/admin/generate-ticket', requireDashboardAdmin, async (req, res) =
 
     const qty = parseInt(quantity, 10) || 1;
     const evtName = event || EVENT.name;
-    const tType = ticketType || (gender === 'male' ? 'Male Pass' : gender === 'female' ? 'Female Pass' : 'General');
+    const tType = ticketType || (gender === 'male' ? 'Male Pass' : gender === 'female' ? 'Female Pass' : gender === 'couple' ? 'Couple Pass' : 'General');
     
     // Compute price dynamically from single source of truth: PRICING
     let finalAmount = parseFloat(amount) || 0;
@@ -561,6 +562,8 @@ app.post('/api/admin/generate-ticket', requireDashboardAdmin, async (req, res) =
             finalAmount = PRICING.female * qty;
         } else if (lowerType.includes('male')) {
             finalAmount = PRICING.male * qty;
+        } else if (lowerType.includes('couple')) {
+            finalAmount = PRICING.couple * qty;
         } else {
             // General or other fallback
             finalAmount = 249 * qty;
@@ -1042,7 +1045,7 @@ app.post('/api/admin/pr-approve', requireDashboardAdmin, async (req, res) => {
 
     // Generate ticket + send email (same flow as normal payment)
     try {
-        const tType = sale.gender === 'male' ? 'Male Pass' : 'Female Pass';
+        const tType = sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : sale.gender === 'couple' ? 'Couple Pass' : 'General';
         const pdfPath = await buildTicketPdf({
             ticketId: sale.ticketId,
             name: sale.name,

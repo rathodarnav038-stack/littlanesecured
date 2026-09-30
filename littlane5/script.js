@@ -123,7 +123,7 @@ class TextScramble{
 }
 
 /* ==================== BOOKING POPUP (COE UNOFFICIAL FRESHERS PARTY 2026) ==================== */
-const FT_PRICING = { female: 449, male: 549 };
+const FT_PRICING = { female: 449, male: 549, couple: 699 };
 
 class BookingPopup{
     constructor(){
@@ -349,7 +349,7 @@ class BookingPopup{
         this.successStep.style.display = 'block';
 
         const d = result.details || {};
-        const genderLabel = result.gender === 'male' ? 'Male Pass' : result.gender === 'female' ? 'Female Pass' : 'General';
+        const genderLabel = result.gender === 'male' ? 'Male Pass' : result.gender === 'female' ? 'Female Pass' : result.gender === 'couple' ? 'Couple Pass' : 'General';
 
         document.getElementById('b_downloadBtn').href = result.downloadUrl || '#';
         document.getElementById('b_qrImg').src = result.qrDataUrl || '';

@@ -142,6 +142,8 @@ export default function Tickets({
           ? 'Male Pass'
           : s.gender === 'female'
           ? 'Female Pass'
+          : s.gender === 'couple'
+          ? 'Couple Pass'
           : String(s.gender || '').toLowerCase().includes('exclusive')
           ? 'Exclusive VIP'
           : 'General',

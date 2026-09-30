@@ -90,6 +90,8 @@ export default function Analytics({ sales = [] }: Props) {
         ? 'Male Pass'
         : s.gender === 'female'
         ? 'Female Pass'
+        : s.gender === 'couple'
+        ? 'Couple Pass'
         : String(s.gender || '').toLowerCase().includes('exclusive')
         ? 'VIP Invite'
         : 'General'
