@@ -105,8 +105,8 @@ function requireAdmin(req, res, next) {
 
 // ==================== 1. CREATE ORDER (start of checkout) ====================
 app.post('/api/create-order', async (req, res) => {
-    if (TEST_MODE && process.env.NODE_ENV === 'production') {
-        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    if (TEST_MODE && process.env.PAYMENTS_TEST_MODE !== 'true') {
+        return res.status(503).json({ success: false, message: 'Razorpay is not configured on this server. Please try again after payment setup is complete.' });
     }
     const { name, email, phone, gender, quantity } = req.body || {};
 
@@ -174,8 +174,8 @@ app.post('/api/create-order', async (req, res) => {
 
 // ==================== 2. VERIFY PAYMENT (after gateway completes) ====================
 app.post('/api/verify-payment', async (req, res) => {
-    if (TEST_MODE && process.env.NODE_ENV === 'production') {
-        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    if (TEST_MODE && process.env.PAYMENTS_TEST_MODE !== 'true') {
+        return res.status(503).json({ success: false, message: 'Razorpay is not configured on this server. Please try again after payment setup is complete.' });
     }
     const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body || {};
 
@@ -907,8 +907,8 @@ app.get('/api/pr/sales', async (req, res) => {
 
 // POST /api/pr/create-order — PR partner initiates a Razorpay payment for a customer
 app.post('/api/pr/create-order', async (req, res) => {
-    if (TEST_MODE && process.env.NODE_ENV === 'production') {
-        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    if (TEST_MODE && process.env.PAYMENTS_TEST_MODE !== 'true') {
+        return res.status(503).json({ success: false, message: 'Razorpay is not configured on this server. Please try again after payment setup is complete.' });
     }
     const { name, email, phone, gender, quantity, prUserId } = req.body || {};
     if (!name || !email || !phone || !gender || !prUserId)
