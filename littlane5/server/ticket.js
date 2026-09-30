@@ -107,12 +107,18 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         let y = BANNER_H + 22;
         doc.rect(0, BANNER_H, W, 1200 - BANNER_H).fill('#ffffff');
 
-        doc.font('Helvetica-Bold').fontSize(20).fillColor('#0d0d0f').text(brandName, 24, y);
-        y += 28;
+        const titleWidth = W - 48;
+        let titleFontSize = 20;
+        doc.font('Helvetica-Bold').fillColor('#0d0d0f');
+        while (titleFontSize > 14 && doc.fontSize(titleFontSize).widthOfString(brandName) > titleWidth) {
+            titleFontSize -= 0.5;
+        }
+        doc.fontSize(titleFontSize).text(brandName, 24, y, { width: titleWidth, lineBreak: false });
+        y += doc.currentLineHeight() + 6;
         const passLabel = GENDER_LABEL[gender] || gender;
         doc.font('Helvetica-Bold').fontSize(11).fillColor('#A855F7')
             .text(passLabel.toUpperCase(), 24, y);
-        y += 22;
+        y += doc.currentLineHeight() + 8;
         
         doc.font('Helvetica-Bold').fontSize(12).fillColor('#111111').text(`Attendee: ${name}`, 24, y);
         y += 22;
