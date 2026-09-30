@@ -151,6 +151,39 @@ button{cursor:pointer}
 .event-popup{background:var(--bg);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(40px) scale(.95);transition:transform .6s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,.4)}
 .event-popup-overlay.active .event-popup{transform:translateY(0) scale(1)}
 [data-theme="dark"] .event-popup{background:#0f0709;border:1px solid rgba(255,0,255,.12)}
+.event-popup.ticket-booking{background:radial-gradient(ellipse at 90% 0%,rgba(134,31,35,.23),transparent 42%),linear-gradient(155deg,#211011 0%,#12090a 72%);border:1px solid rgba(224,174,119,.22);border-radius:22px;color:#f7eee7;box-shadow:0 36px 110px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,235,216,.06)}
+.event-popup.ticket-booking .event-close{top:18px;right:18px;width:36px;height:36px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#e9d9cc;font-size:15px}
+.event-popup.ticket-booking .event-close:hover{background:rgba(225,169,115,.2);color:#fff;transform:none}
+.ticket-booking-head{padding:4px 42px 22px 0;border-bottom:1px solid rgba(255,232,211,.1);margin-bottom:22px}
+.ticket-booking-eyebrow{display:flex;align-items:center;gap:9px;color:#e5ae78;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
+.ticket-live-dot{width:7px;height:7px;border-radius:50%;background:#d95747;box-shadow:0 0 12px rgba(217,87,71,.75)}
+.ticket-booking-head h2{font-family:var(--font-d);font-size:clamp(22px,5vw,29px);line-height:1.08;letter-spacing:-.035em;font-weight:800;color:#fff4e9;margin:0 0 10px}
+.ticket-booking-head h2 span{color:#d9a16e}
+.ticket-booking-head p{font-size:12px;line-height:1.6;color:#ae9c94;margin:0}
+.ticket-booking-head p span{color:#d99a69;padding:0 3px}
+.littix-form{display:grid;gap:15px}
+.littix-field{display:grid;gap:7px;min-width:0}
+.littix-label{display:block;color:#d5c4ba;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.littix-input{display:block;width:100%;height:48px;padding:0 14px;border:1px solid rgba(245,220,199,.17);border-radius:10px;outline:none;background:rgba(255,248,241,.055);color:#fff7f1;font:500 14px var(--font-b);transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.littix-input::placeholder{color:#796c67}
+.littix-input:focus{border-color:#d7a071;background:rgba(255,248,241,.08);box-shadow:0 0 0 3px rgba(215,160,113,.12)}
+.littix-input:-webkit-autofill{-webkit-text-fill-color:#fff7f1;-webkit-box-shadow:0 0 0 1000px #271718 inset}
+select.littix-input{appearance:none;padding-right:42px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23d9a16e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+select.littix-input option{background:#211011;color:#fff7f1}
+.ticket-checkout{padding-top:3px}
+.ticket-total{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;margin-bottom:12px;border:1px solid rgba(245,220,199,.12);border-radius:11px;background:rgba(255,248,241,.045)}
+.ticket-total span{font-size:12px;font-weight:600;color:#b8a69d}
+.ticket-total strong{font:800 21px var(--font-d);letter-spacing:-.02em;color:#f0bd8b}
+.ticket-booking #b_formError{padding:10px 12px;border-radius:9px;background:rgba(187,55,55,.12);border:1px solid rgba(231,104,93,.25);color:#ffaaa1;font-size:12px;line-height:1.5}
+.ticket-booking .littix-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:11px;background:linear-gradient(105deg,#e5ad79,#f0c697);box-shadow:0 8px 24px rgba(181,105,61,.2);color:#291510;font:800 13px var(--font-b);letter-spacing:.015em;cursor:pointer;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.ticket-booking .littix-btn:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 12px 30px rgba(181,105,61,.28)}
+.ticket-booking .littix-btn:disabled{cursor:wait;filter:saturate(.65)}
+.ticket-secure-note{display:flex;justify-content:center;align-items:center;gap:7px;margin:12px 0 0;color:#887a74;font-size:10px;letter-spacing:.025em}
+.ticket-secure-note span{color:#d9a16e;font-size:14px}
+.ticket-booking-success h2{color:#fff4e9;font:800 26px var(--font-d)}
+.ticket-booking-success>p{color:#b8a69d;margin:8px 0}
+@media(max-width:520px){.event-popup.ticket-booking{padding:24px 20px!important;border-radius:18px}.ticket-booking-head{padding-right:38px}.ticket-booking-head p{max-width:35ch}}
+@media(max-height:700px){.event-popup.ticket-booking{padding-top:18px!important;padding-bottom:18px!important}.ticket-booking-head{padding-bottom:12px;margin-bottom:12px}.littix-form{gap:8px}.littix-field{gap:5px}.littix-input{height:40px}.ticket-total{padding:9px 14px;margin-bottom:7px}.ticket-booking .littix-btn{min-height:44px}.ticket-secure-note{margin-top:6px}}
 .event-close{position:absolute;top:16px;right:16px;z-index:5;width:40px;height:40px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease)}
 .event-close:hover{background:var(--neon1);transform:rotate(90deg)}
 .event-badge{position:absolute;top:16px;left:16px;z-index:5;background:var(--neon1);color:#fff;padding:8px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;animation:badge-pulse 2s ease-in-out infinite}

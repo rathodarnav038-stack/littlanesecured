@@ -86,14 +86,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           // Map DB sales to Littix Ticket objects
           const mapped: Ticket[] = data.sales.map((sale: any) => {
             const isScanned = sale.status === 'scanned' || !!sale.scannedAt
+            const isCoeParty = (sale.event || '').toUpperCase().includes('COE UNOFFICIAL FRESHERS PARTY 2026')
             return {
               id: sale.ticketId || sale.orderId,
               event: sale.event || 'FRESHERS TAKEOVER',
               attendee: sale.name,
               email: sale.email,
               phone: sale.phone || '',
-              dateLabel: fmtIST(sale.generatedAt),
-              venue: 'Flo The Brewery, Pune',
+              dateLabel: isCoeParty ? '06 OCT 2026' : fmtIST(sale.generatedAt),
+              venue: isCoeParty ? 'The Mills, Pune' : 'Flo The Brewery, Pune',
               ticketType: sale.gender === 'male' ? 'Male Pass' : sale.gender === 'female' ? 'Female Pass' : 'General',
               price: `₹${sale.amount}`,
               qty: sale.quantity || 1,

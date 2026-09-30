@@ -17,7 +17,7 @@ export default function EmailDelivery({ sales = [], onResend }: EmailDeliveryPro
       time: s.createdAt ? new Date(s.createdAt).toLocaleString('en-IN') : '—',
       recipient: s.email,
       name: s.name || 'Attendee',
-      subject: `Your ${s.event || 'FRESHERS TAKEOVER'} Pass`,
+      subject: `Your ${s.event || 'COE UNOFFICIAL FRESHERS PARTY 2026'} Pass`,
       status: s.emailStatus, // sent, failed, pending
       error: s.emailError || '—',
       retryCount: s.errorLog ? s.errorLog.filter((log: any) => log.stage === 'email').length : 0,

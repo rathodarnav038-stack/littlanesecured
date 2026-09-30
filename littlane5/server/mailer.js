@@ -84,8 +84,15 @@ async function getTransporter() {
 async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, pdfPath, qrBuffer, downloadUrl, event }) {
     try {
         const eventTitle = event || EVENT_NAME;
+        const isCurrentParty = eventTitle.toUpperCase().includes('COE UNOFFICIAL FRESHERS PARTY 2026');
         const genderLabel = GENDER_LABEL[gender] || gender;
         const fromEmail = process.env.EMAIL_FROM || '"Littlane Events" <events@littlane.com>';
+        const eventDetailsHtml = isCurrentParty
+            ? '<p style="font-size: 14px; color: #333333;"><strong>Event details:</strong> 6 October 2026 at The Mills, behind Hotel Grand Sheraton, Pune. Food, live DJ and dance.</p>'
+            : '';
+        const eventDetailsText = isCurrentParty
+            ? '\n\nEvent details: 6 October 2026 at The Mills, behind Hotel Grand Sheraton, Pune. Food, live DJ and dance.'
+            : '';
 
         const attachments = [
             { filename: `${ticketId}.pdf`, path: pdfPath }
@@ -146,16 +153,18 @@ async function sendTicketEmail({ to, name, ticketId, gender, quantity, amount, p
                 </p>
               </div>
 
+              ${eventDetailsHtml}
               <p style="font-size: 16px; font-weight: bold; color: #000000;">Find your ticket in the PDF attached below.</p>
               
               <p style="margin-top: 30px; font-size: 13px; color: #666666;">
+                ${isCurrentParty ? 'COE Unofficial Freshers Party 2026 · 6 October 2026 · The Mills, behind Hotel Grand Sheraton, Pune<br>' : ''}
                 See you on the dancefloor!<br>
                 <strong>— LITTLANE Entertainment</strong>
               </p>
             </div>`;
 
             subject = `Your ${eventTitle} Pass — ${ticketId}`;
-            text = `Hi ${name},\n\nThanks for booking your ${eventTitle} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
+            text = `Hi ${name},\n\nThanks for booking your ${eventTitle} pass! Your ticket (${ticketId}) is attached as a PDF.\n\n🎟️ Ticket Guidelines\n\n• Your QR code is unique and valid for one-time entry only.\n• Do not share or forward this ticket. If someone else uses it first, your entry will be denied.\n• Carry a valid Photo ID and your payment screenshot/receipt for verification at the venue.\n• Keep your ticket ready on your phone or as a printed copy.\n• Duplicate, tampered, or already-scanned tickets will not be accepted.\n\nNO EXCUSES. All ticket purchases are final. Once booked, tickets are non-refundable and non-transferable under any circumstances.${eventDetailsText}\n\nFind your ticket in the PDF attached below.\n\nSee you on the dancefloor!\n— LITTLANE Entertainment`;
         }
 
         // 1. If Brevo API is configured, use Brevo HTTP API (Port 443 — Never Blocked)

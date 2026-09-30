@@ -11,21 +11,22 @@ const { randomUUID } = require('crypto');
 const TICKETS_DIR = path.join(__dirname, 'tickets');
 if (!fs.existsSync(TICKETS_DIR)) fs.mkdirSync(TICKETS_DIR, { recursive: true });
 
-const BANNER_PATH = path.join(__dirname, 'ticket-banner.png');
+const BANNER_PATH = path.join(__dirname, 'coe-freshers-party-2026.png');
+const LEGACY_FRESHERS_BANNER_PATH = path.join(__dirname, 'ticket-banner.png');
 const AURA_BANNER_PATH = path.join(__dirname, 'aura-ticket-banner.jpg');
 const INVITE_BANNER_PATH = path.join(__dirname, 'invite-banner.png');
 const TAKEOVER2_BANNER_PATH = path.join(__dirname, 'takeover2-banner.jpeg');
 
-const EVENT_NAME = 'FRESHERS TAKEOVER';
+const EVENT_NAME = 'COE UNOFFICIAL FRESHERS PARTY 2026';
 
 // ---- Edit these to match your actual event details ----
 const EVENT_DETAILS = {
-    brand: 'TAKEOVER 2.0',
-    stage: 'Coffee Rave',
+    brand: 'COE UNOFFICIAL FRESHERS PARTY 2026',
+    stage: 'Food · Live DJ · Dance',
     admission: 'General Admission',
-    date: 'TBA',
+    date: '06 OCT 2026',
     time: 'TBA',
-    venue: 'Pune',
+    venue: 'THE MILLS · PUNE',
     generatedBy: 'Littlane Events'
 };
 
@@ -63,16 +64,20 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
     const filePath = path.join(TICKETS_DIR, `${ticketId}.pdf`);
     const qrPngBuffer = await buildQrBuffer(ticketId);
 
-    const isAura = event && event.toUpperCase().includes('AURA');
-    const brandName = isAura ? 'AURA GENESIS' : EVENT_DETAILS.brand;
-    const eventDate = isAura ? '14 AUG 2026' : EVENT_DETAILS.date;
+    const eventName = (event || EVENT_NAME).toUpperCase();
+    const isAura = eventName.includes('AURA');
+    const isLegacyTakeover = eventName.includes('TAKEOVER 2');
+    const isLegacyFreshers = eventName === 'FRESHERS TAKEOVER';
+    const brandName = isAura ? 'AURA GENESIS' : isLegacyTakeover ? 'TAKEOVER 2.0' : isLegacyFreshers ? 'FRESHERS TAKEOVER' : EVENT_DETAILS.brand;
+    const eventDate = isAura ? '14 AUG 2026' : isLegacyFreshers ? '05 AUG 2026' : isLegacyTakeover ? 'TBA' : EVENT_DETAILS.date;
+    const eventVenue = isLegacyFreshers ? 'Flo The Brewery, Pune' : isLegacyTakeover ? 'Pune' : EVENT_DETAILS.venue;
     const bannerFile = isAura ? AURA_BANNER_PATH : BANNER_PATH;
 
     const W = 380;
-    const BANNER_H = 380;
+    const BANNER_H = 650;
 
     return new Promise((resolve, reject) => {
-        const doc = new PDFDocument({ size: [W, 900], margin: 0 });
+        const doc = new PDFDocument({ size: [W, 1200], margin: 0 });
         const stream = fs.createWriteStream(filePath);
         doc.pipe(stream);
 
@@ -81,6 +86,8 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
             bannerToUse = TAKEOVER2_BANNER_PATH;
         } else if (event && event.toUpperCase().includes('AURA') && fs.existsSync(AURA_BANNER_PATH)) {
             bannerToUse = AURA_BANNER_PATH;
+        } else if (event && event.toUpperCase() === 'FRESHERS TAKEOVER' && fs.existsSync(LEGACY_FRESHERS_BANNER_PATH)) {
+            bannerToUse = LEGACY_FRESHERS_BANNER_PATH;
         } else if (gender && gender.toUpperCase().includes('EXCLUSIVE') && fs.existsSync(INVITE_BANNER_PATH)) {
             bannerToUse = INVITE_BANNER_PATH;
         }
@@ -98,7 +105,7 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
 
         // ---- White details panel ----
         let y = BANNER_H + 22;
-        doc.rect(0, BANNER_H, W, 900 - BANNER_H).fill('#ffffff');
+        doc.rect(0, BANNER_H, W, 1200 - BANNER_H).fill('#ffffff');
 
         doc.font('Helvetica-Bold').fontSize(20).fillColor('#0d0d0f').text(brandName, 24, y);
         y += 28;
@@ -113,7 +120,7 @@ async function buildTicketPdf({ ticketId, name, email, gender, quantity, amount,
         // Info pills: date / time / venue (Aura Genesis: date only)
         const pillY = y;
         const pillH = 26;
-        const infoPills = isAura ? [eventDate] : [eventDate, EVENT_DETAILS.time, EVENT_DETAILS.venue];
+        const infoPills = isAura ? [eventDate] : [eventDate, EVENT_DETAILS.time, eventVenue];
         let px = 24;
         infoPills.forEach(text => {
             const w = 30 + text.length * 6.5;

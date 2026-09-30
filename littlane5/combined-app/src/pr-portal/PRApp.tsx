@@ -30,11 +30,11 @@ const PR_USERS: (PRUser & { password: string })[] = [
   { id: 'pr5', username: 'partner5', password: 'Wav3!Msc56', displayName: 'Partner Five' },
 ]
 
-// ==================== TAKEOVER 2.0 PRICING ====================
-const PRICING = { female: 399, male: 499 }
+// ==================== COE FRESHERS PARTY PRICING ====================
+const PRICING = { female: 449, male: 549 }
 const API = ''
 
-// ==================== TAKEOVER 2.0 POPUP ====================
+// ==================== COE FRESHERS PARTY POPUP ====================
 function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () => void }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -71,8 +71,8 @@ function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () =>
         {/* Flyer Image */}
         <div style={{ position: 'relative', width: '100%' }}>
           <img
-            src="/takeover2.jpeg"
-            alt="Takeover 2.0 — Coffee Rave"
+            src="/images/coe-freshers-party-2026.png"
+            alt="COE Unofficial Freshers Party 2026"
             style={{ width: '100%', display: 'block', objectFit: 'cover' }}
           />
           {/* Dark gradient overlay at bottom of image */}
@@ -105,7 +105,7 @@ function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () =>
               background: 'rgba(124,92,250,0.18)', color: '#A78BFA',
               border: '1px solid rgba(124,92,250,0.35)',
               padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em',
-            }}>☕ COFFEE RAVE</span>
+            }}>🎟 PASSES OUT NOW</span>
             <span style={{
               background: 'rgba(61,220,132,0.12)', color: '#3DDC84',
               border: '1px solid rgba(61,220,132,0.25)',
@@ -114,10 +114,10 @@ function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () =>
           </div>
 
           <h2 style={{ margin: '0 0 4px', fontSize: '1.35rem', fontWeight: 900, color: '#F5F4F8', letterSpacing: '-0.02em' }}>
-            Takeover 2.0
+            COE Freshers Party 2026
           </h2>
           <p style={{ margin: '0 0 20px', fontSize: '0.88rem', color: '#9C9AAB' }}>
-            Book your pass now — limited seats available!
+            6 October · The Mills, Pune · Limited passes available!
           </p>
 
           {/* Pricing */}
@@ -127,14 +127,14 @@ function TakeoverPopup({ onClose, onSell }: { onClose: () => void; onSell: () =>
               borderRadius: '14px', padding: '14px', textAlign: 'center',
             }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C9AAB', marginBottom: '4px', letterSpacing: '0.06em' }}>♂ MALE PASS</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#7C5CFA' }}>₹499</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#7C5CFA' }}>₹549</div>
             </div>
             <div style={{
               background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.25)',
               borderRadius: '14px', padding: '14px', textAlign: 'center',
             }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#9C9AAB', marginBottom: '4px', letterSpacing: '0.06em' }}>♀ FEMALE PASS</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#EC4899' }}>₹399</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#EC4899' }}>₹449</div>
             </div>
           </div>
 
@@ -285,7 +285,7 @@ function SellTicketModal({
           amount: data.amount * 100,
           currency: data.currency,
           name: 'Littlane',
-          description: `${gender === 'male' ? 'Male' : 'Female'} Pass — Takeover 2.0 (Coffee Rave)`,
+          description: `${gender === 'male' ? 'Male' : 'Female'} Pass — COE Unofficial Freshers Party 2026`,
           order_id: data.orderId,
           prefill: { name, email, contact: phone },
           theme: { color: '#7C5CFA' },
@@ -348,13 +348,13 @@ function SellTicketModal({
   return (
     <div className="pr-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={onClose}>
       <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '500px', padding: 0, overflow: 'hidden' }}>
-        {/* Modal header with Takeover 2.0 branding */}
+        {/* Modal header with COE Freshers Party 2026 branding */}
         <div style={{ position: 'relative', overflow: 'hidden' }}>
-          <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
+          <img src="/images/coe-freshers-party-2026.png" alt="COE Freshers Party 2026" style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(10,11,16,0.9) 100%)', display: 'flex', alignItems: 'flex-end', padding: '16px 20px', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: 900, color: '#fff', letterSpacing: '-0.01em' }}>Takeover 2.0 — Coffee Rave</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Male ₹499 · Female ₹399</div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#fff', letterSpacing: '-0.01em' }}>COE Unofficial Freshers Party 2026</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Male ₹549 · Female ₹449</div>
             </div>
             <button onClick={onClose} style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
           </div>
@@ -459,7 +459,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
 
   return (
     <div className={`app-canvas pr-portal ${dark ? '' : 'theme-light'}`} style={{ '--rail-w': '0px' } as React.CSSProperties}>
-      {/* Takeover 2.0 Popup */}
+      {/* COE Freshers Party popup */}
       {showPopup && (
         <TakeoverPopup
           onClose={() => setShowPopup(false)}
@@ -484,7 +484,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
         <div style={{ flex: 1 }} />
 
         <div className="topbar-actions">
-          {/* Takeover 2.0 banner button */}
+          {/* COE Freshers Party banner button */}
           <button
             onClick={() => setShowPopup(true)}
             style={{
@@ -502,7 +502,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
               gap: '5px',
             }}
           >
-            ☕ TAKEOVER 2.0
+            🎟 FRESHERS PARTY 2026
           </button>
 
           <button
@@ -536,7 +536,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
           cursor: 'pointer',
           border: '1px solid rgba(124,92,250,0.25)',
         }} onClick={() => setShowPopup(true)}>
-          <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }} />
+          <img src="/images/coe-freshers-party-2026.png" alt="COE Freshers Party 2026" style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }} />
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(to right, rgba(10,11,16,0.85) 0%, transparent 60%)',
@@ -544,12 +544,12 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
           }}>
             <div>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ background: 'rgba(124,92,250,0.25)', border: '1px solid rgba(124,92,250,0.5)', color: '#c4b5fd', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>☕ COFFEE RAVE</span>
-                <span style={{ background: 'rgba(61,220,132,0.2)', border: '1px solid rgba(61,220,132,0.4)', color: '#3DDC84', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>🔴 LIVE</span>
+                <span style={{ background: 'rgba(124,92,250,0.25)', border: '1px solid rgba(124,92,250,0.5)', color: '#c4b5fd', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>🎟 PASSES OUT NOW</span>
+                <span style={{ background: 'rgba(61,220,132,0.2)', border: '1px solid rgba(61,220,132,0.4)', color: '#3DDC84', padding: '3px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.08em' }}>📍 THE MILLS · PUNE</span>
               </div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>Takeover 2.0</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>COE Freshers Party 2026</div>
               <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', marginTop: '2px' }}>
-                ♂ Male ₹499 &nbsp;·&nbsp; ♀ Female ₹399
+                ♂ Male ₹549 &nbsp;·&nbsp; ♀ Female ₹449
               </div>
             </div>
           </div>
@@ -764,7 +764,7 @@ function PRDashboard({ prUser, onLogout, dark, setDark }: { prUser: PRUser; onLo
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>EVENT</div>
-                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'TAKEOVER 2.0'}</div>
+                    <div style={{ fontWeight: 600, marginTop: '2px' }}>{viewSale.event || 'COE UNOFFICIAL FRESHERS PARTY 2026'}</div>
                   </div>
                   <div style={{ background: 'var(--panel-2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <div style={{ fontSize: '10px', color: 'var(--ink-soft)', fontWeight: 700 }}>TICKET TYPE</div>

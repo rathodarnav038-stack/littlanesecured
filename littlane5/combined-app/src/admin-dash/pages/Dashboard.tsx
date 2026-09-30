@@ -58,10 +58,10 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
       (s.ticketType || '').toLowerCase().includes('exclusive')
   )
 
-  // Takeover 2.0 (Coffee Rave) — also catch old 'FRESHERS TAKEOVER' records already in DB
+  // Current COE Freshers Party ticket sales
   const isT2Sale = (s: any) => {
     const ev = (s.event || '').toUpperCase()
-    return ev.includes('TAKEOVER 2') || ev.includes('FRESHERS') || ev === ''
+    return ev.includes('COE UNOFFICIAL FRESHERS PARTY 2026')
   }
   const takeover2Male = paidSales.filter(
     s =>
@@ -170,7 +170,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
         id: `created-${sale.orderId}`,
         type: 'purchase',
         title: `${sale.name || 'Attendee'} booked a pass`,
-        sub: `${sale.event || 'FRESHERS TAKEOVER'} · ₹${sale.amount || 0}`,
+        sub: `${sale.event || 'COE UNOFFICIAL FRESHERS PARTY 2026'} · ₹${sale.amount || 0}`,
         time: timeLabel,
         badge: <span className="badge badge-blue"><span className="badge-dot" />New</span>,
       })
@@ -193,7 +193,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
           id: `pr-cash-${sale.orderId}`,
           type: 'purchase',
           title: `PR cash sale — ${sale.name || 'Attendee'} (${sale.prName || sale.prUserId || 'PR'})`,
-          sub: `${sale.event || 'TAKEOVER 2.0'} · ₹${sale.amount || 0} · Awaiting approval`,
+          sub: `${sale.event || 'COE UNOFFICIAL FRESHERS PARTY 2026'} · ₹${sale.amount || 0} · Awaiting approval`,
           time: timeLabel,
           badge: <span className="badge" style={{ background: 'rgba(251,146,60,0.2)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.4)' }}><span className="badge-dot" style={{ background: '#fb923c' }} />PR Pending</span>,
         })
@@ -447,7 +447,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Takeover 2.0 Male (₹499)</span>
+                    <span style={{ color: 'var(--ink)' }}>COE Freshers Party Male (₹549)</span>
                     <span className="muted">{t2MaleCount} ({t2MalePct}%)</span>
                   </div>
                   <div className="bar">
@@ -460,7 +460,7 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
 
                 <div className="tier-row">
                   <div className="h">
-                    <span style={{ color: 'var(--ink)' }}>Takeover 2.0 Female (₹399)</span>
+                    <span style={{ color: 'var(--ink)' }}>COE Freshers Party Female (₹449)</span>
                     <span className="muted">{t2FemaleCount} ({t2FemalePct}%)</span>
                   </div>
                   <div className="bar">
@@ -492,14 +492,14 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.15, filter: 'blur(10px)', transform: 'scale(1.2)' }} />
+              <img src="/images/coe-freshers-party-2026.png" alt="COE Freshers Party 2026" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.15, filter: 'blur(10px)', transform: 'scale(1.2)' }} />
               <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '15px' }}>☕</span>
-                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#c4b5fd' }}>Takeover 2.0 — Male</h4>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#c4b5fd' }}>COE Freshers Party — Male</h4>
                   </div>
-                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹499 · Coffee Rave · Male Passes</p>
+                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹549 · 6 October · Male Passes</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '20px', fontWeight: 800, color: '#7C5CFA', fontFamily: 'monospace' }}>{t2MaleCount}</div>
@@ -521,14 +521,14 @@ export default function Dashboard({ sales = [], summary = {}, testMode, onManual
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <img src="/takeover2.jpeg" alt="Takeover 2.0" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.15, filter: 'blur(10px)', transform: 'scale(1.2)' }} />
+              <img src="/images/coe-freshers-party-2026.png" alt="COE Freshers Party 2026" style={{ width: '100%', height: '70px', objectFit: 'cover', display: 'block', opacity: 0.15, filter: 'blur(10px)', transform: 'scale(1.2)' }} />
               <div style={{ position: 'absolute', inset: 0, padding: '10px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '15px' }}>☕</span>
-                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#f9a8d4' }}>Takeover 2.0 — Female</h4>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 800, color: '#f9a8d4' }}>COE Freshers Party — Female</h4>
                   </div>
-                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹399 · Coffee Rave · Female Passes</p>
+                  <p style={{ margin: '3px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>₹449 · 6 October · Female Passes</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '20px', fontWeight: 800, color: '#EC4899', fontFamily: 'monospace' }}>{t2FemaleCount}</div>

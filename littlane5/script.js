@@ -122,8 +122,8 @@ class TextScramble{
     }
 }
 
-/* ==================== BOOKING POPUP (TAKEOVER 2.0) ==================== */
-const FT_PRICING = { female: 399, male: 499 };
+/* ==================== BOOKING POPUP (COE UNOFFICIAL FRESHERS PARTY 2026) ==================== */
+const FT_PRICING = { female: 449, male: 549 };
 
 class BookingPopup{
     constructor(){
@@ -137,7 +137,7 @@ class BookingPopup{
         this.formError = document.getElementById('b_formError');
         this.submitBtn = document.getElementById('b_submitBtn');
         this.submitLabel = document.getElementById('b_submitLabel');
-        this.apiBase = window.LITTLANE_API_BASE || 'http://localhost:3000';
+        this.apiBase = window.LITTLANE_API_BASE || window.location.origin;
 
         // ==================== EVENT FLYER POPUP ====================
         // Init flyer BEFORE the early return so it always works
@@ -146,12 +146,6 @@ class BookingPopup{
         this.flyerClose = document.getElementById('flyerClose');
         
         if (this.flyerOverlay) {
-            // Auto open the flyer after 1.5 seconds on page load
-            setTimeout(() => {
-                this.flyerOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }, 1500);
-
             const closeFlyer = () => {
                 this.flyerOverlay.classList.remove('active');
                 document.body.style.overflow = '';
@@ -181,6 +175,12 @@ class BookingPopup{
             this.trigger.addEventListener('click',(e)=>{
                 e.preventDefault();
                 this.openBooking();
+            });
+            this.trigger.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.openBooking();
+                }
             });
         }
 

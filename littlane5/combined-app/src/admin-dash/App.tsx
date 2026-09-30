@@ -199,8 +199,8 @@ export default function App({ isPresentation = false }: AppProps) {
   const [manualPhone, setManualPhone] = useState('')
   const [manualGender, setManualGender] = useState('male')
   const [manualQty, setManualQty] = useState('1')
-  const [manualAmount, setManualAmount] = useState(() => localStorage.getItem('t2_price_male') || '499')
-  const [manualEvent, setManualEvent] = useState('TAKEOVER 2.0')
+  const [manualAmount, setManualAmount] = useState('549')
+  const [manualEvent, setManualEvent] = useState('COE UNOFFICIAL FRESHERS PARTY 2026')
 
   const fetchSales = async (keyToUse = adminKey) => {
     if (!keyToUse) {
@@ -312,12 +312,12 @@ export default function App({ isPresentation = false }: AppProps) {
     const finalEvent = isInvite ? 'FRESHERS TAKEOVER' : manualEvent
     const finalGender = isInvite ? 'Exclusive' : (isAura ? 'aura' : manualGender)
     const finalAmount = isInvite ? 0 : manualAmount
-    const isT2 = manualEvent === 'TAKEOVER 2.0'
+    const isCurrentParty = manualEvent === 'COE UNOFFICIAL FRESHERS PARTY 2026'
     const finalTicketType = isInvite
       ? 'Exclusive VIP Pass'
       : isAura
       ? 'Aura Genesis'
-      : isT2
+      : isCurrentParty
       ? (manualGender === 'female' ? 'Female Pass' : 'Male Pass')
       : manualGender === 'female'
       ? 'Female Pass'
@@ -353,12 +353,8 @@ export default function App({ isPresentation = false }: AppProps) {
         }, 3000)
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
-        } else if (manualEvent === 'TAKEOVER 2.0') {
-          if (manualGender === 'female') {
-            setManualAmount(localStorage.getItem('t2_price_female') || '399')
-          } else {
-            setManualAmount(localStorage.getItem('t2_price_male') || '499')
-          }
+        } else if (manualEvent === 'COE UNOFFICIAL FRESHERS PARTY 2026') {
+          setManualAmount(manualGender === 'female' ? '449' : '549')
         } else if (manualGender === 'female') {
           setManualAmount(localStorage.getItem('ft_price_female') || '599')
         } else {
@@ -377,12 +373,8 @@ export default function App({ isPresentation = false }: AppProps) {
 
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
-    if (manualEvent === 'TAKEOVER 2.0') {
-      if (val === 'female') {
-        setManualAmount(localStorage.getItem('t2_price_female') || '399')
-      } else {
-        setManualAmount(localStorage.getItem('t2_price_male') || '499')
-      }
+    if (manualEvent === 'COE UNOFFICIAL FRESHERS PARTY 2026') {
+      setManualAmount(val === 'female' ? '449' : '549')
     } else if (manualEvent === 'FRESHERS TAKEOVER') {
       const saved = localStorage.getItem('ft_price_male') || '699'
       setManualAmount(saved)
@@ -722,10 +714,10 @@ export default function App({ isPresentation = false }: AppProps) {
                     const evt = e.target.value
                     setManualEvent(evt)
                     setManualGender('male')
-                    setManualAmount(localStorage.getItem('t2_price_male') || '499')
+                    setManualAmount('549')
                   }}
                 >
-                  <option value="TAKEOVER 2.0">TAKEOVER 2.0</option>
+                  <option value="COE UNOFFICIAL FRESHERS PARTY 2026">COE UNOFFICIAL FRESHERS PARTY 2026</option>
                 </select>
               </div>
 
@@ -770,8 +762,8 @@ export default function App({ isPresentation = false }: AppProps) {
                     value={manualGender}
                     onChange={(e) => handleManualGenderChange(e.target.value)}
                   >
-                    <option value="male">Takeover 2.0 Male Pass (₹499)</option>
-                    <option value="female">Takeover 2.0 Female Pass (₹399)</option>
+                    <option value="male">COE Freshers Party Male Pass (₹549)</option>
+                    <option value="female">COE Freshers Party Female Pass (₹449)</option>
                   </select>
                 </div>
 

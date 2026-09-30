@@ -136,7 +136,7 @@ export default function Tickets({
       buyer: s.name,
       email: s.email,
       phone: s.phone || '—',
-      event: (() => { const ev = (s.event || '').toUpperCase(); return ev && !ev.includes('FRESHERS') ? s.event : 'TAKEOVER 2.0' })(),
+      event: s.event || 'COE UNOFFICIAL FRESHERS PARTY 2026',
       type:
         s.gender === 'male'
           ? 'Male Pass'
@@ -223,6 +223,7 @@ export default function Tickets({
 
         <select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)}>
           <option value="all">All events</option>
+          <option value="coe unofficial freshers party 2026">COE UNOFFICIAL FRESHERS PARTY 2026</option>
           <option value="takeover 2.0">TAKEOVER 2.0</option>
         </select>
 

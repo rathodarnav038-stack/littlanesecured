@@ -72,7 +72,7 @@ export default function TicketCard({ dark, ticket, onBack }: Props) {
         >
           <div className="relative overflow-hidden">
             <motion.img
-              src={ticket.event && ticket.event.toUpperCase().includes('AURA') ? "/aura-genesis-banner.jpg" : "/images/freshers-takeover-banner.png"}
+              src={ticket.event && ticket.event.toUpperCase().includes('AURA') ? "/aura-genesis-banner.jpg" : ticket.event?.toUpperCase().includes('COE UNOFFICIAL FRESHERS PARTY 2026') ? "/images/coe-freshers-party-2026.png" : "/images/freshers-takeover-banner.png"}
               alt={ticket.event || "Banner"}
               className="w-full object-cover"
               style={{ height: 180 }}
@@ -110,7 +110,7 @@ export default function TicketCard({ dark, ticket, onBack }: Props) {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <h2 className={`text-lg font-black uppercase tracking-tight ${text}`}>{ticket.event}</h2>
-            <p className="text-sm font-semibold text-[#A855F7] mt-0.5">Main Stage · {ticket.ticketType} Admission</p>
+            <p className="text-sm font-semibold text-[#A855F7] mt-0.5">{ticket.event?.toUpperCase().includes('COE UNOFFICIAL FRESHERS PARTY 2026') ? 'Food · Live DJ · Dance' : 'Main Stage'} · {ticket.ticketType} Admission</p>
 
             <div className="flex gap-2 mt-3 flex-wrap">
               {(ticket.event && ticket.event.toUpperCase().includes('AURA')

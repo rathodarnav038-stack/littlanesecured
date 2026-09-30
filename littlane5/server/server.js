@@ -16,8 +16,8 @@ app.use(express.json());
 // ==================== EVENT & PRICING ====================
 const EVENT = { name: EVENT_NAME };
 const PRICING = {
-    female: 399,
-    male: 499
+    female: 449,
+    male: 549
 };
 
 // ==================== RAZORPAY SETUP ====================
@@ -34,7 +34,7 @@ if (!TEST_MODE) {
 }
 
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
-const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+const BASE_URL = process.env.BASE_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 // Serve generated ticket PDFs at /ticket-files
 app.use('/ticket-files', express.static(TICKETS_DIR));
@@ -105,6 +105,9 @@ function requireAdmin(req, res, next) {
 
 // ==================== 1. CREATE ORDER (start of checkout) ====================
 app.post('/api/create-order', async (req, res) => {
+    if (TEST_MODE && process.env.NODE_ENV === 'production') {
+        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    }
     const { name, email, phone, gender, quantity } = req.body || {};
 
     if (!name || !email || !phone || !gender) {
@@ -171,6 +174,9 @@ app.post('/api/create-order', async (req, res) => {
 
 // ==================== 2. VERIFY PAYMENT (after gateway completes) ====================
 app.post('/api/verify-payment', async (req, res) => {
+    if (TEST_MODE && process.env.NODE_ENV === 'production') {
+        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    }
     const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body || {};
 
     const sale = await db.getByOrderId(orderId);
@@ -250,7 +256,7 @@ app.post('/api/verify-payment', async (req, res) => {
                 quantity: sale.quantity,
                 amount: sale.amount,
                 createdAt: generatedAt,
-                event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
+                event: sale.event || EVENT.name
             });
             qrBuffer = await buildQrBuffer(ticketId);
             qrDataUrl = await buildQrDataUrl(ticketId);
@@ -281,7 +287,7 @@ app.post('/api/verify-payment', async (req, res) => {
             pdfPath,
             qrBuffer,
             downloadUrl,
-            event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
+            event: sale.event || EVENT.name
         });
 
         if (emailResult.success) {
@@ -369,7 +375,7 @@ app.post('/api/webhook/razorpay', async (req, res) => {
                 pdfPath = await buildTicketPdf({
                     ticketId, name: sale.name, email: sale.email, gender: sale.gender,
                     quantity: sale.quantity, amount: sale.amount, createdAt: generatedAt,
-                    event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
+                    event: sale.event || EVENT.name
                 });
                 qrBuffer = await buildQrBuffer(ticketId);
                 qrDataUrl = await buildQrDataUrl(ticketId);
@@ -388,7 +394,7 @@ app.post('/api/webhook/razorpay', async (req, res) => {
             const emailResult = await sendTicketEmail({
                 to: sale.email, name: sale.name, ticketId, gender: sale.gender,
                 quantity: sale.quantity, amount: sale.amount, pdfPath, qrBuffer,
-                downloadUrl, event: sale.event && !sale.event.toUpperCase().includes('FRESHERS') ? sale.event : 'TAKEOVER 2.0'
+                downloadUrl, event: sale.event || EVENT.name
             });
 
             if (emailResult.success) {
@@ -901,6 +907,9 @@ app.get('/api/pr/sales', async (req, res) => {
 
 // POST /api/pr/create-order — PR partner initiates a Razorpay payment for a customer
 app.post('/api/pr/create-order', async (req, res) => {
+    if (TEST_MODE && process.env.NODE_ENV === 'production') {
+        return res.status(503).json({ success: false, message: 'Online ticketing is temporarily unavailable. Please try again shortly.' });
+    }
     const { name, email, phone, gender, quantity, prUserId } = req.body || {};
     if (!name || !email || !phone || !gender || !prUserId)
         return res.status(400).json({ success: false, message: 'Missing required fields.' });
@@ -925,7 +934,7 @@ app.post('/api/pr/create-order', async (req, res) => {
         const ticketId = generateTicketId();
         await db.createSaleRecord({
             orderId,
-            event: 'TAKEOVER 2.0',
+            event: EVENT.name,
             name, email, phone, gender,
             quantity: qty,
             amount,
@@ -963,7 +972,7 @@ app.post('/api/pr/cash-request', async (req, res) => {
 
         await db.createSaleRecord({
             orderId,
-            event: 'TAKEOVER 2.0',
+            event: EVENT.name,
             name, email, phone, gender,
             quantity: qty,
             amount,
