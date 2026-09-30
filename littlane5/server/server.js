@@ -103,6 +103,22 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+function requireDashboardAdmin(req, res, next) {
+    const referer = req.get('referer');
+    let sourcePath = '';
+    try {
+        sourcePath = referer ? new URL(referer).pathname : '';
+    } catch (_) {
+        // Missing or malformed referrers are not allowed to create tickets.
+    }
+
+    if (sourcePath !== '/dashboard' && !sourcePath.startsWith('/dashboard/')) {
+        return res.status(403).json({ success: false, message: 'Manual ticket generation is available only from /dashboard.' });
+    }
+
+    return requireAdmin(req, res, next);
+}
+
 // ==================== 1. CREATE ORDER (start of checkout) ====================
 app.post('/api/create-order', async (req, res) => {
     if (TEST_MODE && process.env.PAYMENTS_TEST_MODE !== 'true') {
@@ -525,7 +541,7 @@ app.post('/api/admin/toggle-presentation', requireAdmin, async (req, res) => {
 // app.post('/api/admin/presentation-config', requireAdmin, (req, res) => { ... })
 
 // ==================== 6. ADMIN — GENERATE TICKET MANUALLY ====================
-app.post('/api/admin/generate-ticket', async (req, res) => {
+app.post('/api/admin/generate-ticket', requireDashboardAdmin, async (req, res) => {
     const { name, email, phone, gender, ticketType, quantity, amount, event } = req.body || {};
 
     if (!name || !email) {
@@ -1007,7 +1023,7 @@ app.get('/api/admin/pr-approvals', requireAdmin, async (req, res) => {
 });
 
 // POST /api/admin/pr-approve — admin approves a cash sale → ticket generated and emailed
-app.post('/api/admin/pr-approve', requireAdmin, async (req, res) => {
+app.post('/api/admin/pr-approve', requireDashboardAdmin, async (req, res) => {
     const { orderId } = req.body || {};
     if (!orderId) return res.status(400).json({ success: false, message: 'orderId required' });
 

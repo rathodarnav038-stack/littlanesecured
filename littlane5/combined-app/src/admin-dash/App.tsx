@@ -302,6 +302,7 @@ export default function App({ isPresentation = false }: AppProps) {
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isPresentation) return
     if (isManualSubmitting) return
     if (!manualName.trim() || !manualEmail.trim()) {
       alert('Name and Email are required')
@@ -590,15 +591,17 @@ export default function App({ isPresentation = false }: AppProps) {
           })}
         </nav>
 
-        <div className="rail-promo" onClick={() => setShowManualModal(true)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
-          <div>
-            + New Ticket
-            <span>Generate & email pass</span>
+        {!isPresentation && (
+          <div className="rail-promo" onClick={() => setShowManualModal(true)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+            <div>
+              + New Ticket
+              <span>Generate & email pass</span>
+            </div>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* Header Topbar */}
@@ -656,16 +659,18 @@ export default function App({ isPresentation = false }: AppProps) {
             <div className="tb-dot" />
           </button>
 
-          <button
-            className="tb-cta"
-            onClick={() => setShowManualModal(true)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            New ticket
-          </button>
+          {!isPresentation && (
+            <button
+              className="tb-cta"
+              onClick={() => setShowManualModal(true)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}>
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              New ticket
+            </button>
+          )}
         </div>
       </header>
 
@@ -673,7 +678,7 @@ export default function App({ isPresentation = false }: AppProps) {
       <main className="content fade-in-up">{renderPage(page)}</main>
 
       {/* Manual Ticket Modal */}
-      {showManualModal && (
+      {!isPresentation && showManualModal && (
         <div
           style={{
             position: 'fixed',
