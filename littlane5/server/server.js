@@ -18,7 +18,7 @@ const EVENT = { name: EVENT_NAME };
 const PRICING = {
     female: 449,
     male: 549,
-    couple: 699
+    couple: 849
 };
 
 // ==================== RAZORPAY SETUP ====================

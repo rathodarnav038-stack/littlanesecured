@@ -123,7 +123,7 @@ class TextScramble{
 }
 
 /* ==================== BOOKING POPUP (COE UNOFFICIAL FRESHERS PARTY 2026) ==================== */
-const FT_PRICING = { female: 449, male: 549, couple: 699 };
+const FT_PRICING = { female: 449, male: 549, couple: 849 };
 
 class BookingPopup{
     constructor(){

@@ -355,7 +355,7 @@ export default function App({ isPresentation = false }: AppProps) {
         if (manualEvent === 'AURA GENESIS') {
           setManualAmount(localStorage.getItem('ft_price_aura') || '350')
         } else if (manualEvent === 'COE UNOFFICIAL FRESHERS PARTY 2026') {
-          setManualAmount(manualGender === 'female' ? '449' : manualGender === 'couple' ? '699' : '549')
+          setManualAmount(manualGender === 'female' ? '449' : manualGender === 'couple' ? '849' : '549')
         } else if (manualGender === 'female') {
           setManualAmount(localStorage.getItem('ft_price_female') || '599')
         } else {
@@ -375,7 +375,7 @@ export default function App({ isPresentation = false }: AppProps) {
   const handleManualGenderChange = (val: string) => {
     setManualGender(val)
     if (manualEvent === 'COE UNOFFICIAL FRESHERS PARTY 2026') {
-      setManualAmount(val === 'female' ? '449' : val === 'couple' ? '699' : '549')
+      setManualAmount(val === 'female' ? '449' : val === 'couple' ? '849' : '549')
     } else if (manualEvent === 'FRESHERS TAKEOVER') {
       const saved = localStorage.getItem('ft_price_male') || '699'
       setManualAmount(saved)
@@ -769,7 +769,7 @@ export default function App({ isPresentation = false }: AppProps) {
                   >
                     <option value="male">COE Freshers Party Male Pass (₹549)</option>
                     <option value="female">COE Freshers Party Female Pass (₹449)</option>
-                    <option value="couple">COE Freshers Party Couple Pass (₹699)</option>
+                    <option value="couple">COE Freshers Party Couple Pass (₹849)</option>
                   </select>
                 </div>
 

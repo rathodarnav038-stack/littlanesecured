@@ -31,7 +31,7 @@ const PR_USERS: (PRUser & { password: string })[] = [
 ]
 
 // ==================== COE FRESHERS PARTY PRICING ====================
-const PRICING = { female: 449, male: 549, couple: 699 }
+const PRICING = { female: 449, male: 549, couple: 849 }
 const API = ''
 
 // ==================== COE FRESHERS PARTY POPUP ====================
