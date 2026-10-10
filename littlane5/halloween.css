@@ -205,3 +205,28 @@
 .hw-soon-sub{font-size:.95rem;line-height:1.6;color:rgba(239,230,210,.7);max-width:38ch}
 .hw-soon-cta{display:inline-flex;gap:10px;margin-top:6px;padding:12px 18px;background:#f07a1a;color:#140a04;font:700 12px 'DM Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;box-shadow:4px 4px 0 #3a1406;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
 .hw-soon-cta:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 #3a1406}
+
+/* PixelRiot links */
+.pr-link{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(240,122,26,.6);transition:color .3s}
+.pr-link:hover{color:#f07a1a}
+a.partner-tag-item{display:block;color:inherit}
+
+/* contrast pass: muted copy was too dim on the near-black background */
+[data-theme="halloween"] .section-label,[data-theme="halloween"] .section-label-light,[data-theme="halloween"] .section-label-dark{color:#ffcc4d;opacity:1}
+[data-theme="halloween"] .stat-label,[data-theme="halloween"] .stat-big-label,[data-theme="halloween"] .contact-info-label,[data-theme="halloween"] .footer-col-title{color:#ffcc4d;opacity:.9}
+[data-theme="halloween"] .hero-tagline{color:rgba(239,230,210,.88)}
+[data-theme="halloween"] .crew-desc,[data-theme="halloween"] .partner-desc,[data-theme="halloween"] .partners-intro,[data-theme="halloween"] .faq-answer p,[data-theme="halloween"] .contact-sub,[data-theme="halloween"] .footer-desc{color:rgba(239,230,210,.85);opacity:1}
+[data-theme="halloween"] .footer-link,[data-theme="halloween"] .footer-bottom{opacity:1}
+[data-theme="halloween"] .footer-bottom{color:rgba(239,230,210,.75);border-color:rgba(240,122,26,.25)}
+[data-theme="halloween"] .form-float label{color:rgba(239,230,210,.7)}
+[data-theme="halloween"] .hero-scroll-indicator span{opacity:.8;color:#efe6d2}
+[data-theme="halloween"] .scroll-line{background:rgba(239,230,210,.45)}
+[data-theme="halloween"] .loader-percent{color:rgba(239,230,210,.7)}
+[data-theme="halloween"] .why-num,[data-theme="halloween"] .partner-num{color:#ffcc4d}
+[data-theme="halloween"] .why-item,[data-theme="halloween"] .partner-card,[data-theme="halloween"] .faq-item{border-color:rgba(240,122,26,.28)!important}
+[data-theme="halloween"] .perk-item,[data-theme="halloween"] .partner-tag-item{border-color:rgba(240,122,26,.28)!important}
+[data-theme="halloween"] .faq-icon{color:#f07a1a}
+
+/* loader: progress bar sits below the logo */
+.loader-bar{margin:28px auto 0}
+.loader-percent{margin-top:14px}
