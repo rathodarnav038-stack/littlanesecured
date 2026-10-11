@@ -55,7 +55,7 @@ function PasswordGateApp() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (password === 'littlane2026') {
+    if (password === 'Littlane17') {
       sessionStorage.setItem('tickets_auth', 'true')
       setAuth(true)
       setError('')

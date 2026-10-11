@@ -128,6 +128,59 @@ export default function Tickets({
     }
   }
 
+  const exportToExcel = () => {
+    const rows = ticketSales.map((s: any) => {
+      const ev = (s.event || '').toUpperCase()
+      const eventName = ev && !ev.includes('FRESHERS') ? s.event : 'TAKEOVER 2.0'
+      const type =
+        s.gender === 'male' ? 'Male Pass' :
+        s.gender === 'female' ? 'Female Pass' :
+        s.gender === 'couple' ? 'Couple Pass' :
+        String(s.gender || '').toLowerCase().includes('exclusive') ? 'Exclusive VIP' : 'General'
+      const isCancelled = s.status === 'cancelled'
+      const isScanned = s.status === 'scanned' || !!s.scannedAt
+      const status = isCancelled ? 'Cancelled' : isScanned ? 'Scanned' : 'Active'
+      const payMethod = s.paymentMethod === 'cash' ? 'Cash (PR)' : s.paymentId === 'manual' ? 'Manual' : 'Razorpay'
+      return [
+        s.ticketId || '',
+        s.name || '',
+        s.email || '',
+        s.phone || '',
+        eventName,
+        type,
+        s.quantity || 1,
+        s.amount || 0,
+        status,
+        payMethod,
+        s.prName || s.prUserId || '',
+        s.generatedAt ? new Date(s.generatedAt).toLocaleString('en-IN') : '',
+        s.scannedAt ? new Date(s.scannedAt).toLocaleString('en-IN') : '',
+      ]
+    })
+
+    const headers = [
+      'Ticket ID', 'Name', 'Email', 'Phone', 'Event', 'Pass Type',
+      'Qty', 'Amount (₹)', 'Status', 'Payment Method', 'PR Name',
+      'Generated At', 'Scanned At'
+    ]
+
+    const csvContent = [
+      headers,
+      ...rows
+    ].map(row =>
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\n')
+
+    const bom = '\uFEFF' // UTF-8 BOM for Excel
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `tickets_${new Date().toISOString().slice(0,10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const mapTicket = (s: any): Ticket => {
     const isCancelled = s.status === 'cancelled'
     const isScanned = s.status === 'scanned' || !!s.scannedAt
@@ -240,6 +293,30 @@ export default function Tickets({
           style={{ width: '40px', height: '40px', borderRadius: '12px' }}
         >
           📋
+        </button>
+
+        <button
+          onClick={exportToExcel}
+          title="Export as Excel"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '0 14px',
+            height: '40px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.1))',
+            border: '1px solid rgba(34,197,94,0.35)',
+            color: '#4ade80',
+            fontSize: '12px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            letterSpacing: '0.03em',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: '14px' }}>📊</span>
+          Export Excel
         </button>
       </div>
 
