@@ -550,3 +550,13 @@ select.littix-input option{background:#211011;color:#fff7f1}
 ::-webkit-scrollbar-track{background:var(--dark)}
 ::-webkit-scrollbar-thumb{background:rgba(212,90,0,.35);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(212,90,0,.55)}
+
+
+/* brand logos: light artwork on dark backgrounds, dark artwork in the light theme */
+.logo-img{display:block;height:84px;width:auto;transition:height .5s var(--ease)}
+.navbar.scrolled .logo-img{height:58px}
+.logo-on-light{display:none}
+[data-theme="light"] .logo-on-dark{display:none}
+[data-theme="light"] .logo-on-light{display:block}
+.loader-logo{display:block;width:clamp(150px,22vw,220px);height:auto;margin:0 auto}
+@media(max-width:768px){.logo-img{height:64px}.navbar.scrolled .logo-img{height:50px}}

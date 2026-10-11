@@ -29,7 +29,7 @@ class Particles{
                 vx:(Math.random()-.5)*.5,
                 vy:(Math.random()-.5)*.5,
                 size:Math.random()*2+.5,
-                color:['#ff00ff','#00f0ff','#b400ff','#ff2d95','#7b00ff'][Math.floor(Math.random()*5)],
+                color:(document.documentElement.dataset.theme==='halloween'?['#f07a1a','#ffa04d','#ffcc4d','#d45a00','#ff6a00']:['#ff00ff','#00f0ff','#b400ff','#ff2d95','#7b00ff'])[Math.floor(Math.random()*5)],
                 alpha:Math.random()*.5+.2,
                 pulse:Math.random()*Math.PI*2
             });
@@ -37,7 +37,7 @@ class Particles{
     }
     animate(){
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-        const isDark=document.documentElement.dataset.theme==='dark';
+        const isDark=document.documentElement.dataset.theme!=='light';
         if(isDark){
             this.particles.forEach(p=>{
                 p.pulse+=.02;
@@ -416,20 +416,20 @@ class ThemeToggle{
         this.btn=document.getElementById('themeToggle');
         this.label=document.getElementById('toggleLabel');
         if(!this.btn)return;
-        this.isDark=false; // default to light (sundowner)
-        document.documentElement.dataset.theme = 'light';
-        if (this.label) this.label.textContent = 'Rave Mode';
+        this.isDark=false; // false = Halloween (default), true = Sundowner
+        document.documentElement.dataset.theme = 'halloween';
+        if (this.label) this.label.textContent = 'Sundowner Mode';
         this.btn.addEventListener('click',()=>this.toggle());
     }
     toggle(){
         this.isDark=!this.isDark;
-        document.documentElement.dataset.theme=this.isDark?'dark':'light';
+        document.documentElement.dataset.theme=this.isDark?'light':'halloween';
         if (this.label) {
-            this.label.textContent = this.isDark ? 'Sundowner Mode' : 'Rave Mode';
+            this.label.textContent = this.isDark ? 'Halloween Mode' : 'Sundowner Mode';
         }
         // Swap images
         document.querySelectorAll('[data-light][data-dark]').forEach(img=>{
-            const src=this.isDark?img.dataset.dark:img.dataset.light;
+            const src=this.isDark?img.dataset.light:img.dataset.dark;
             img.style.opacity='0';
             setTimeout(()=>{img.src=src;img.style.opacity='1'},400);
         });

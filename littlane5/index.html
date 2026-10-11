@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="halloween">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LITTLANE — Pune's Premier College Fest Curators</title>
-    <meta name="description" content="Littlane is Pune's leading college fest & entertainment crew. Crafting sold-out nights with loud sound and zero chill.">
+    <meta name="description" content="Littlane is Pune's leading college fest & entertainment crew. Crafting sold-out nights with loud sound, zero chill and a little horror.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="halloween.css">
 </head>
 <body>
     <!-- LOADER -->
-    <div class="loader" id="loader"><div class="loader-inner"><div class="loader-bar"></div><span class="loader-text">LITTLANE</span><span class="loader-percent" id="loaderPercent">0</span></div></div>
+    <div class="loader" id="loader"><div class="loader-inner"><img class="loader-logo" src="images/logo-light.png" alt="Littlane Entertainment"><div class="loader-bar"></div><span class="loader-percent" id="loaderPercent">0</span></div></div>
     <!-- PARTICLES -->
     <canvas class="particles-canvas" id="particles"></canvas>
     <!-- GRAIN -->
@@ -24,10 +25,10 @@
     <div class="custom-cursor-dot" id="cursorDot"></div>
 
     <!-- THEME TOGGLE -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle rave mode">
-        <span class="toggle-sun">☀️</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Halloween mode">
+        <span class="toggle-sun">🎃</span>
         <span class="toggle-moon">🌙</span>
-        <span class="toggle-label" id="toggleLabel">Sundowner Theme</span>
+        <span class="toggle-label" id="toggleLabel">Sundowner Mode</span>
     </button>
 
     <!-- Old event popup removed -->
@@ -39,7 +40,7 @@
 
     <!-- ==================== NAVBAR ==================== -->
     <nav class="navbar" id="navbar">
-        <div class="nav-logo"><a href="#hero"><span class="logo-text">LITTLANE</span><span class="logo-sub">Pune • Entertainment</span></a></div>
+        <div class="nav-logo"><a href="#hero" aria-label="Littlane Entertainment"><img class="logo-img logo-on-dark" src="images/logo-light.png" alt="Littlane Entertainment"><img class="logo-img logo-on-light" src="images/logo-dark.png" alt="" aria-hidden="true"></a></div>
         <div class="nav-links">
             <a href="#crew" class="nav-link">The Crew</a>
             <a href="#experience" class="nav-link">Experience</a>
@@ -63,6 +64,7 @@
 
     <!-- ==================== HERO ==================== -->
     <section class="hero" id="hero">
+        <div class="hw-sky" aria-hidden="true"><div class="hw-moon"></div><div class="hw-fog"></div><div class="hw-skyline"></div></div>
         <div class="hero-bg">
             <img src="images/sky-hero.jpg" alt="Sunset sky" class="hero-bg-img" id="heroBgImg"
                  data-light="images/sky-hero.jpg" data-dark="images/rave-sky.jpg">
@@ -71,12 +73,12 @@
             <div class="hero-desktop">
                 <h1 class="hero-title">
                     <div class="hero-line-wrap"><span class="hero-line js-hero-line-1">Where Hype</span></div>
-                    <div class="hero-line-wrap"><span class="hero-line js-hero-line-2">Meets Reality</span></div>
+                    <div class="hero-line-wrap"><span class="hero-line js-hero-line-2">Meets Nightmare</span></div>
                 </h1>
                 <div class="hero-bottom">
                     <div class="hero-bottom-left">
-                        <span class="hero-bold js-hero-left-1">Every</span>
-                        <span class="hero-bold js-hero-left-2">Weekend</span>
+                        <span class="hero-bold js-hero-left-1">After</span>
+                        <span class="hero-bold js-hero-left-2">Dark</span>
                     </div>
                     <div class="hero-bottom-right">
                         <span class="hero-bold js-hero-right-1">Across</span>
@@ -91,13 +93,13 @@
                     <div class="hero-line-wrap"><span class="hero-small-line js-hero-line-1"><span class="deco-line"></span>WHERE<span class="deco-line"></span></span></div>
                     <div class="hero-line-wrap"><span class="hero-line mobile-huge js-hero-line-1">HYPE</span></div>
                     <div class="hero-line-wrap"><span class="hero-small-line js-hero-line-2"><span class="deco-line"></span>MEETS<span class="deco-line"></span></span></div>
-                    <div class="hero-line-wrap"><span class="hero-line mobile-huge js-hero-line-2">REALITY</span></div>
+                    <div class="hero-line-wrap"><span class="hero-line mobile-huge js-hero-line-2">NIGHTMARE</span></div>
                 </h1>
                 <div class="hero-bottom mobile-bottom">
                     <div class="mobile-bottom-col js-hero-left-1">
                         <svg class="mobile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        <span class="mobile-bold js-hero-left-2">EVERY</span>
-                        <span class="mobile-bold js-hero-left-2">WEEKEND</span>
+                        <span class="mobile-bold js-hero-left-2">AFTER</span>
+                        <span class="mobile-bold js-hero-left-2">DARK</span>
                     </div>
                     <div class="mobile-divider js-hero-right-1"></div>
                     <div class="mobile-bottom-col js-hero-right-2">
@@ -109,32 +111,15 @@
             </div>
         </div>
         <div class="hero-sub-section">
-            <p class="hero-tagline">Pune's premier college fest curators.<br>Sold-out nights. Loud sound. Zero chill.</p>
+            <p class="hero-tagline">Pune's premier college fest curators.<br>Sold-out nights. Loud sound. Zero chill. Whatever crawls out after dark.</p>
             <div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 16px;">
 
-                <!-- Current event and ticket sales -->
-                <div style="
-                    background: rgba(0,0,0,0.75);
-                    backdrop-filter: blur(18px);
-                    -webkit-backdrop-filter: blur(18px);
-                    border: 1px solid rgba(124,92,250,0.4);
-                    border-radius: 20px;
-                    overflow: hidden;
-                    max-width: 520px;
-                    width: 100%;
-                    box-shadow: 0 8px 40px rgba(124,92,250,0.25);
-                    cursor: pointer;
-                " id="eventTrigger" role="button" tabindex="0" aria-label="Book COE Unofficial Freshers Party passes">
-                    <img src="images/coe-freshers-party-2026.png" alt="COE Unofficial Freshers Party 2026 — 6 October at The Mills, Pune" style="width:100%;display:block;max-height:300px;object-fit:cover;object-position:top;">
-                    <div style="padding:16px 20px;">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-                            <span style="background:rgba(61,220,132,0.18);border:1px solid rgba(61,220,132,0.4);color:#3DDC84;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.08em;">🎟 PASSES OUT NOW</span>
-                            <span style="background:rgba(124,92,250,0.18);border:1px solid rgba(124,92,250,0.4);color:#c4b5fd;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.08em;">6 OCT · THE MILLS, PUNE</span>
-                        </div>
-                        <div style="font-size:clamp(1.3rem,5vw,1.8rem);font-weight:900;color:#fff;letter-spacing:-0.02em;font-family:'Outfit',sans-serif;">COE UNOFFICIAL FRESHERS PARTY 2026</div>
-                        <div style="font-size:0.92rem;color:rgba(255,255,255,0.76);margin-top:8px;">Food · Live DJ · Dance &nbsp;|&nbsp; Female ₹449 · Male ₹549 · Couple ₹849</div>
-                        <span style="display:inline-flex;margin-top:14px;padding:10px 18px;border-radius:999px;background:#f4d7c3;color:#3d0708;font-size:.85rem;font-weight:900;letter-spacing:.06em;">BOOK YOUR PASS →</span>
-                    </div>
+                <!-- Next event: coming soon -->
+                <div class="hw-soon" aria-label="Next Littlane event, coming soon">
+                    <span class="hw-soon-tag"><span class="hw-soon-dot"></span> Coming soon</span>
+                    <div class="hw-soon-title">Something wicked is coming</div>
+                    <p class="hw-soon-sub">Our next event is being summoned. Date, venue and passes drop soon.</p>
+                    <a class="hw-soon-cta" href="https://instagram.com/littlane.entertainment" target="_blank" rel="noopener">Follow @littlane.entertainment for the reveal <span aria-hidden="true">→</span></a>
                 </div>
 
             </div>
@@ -145,9 +130,9 @@
     <!-- ==================== MARQUEE ==================== -->
     <section class="marquee-section" id="marqueeSection">
         <div class="marquee-track" id="marqueeTrack">
-            <div class="marquee-content"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
-            <div class="marquee-content" aria-hidden="true"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
-            <div class="marquee-content" aria-hidden="true"><span>College Fests</span><span class="marquee-star">✺</span><span>Club Gigs</span><span class="marquee-star">✺</span><span>Live Events</span><span class="marquee-star">✺</span><span>Brand Activations</span><span class="marquee-star">✺</span><span>DJ Nights</span><span class="marquee-star">✺</span><span>Campus Tours</span><span class="marquee-star">✺</span><span>Sold Out</span><span class="marquee-star">✺</span><span>Repeat</span><span class="marquee-star">✺</span></div>
+            <div class="marquee-content"><span>Costumes</span><span class="marquee-star">🎃</span><span>Chaos</span><span class="marquee-star">🎃</span><span>Loud Sound</span><span class="marquee-star">🎃</span><span>Zero Chill</span><span class="marquee-star">🎃</span><span>After Dark</span><span class="marquee-star">🎃</span><span>Sold Out</span><span class="marquee-star">🎃</span><span>Screams</span><span class="marquee-star">🎃</span><span>Repeat</span><span class="marquee-star">🎃</span></div>
+            <div class="marquee-content" aria-hidden="true"><span>Costumes</span><span class="marquee-star">🎃</span><span>Chaos</span><span class="marquee-star">🎃</span><span>Loud Sound</span><span class="marquee-star">🎃</span><span>Zero Chill</span><span class="marquee-star">🎃</span><span>After Dark</span><span class="marquee-star">🎃</span><span>Sold Out</span><span class="marquee-star">🎃</span><span>Screams</span><span class="marquee-star">🎃</span><span>Repeat</span><span class="marquee-star">🎃</span></div>
+            <div class="marquee-content" aria-hidden="true"><span>Costumes</span><span class="marquee-star">🎃</span><span>Chaos</span><span class="marquee-star">🎃</span><span>Loud Sound</span><span class="marquee-star">🎃</span><span>Zero Chill</span><span class="marquee-star">🎃</span><span>After Dark</span><span class="marquee-star">🎃</span><span>Sold Out</span><span class="marquee-star">🎃</span><span>Screams</span><span class="marquee-star">🎃</span><span>Repeat</span><span class="marquee-star">🎃</span></div>
         </div>
     </section>
 
@@ -261,6 +246,16 @@
         </div>
     </section>
 
+    <!-- ==================== MEDIA PARTNERS ==================== -->
+    <section class="who-partner-section media-partners-section" id="media-partners">
+        <div class="container">
+            <span class="section-label reveal-text">— Media Partners</span>
+            <div class="partner-tags-grid">
+                <a class="partner-tag-item" href="https://pixelriot.in" target="_blank" rel="noopener"><span>PixelRiot</span></a>
+            </div>
+        </div>
+    </section>
+
     <!-- ==================== CAMPUS AMBASSADORS ==================== -->
     <section class="ambassador-section">
         <div class="container">
@@ -352,7 +347,7 @@
                 <div class="footer-col"><span class="footer-col-title">Explore</span><a href="#crew" class="footer-link">The Crew</a><a href="#experience" class="footer-link">Experience</a><a href="#partners" class="footer-link">Partners</a><a href="#faq" class="footer-link">FAQ</a></div>
                 <div class="footer-col"><span class="footer-col-title">Follow</span><a href="https://instagram.com/littlane.entertainment" target="_blank" class="footer-link">Instagram</a><a href="#" class="footer-link">YouTube</a><a href="#" class="footer-link">LinkedIn</a><a href="mailto:littlaneent@gmail.com" class="footer-link">Email</a></div>
             </div>
-            <div class="footer-bottom"><span>© 2026 Littlane Entertainment</span><span>Made in Pune</span></div>
+            <div class="footer-bottom"><span>© 2026 Littlane Entertainment · Media Partner <a class="pr-link" href="https://pixelriot.in" target="_blank" rel="noopener">PixelRiot</a></span><span>Made in Pune · Made by <a class="pr-link" href="https://pixelriot.in" target="_blank" rel="noopener">PixelRiot</a></span></div>
         </div>
     </footer>
 
@@ -410,5 +405,6 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>window.LITTLANE_API_BASE = window.location.origin;</script>
     <script src="script.js"></script>
+    <script src="halloween.js"></script>
 </body>
 </html>
